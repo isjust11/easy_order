@@ -1,3 +1,20 @@
+export const sidebarLinks = [
+  {
+      route:'/discover',
+      label: 'Discover',
+      icon: '/icons/discover.svg'
+  },
+  {
+      route: '/create-podcast',
+      label: 'Create Podcast',
+      icon: '/icons/microphone.svg'
+  },
+  {
+      route: '/profile',
+      label: 'Profile',
+      icon: '/icons/profile.svg'
+  },
+]
 export const podcastData = [
     {
       id: 1,

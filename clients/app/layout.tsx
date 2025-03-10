@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { toast } from "sonner"
 import Sidebar from "@/components/Sidebar";
-
+import { Toaster } from "@/components/ui/sonner"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,6 +31,7 @@ export default function RootLayout({
           <main className="flex-1 overflow-y-auto">
             <div className="container mx-auto px-6 py-8">
               {children}
+              < Toaster/>
             </div>
           </main>
         </div>

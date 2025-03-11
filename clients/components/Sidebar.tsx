@@ -6,6 +6,7 @@ import React from 'react';
 import { getNavigators } from '@/services/navigator-api';
 import Image from 'next/image';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import UserMenu from './UserMenu';
 
 const NavigatorItem = ({ item, level = 0 }: { item: Navigator; level?: number }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,15 +83,18 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className="h-screen w-64 bg-sidebar border-r border-sidebar-border">
-      <div className="p-6">
+    <div className="h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
+      <div className="p-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-sidebar-foreground">Easy Order</h1>
       </div>
-      <nav className="px-4">
+      <nav className="px-4 flex-grow">
         {menuItems.map((item) => (
           <NavigatorItem key={item.id} item={item} />
         ))}
       </nav>
+      <div className="p-4 border-t border-sidebar-border">
+        <UserMenu />
+      </div>
     </div>
   );
 };

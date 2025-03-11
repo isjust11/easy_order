@@ -42,10 +42,18 @@ export default function TablesManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Quản lý bàn</h2>
-        <Button onClick={() => router.push('/manager/tables/create')}>
-          <Plus className="w-4 h-4 mr-2" />
-          Thêm bàn mới
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={() => router.push('/manager/tables/qrcodes')}
+          >
+            QR Codes
+          </Button>
+          <Button onClick={() => router.push('/manager/tables/create')}>
+            <Plus className="w-4 h-4 mr-2" />
+            Thêm bàn mới
+          </Button>
+        </div>
       </div>
 
       <Table>

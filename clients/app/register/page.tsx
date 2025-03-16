@@ -21,13 +21,13 @@ import Link from 'next/link';
 
 // Schéma de validation
 const formSchema = z.object({
-  username: z.string().min(3, 'Nom d\'utilisateur doit contenir au moins 3 caractères'),
-  password: z.string().min(6, 'Mot de passe doit contenir au moins 6 caractères'),
+  username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự'),
+  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
   confirmPassword: z.string(),
   fullName: z.string().optional(),
-  email: z.string().email('Adresse email invalide').optional(),
+  email: z.string().email('Email không hợp lệ').optional(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Les mots de passe ne correspondent pas',
+  message: 'Mật khẩu xác nhận không khớp',
   path: ['confirmPassword'],
 });
 
@@ -73,9 +73,9 @@ export default function RegisterPage() {
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Créer un compte</h1>
+          <h1 className="text-2xl font-bold">Tạo tài khoản</h1>
           <p className="text-gray-500 mt-2">
-            Inscrivez-vous pour accéder à Easy Order
+            Đăng ký để sử dụng Easy Order
           </p>
         </div>
 
@@ -86,9 +86,9 @@ export default function RegisterPage() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nom d'utilisateur</FormLabel>
+                  <FormLabel>Tên đăng nhập</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrez votre nom d'utilisateur" {...field} />
+                    <Input placeholder="Nhập tên đăng nhập" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -100,9 +100,9 @@ export default function RegisterPage() {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nom complet (optionnel)</FormLabel>
+                  <FormLabel>Họ và tên (tùy chọn)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrez votre nom complet" {...field} />
+                    <Input placeholder="Nhập họ và tên" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,9 +114,9 @@ export default function RegisterPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (optionnel)</FormLabel>
+                  <FormLabel>Email (tùy chọn)</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrez votre adresse email" {...field} />
+                    <Input placeholder="Nhập địa chỉ email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,11 +128,11 @@ export default function RegisterPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mot de passe</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Entrez votre mot de passe"
+                      placeholder="Nhập mật khẩu"
                       {...field}
                     />
                   </FormControl>
@@ -146,11 +146,11 @@ export default function RegisterPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirmer le mot de passe</FormLabel>
+                  <FormLabel>Xác nhận mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Confirmez votre mot de passe"
+                      placeholder="Xác nhận mật khẩu"
                       {...field}
                     />
                   </FormControl>
@@ -164,16 +164,16 @@ export default function RegisterPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Inscription en cours...' : 'S\'inscrire'}
+              {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
             </Button>
           </form>
         </Form>
 
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Vous avez déjà un compte?{' '}
+            Đã có tài khoản?{' '}
             <Link href="/login" className="text-primary font-semibold hover:underline">
-              Se connecter
+              Đăng nhập
             </Link>
           </p>
         </div>

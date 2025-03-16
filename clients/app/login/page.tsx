@@ -21,8 +21,8 @@ import Link from 'next/link';
 
 // Schéma de validation
 const formSchema = z.object({
-  username: z.string().min(3, 'Nom d\'utilisateur doit contenir au moins 3 caractères'),
-  password: z.string().min(6, 'Mot de passe doit contenir au moins 6 caractères'),
+  username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự'),
+  password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
 });
 
 export default function LoginPage() {
@@ -45,11 +45,11 @@ export default function LoginPage() {
     
     try {
       await login(values.username, values.password);
-      toast.success('Connexion réussie');
+      toast.success('Đăng nhập thành công');
       router.push('/');
     } catch (error) {
-      console.error('Erreur de connexion:', error);
-      toast.error('Identifiants invalides');
+      console.error('Lỗi đăng nhập:', error);
+      toast.error('Tên đăng nhập hoặc mật khẩu không chính xác');
     } finally {
       setIsLoading(false);
     }
@@ -59,9 +59,9 @@ export default function LoginPage() {
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Connexion</h1>
+          <h1 className="text-2xl font-bold">Đăng nhập</h1>
           <p className="text-gray-500 mt-2">
-            Connectez-vous à votre compte Easy Order
+            Đăng nhập vào tài khoản Easy Order của bạn
           </p>
         </div>
 
@@ -72,9 +72,9 @@ export default function LoginPage() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nom d'utilisateur</FormLabel>
+                  <FormLabel>Tên đăng nhập</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrez votre nom d'utilisateur" {...field} />
+                    <Input placeholder="Nhập tên đăng nhập của bạn" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -86,11 +86,11 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mot de passe</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Entrez votre mot de passe"
+                      placeholder="Nhập mật khẩu của bạn"
                       {...field}
                     />
                   </FormControl>
@@ -104,16 +104,16 @@ export default function LoginPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Connexion en cours...' : 'Se connecter'}
+              {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
             </Button>
           </form>
         </Form>
 
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Vous n'avez pas de compte?{' '}
+            Bạn chưa có tài khoản?{' '}
             <Link href="/register" className="text-primary font-semibold hover:underline">
-              S'inscrire
+              Đăng ký
             </Link>
           </p>
         </div>

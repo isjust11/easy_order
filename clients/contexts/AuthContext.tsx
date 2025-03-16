@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login, register, logout, isAuthenticated, getCurrentUser, setupAxiosInterceptors } from '@/services/auth-api';
+import { login, register, logout, isAuthenticated, getCurrentUser } from '@/services/auth-api';
 
 // Type pour l'utilisateur
 interface User {
@@ -44,8 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Initialiser l'état d'authentification au chargement
   useEffect(() => {
     // Configurer les intercepteurs Axios
-    setupAxiosInterceptors();
-    
+    // setupAxiosInterceptors();
     // Vérifier si l'utilisateur est déjà connecté
     const checkAuth = () => {
       try {
@@ -55,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsLoggedIn(true);
         }
       } catch (error) {
-        console.error('Erreur lors de la vérification de l\'authentification:', error);
+        console.error('có lỗi trong quá trình thực hiện: ', error);
       } finally {
         setLoading(false);
       }
@@ -73,6 +72,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await login({ username, password });
       setUser(response.user);
       setIsLoggedIn(true);
+      // Gọi lại setupAxiosInterceptors sau khi đăng nhập để đảm bảo token được cập nhật
+      // setupAxiosInterceptors();
     } catch (error: any) {
       setError(error.response?.data?.message || 'Erreur de connexion');
       throw error;
@@ -90,8 +91,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await register({ username, password, fullName, email });
       setUser(response.user);
       setIsLoggedIn(true);
+      // Gọi lại setupAxiosInterceptors sau khi đăng ký để đảm bảo token được cập nhật
+      // setupAxiosInterceptors();
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Erreur d\'inscription');
+      setError(error.response?.data?.message || 'Lỗi đăng ký');
       throw error;
     } finally {
       setLoading(false);

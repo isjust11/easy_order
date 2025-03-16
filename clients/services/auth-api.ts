@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_URL = 'http://localhost:4000';
+import axiosApi from './base/api';
 
 // Type pour les données de connexion
 interface LoginData {
@@ -30,7 +29,7 @@ interface AuthResponse {
 // Connexion utilisateur
 export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, data);
+    const response = await axiosApi.post(`/auth/login`, data);
     // Stocker le token dans le localStorage
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -44,7 +43,7 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
 // Inscription utilisateur
 export const register = async (data: RegisterData): Promise<AuthResponse> => {
   try {
-    const response = await axios.post(`${API_URL}/auth/register`, data);
+    const response = await axiosApi.post(`/auth/register`, data);
     // Stocker le token dans le localStorage
     localStorage.setItem('accessToken', response.data.accessToken);
     localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -77,29 +76,37 @@ export const getAuthToken = (): string | null => {
   return localStorage.getItem('accessToken');
 };
 
-// Configurer axios avec le token d'authentification
-export const setupAxiosInterceptors = (): void => {
-  axios.interceptors.request.use(
-    (config) => {
-      const token = getAuthToken();
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
+// // Configurer axios avec le token d'authentification
+// export const setupAxiosInterceptors = (): void => {
+//   const token = getAuthToken();
+//   console.log('Get token from interceptor:', token);
+//   const requestIntercept = Api.interceptors.request.use(
+//     (config) => {
+//       const token = getAuthToken();
+//       console.log('Token from interceptor:', token);
+//       if (token) {
+//         // Đảm bảo headers đã được khởi tạo
+//         config.headers = config.headers || {};
+//         config.headers.Authorization = `Bearer ${token}`;
+//         console.log('Headers set successfully:', config.headers);
+//       }
+//       return config;
+//     },
+//     (error) => {
+//       return Promise.reject(error);
+//     }
+//   );
 
-  axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        logout();
-        window.location.href = '/login';
-      }
-      return Promise.reject(error);
-    }
-  );
-}; 
+//   const responseIntercept =  Api.interceptors.response.use(
+//     (response) => response,
+//     (error) => {
+//       if (error.response && error.response.status === 401) {
+//         logout();
+//         window.location.href = '/login';
+//       }
+//       return Promise.reject(error);
+//     }
+//   );
+//   Api.interceptors.request.eject(requestIntercept);
+//   Api.interceptors.response.eject(responseIntercept);
+// }; 

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import axiosApi from './base/api';
 
 // Type pour les données de connexion
@@ -75,38 +74,3 @@ export const getCurrentUser = (): any => {
 export const getAuthToken = (): string | null => {
   return localStorage.getItem('accessToken');
 };
-
-// // Configurer axios avec le token d'authentification
-// export const setupAxiosInterceptors = (): void => {
-//   const token = getAuthToken();
-//   console.log('Get token from interceptor:', token);
-//   const requestIntercept = Api.interceptors.request.use(
-//     (config) => {
-//       const token = getAuthToken();
-//       console.log('Token from interceptor:', token);
-//       if (token) {
-//         // Đảm bảo headers đã được khởi tạo
-//         config.headers = config.headers || {};
-//         config.headers.Authorization = `Bearer ${token}`;
-//         console.log('Headers set successfully:', config.headers);
-//       }
-//       return config;
-//     },
-//     (error) => {
-//       return Promise.reject(error);
-//     }
-//   );
-
-//   const responseIntercept =  Api.interceptors.response.use(
-//     (response) => response,
-//     (error) => {
-//       if (error.response && error.response.status === 401) {
-//         logout();
-//         window.location.href = '/login';
-//       }
-//       return Promise.reject(error);
-//     }
-//   );
-//   Api.interceptors.request.eject(requestIntercept);
-//   Api.interceptors.response.eject(responseIntercept);
-// }; 

@@ -15,9 +15,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import axios from 'axios';
+import { login } from '@/services/auth-api';
 
 // Schéma de validation
 const formSchema = z.object({
@@ -27,7 +28,6 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const router = useRouter();
 
   // Initialisation du formulaire
@@ -44,7 +44,10 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      await login(values.username, values.password);
+      await login({
+        username: values.username,
+        password: values.password
+      });
       toast.success('Đăng nhập thành công');
       router.push('/');
     } catch (error) {

@@ -29,7 +29,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth doit être utilisé dans un AuthProvider');
+    throw new Error('useAuth phải được sử dụng trong AuthProvider');
   }
   return context;
 };
@@ -41,11 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  // Initialiser l'état d'authentification au chargement
   useEffect(() => {
-    // Configurer les intercepteurs Axios
-    // setupAxiosInterceptors();
-    // Vérifier si l'utilisateur est déjà connecté
     const checkAuth = () => {
       try {
         if (isAuthenticated()) {

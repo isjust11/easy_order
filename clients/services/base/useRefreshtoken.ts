@@ -5,7 +5,7 @@ const getRereshToken = ()=>{
 }
 
 function signIn(){
-    return window.location.href = '/sign-up'
+    return window.location.href = '/login'
 }
 export const useRefreshToken = () => {
   const refreshToken = async () => {

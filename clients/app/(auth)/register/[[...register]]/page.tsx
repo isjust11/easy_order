@@ -15,9 +15,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { register } from '@/services/auth-api';
 
 // Schéma de validation
 const formSchema = z.object({
@@ -33,7 +33,6 @@ const formSchema = z.object({
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { register } = useAuth();
   const router = useRouter();
 
   // Initialisation du formulaire
@@ -51,13 +50,15 @@ export default function RegisterPage() {
   // Soumission du formulaire
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    
+
     try {
-      await register(
-        values.username,
-        values.password,
-        values.fullName || undefined,
-        values.email || undefined
+      await register({
+        username: values.username,
+        password: values.password,
+        fullName: values.fullName || undefined,
+        email: values.email || undefined
+      }
+
       );
       toast.success('Inscription réussie');
       router.push('/');

@@ -31,11 +31,11 @@ export default function UserMenu() {
       <div className="flex items-center space-x-2">
         <Link href="/login">
           <Button variant="outline" size="sm">
-            Se connecter
+            Đăng nhập
           </Button>
         </Link>
         <Link href="/register">
-          <Button size="sm">S'inscrire</Button>
+          <Button size="sm">Đăng ký</Button>
         </Link>
       </div>
     );
@@ -79,7 +79,7 @@ export default function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/profile" className="flex w-full cursor-pointer items-center">
             <User className="mr-2 h-4 w-4" />
-            <span>Profil</span>
+            <span>Tài khoản</span>
           </Link>
         </DropdownMenuItem>
         {user?.isAdmin && (
@@ -96,7 +96,7 @@ export default function UserMenu() {
           onClick={handleLogout}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Déconnexion</span>
+          <span>Đăng xuất</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

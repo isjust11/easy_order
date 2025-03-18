@@ -20,7 +20,7 @@ const managementModules = [
   {
     title: 'Quản lý món ăn',
     description: 'Quản lý danh sách món ăn, giá cả và danh mục',
-    href: '/manager/dishes'
+    href: '/manager/food-items'
   },
   {
     title: 'Quản lý đơn hàng',

@@ -12,26 +12,26 @@ import {
 } from '@/components/ui/table';
 import { Plus, Pencil, Trash } from 'lucide-react';
 import { deleteTable, getTables } from '@/services/table-api';
-import { Table as TableType } from '@/types/table';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-
+import { getOrders } from '@/services/manager-api';
+import { Order } from '@/types/order';
 export default function OrdersManagement() {
-  const [orders, setTables] = useState<TableType[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const router = useRouter();
   useEffect(() => {
-    const fetchTables = async () => {
-      const data = await getTables();
-      setTables(data);
+    const fetchOrders = async () => {
+      const data = await getOrders();
+      setOrders(data);
     };
 
-    fetchTables();
+    fetchOrders();
   }, []);
 
   const handleDelete = async (tableId: number) => {
     try {
       await deleteTable(tableId);
-      setTables(tables.filter(table => table.id !== tableId));
+      setOrders(orders.filter(table => table.id !== tableId));
       toast.success('Bàn đã được xóa thành công');
     } catch (error) {
       toast.error('Có lỗi xảy ra khi xóa bàn');
@@ -49,7 +49,7 @@ export default function OrdersManagement() {
           >
             QR Codes
           </Button>
-          <Button onClick={() => router.push('/manager/tables/create')}>
+          <Button onClick={() => router.push('/manager/orders/create')}>
             <Plus className="w-4 h-4 mr-2" />
             Thêm bàn mới
           </Button>
@@ -68,8 +68,16 @@ export default function OrdersManagement() {
           {orders.map((table) => (
             <TableRow key={table.id}>
               <TableCell>{table.status}</TableCell>
-              <TableCell>{table.description}</TableCell>
+              <TableCell>{table.note}</TableCell>
               <TableCell className="text-right space-x-2">
+                <Button 
+                  variant="default" 
+                  size="icon"
+                  title='Đặt món'
+                  onClick={() => router.push(`/manager/orders/${table.id}/items`)}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
                 <Button variant="outline" size="icon">
                   <Pencil className="w-4 h-4" />
                 </Button>

@@ -23,7 +23,7 @@ export default function RootLayout({
             </div>
           </div>
         </section>
-        <RightSidebar />
+        {/* <RightSidebar /> */}
       </main>
       </AuthProvider>
     </div>

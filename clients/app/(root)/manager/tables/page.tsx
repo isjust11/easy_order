@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Pencil, Trash } from 'lucide-react';
+import { Plus, Pencil, Trash, Utensils } from 'lucide-react';
 import { deleteTable, getTables } from '@/services/table-api';
 import { Table as TableType } from '@/types/table';
 import { useRouter } from 'next/navigation';
@@ -70,10 +70,26 @@ export default function TablesManagement() {
               <TableCell>{table.status}</TableCell>
               <TableCell>{table.description}</TableCell>
               <TableCell className="text-right space-x-2">
-                <Button variant="outline" size="icon">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => router.push(`/manager/tables/${table.id}/order`)}
+                >
                   <Pencil className="w-4 h-4" />
                 </Button>
-                <Button variant="destructive" size="icon" onClick={() => handleDelete(table.id)}>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  title='Đặt món'
+                  onClick={() => router.push(`/manager/tables/${table.id}/order`)}
+                >
+                  <Utensils className="w-4 h-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => handleDelete(table.id)}
+                >
                   <Trash className="w-4 h-4" />
                 </Button>
               </TableCell>

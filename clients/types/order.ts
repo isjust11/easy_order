@@ -2,7 +2,7 @@ import { Guest } from "./guest";
 import { OrderItem } from "./orderItem";
 import { User } from "./user";
 
-export interface Orders {
+export interface Order {
     id: number;
     tableId: number;
     status: 'pending' | 'preparing' | 'ready' | 'served' | 'completed' | 'cancelled';

@@ -5,7 +5,7 @@ import axiosApi from './base/api';
 
 export const getTables = async (): Promise<Table[]> => {
   try {
-    const response = await axiosApi.get(`/tables`);
+    const response = await axiosApi.get(`/table`);
     return response.data;
   } catch (error) {
     console.error('Error fetching tables:', error);
@@ -15,7 +15,7 @@ export const getTables = async (): Promise<Table[]> => {
 
 export const createTable = async (tableData: any): Promise<Table> => {
   try {
-    const response = await axiosApi.post(`$/tables`, tableData);
+    const response = await axiosApi.post(`$/table`, tableData);
     return response.data;
   } catch (error) {
     console.error('Error creating table:', error);
@@ -25,7 +25,7 @@ export const createTable = async (tableData: any): Promise<Table> => {
 
 export const updateTable = async (id: number, tableData: any): Promise<Table> => {
   try {
-    const response = await axiosApi.put(`/tables/${id}`, tableData);
+    const response = await axiosApi.put(`/table/${id}`, tableData);
     return response.data;
   } catch (error) {
     console.error('Error updating table:', error);
@@ -35,7 +35,7 @@ export const updateTable = async (id: number, tableData: any): Promise<Table> =>
 
 export const deleteTable = async (id: number): Promise<void> => {
   try {
-    await axiosApi.delete(`/tables/${id}`);
+    await axiosApi.delete(`/table/${id}`);
   } catch (error) {
     console.error('Error deleting table:', error);
     throw error;

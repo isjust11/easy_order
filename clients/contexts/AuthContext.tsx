@@ -2,6 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { login, register, logout, isAuthenticated, getCurrentUser } from '@/services/auth-api';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 // Type pour l'utilisateur
 interface User {
@@ -36,27 +38,35 @@ export const useAuth = () => {
 
 // Provider du contexte d'authentification
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        if (isAuthenticated()) {
-          const currentUser = getCurrentUser();
-          setUser(currentUser);
-          setIsLoggedIn(true);
-        }
-      } catch (error) {
-        console.error('có lỗi trong quá trình thực hiện: ', error);
-      } finally {
-        setLoading(false);
+  const checkAuthAndRedirect = async () => {
+    try {
+      if (isAuthenticated()) {
+        const currentUser = getCurrentUser();
+        setUser(currentUser);
+        setIsLoggedIn(true);
+      } else {
+        setUser(null);
+        setIsLoggedIn(false);
+        router.push('/login');
       }
-    };
-    
-    checkAuth();
+    } catch (error) {
+      console.error('có lỗi trong quá trình thực hiện: ', error);
+      setUser(null);
+      setIsLoggedIn(false);
+      router.push('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthAndRedirect();
   }, []);
 
   // Connexion utilisateur
@@ -114,5 +124,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout: handleLogout,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    isLoggedIn && (
+      <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    )
+  );
 }; 

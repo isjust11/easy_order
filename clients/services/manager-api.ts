@@ -26,7 +26,7 @@ export const createFoodItem = async (data: CreateFoodItemDto): Promise<FoodItem>
 
 export const updateFoodItem = async (id: number, data: any): Promise<FoodItem> => {
   try {
-    const response = await axiosApi.put(`/food-items/${id}`, data);
+    const response = await axiosApi.patch(`/food-items/${id}`, data);
     return response.data;
   } catch (error) {
     console.error('Error updating table:', error);

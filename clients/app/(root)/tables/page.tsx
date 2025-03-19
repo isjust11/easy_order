@@ -1,8 +1,10 @@
 'use client'
 import { getTables } from '@/services/table-api';
 import { Table } from '@/types/table';
-import { Plus } from 'lucide-react'
+import { Plus, Utensils } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 const TablesPage = () => {
     const [tables, setTables] = useState<Table[]>([]);
@@ -36,7 +38,13 @@ const TablesPage = () => {
                                 {table.status}
                             </span>
                         </div>
-                        <p className="text-muted-foreground">{table.description}</p>
+                        <p className="text-muted-foreground mb-4">{table.description}</p>
+                        <Link href={`/tables/${table.id}/order`}>
+                            <Button className="w-full">
+                                <Utensils className="mr-2" size={16} />
+                                Đặt món
+                            </Button>
+                        </Link>
                     </div>
                 ))}
             </div>

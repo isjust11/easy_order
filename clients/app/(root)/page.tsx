@@ -30,7 +30,12 @@ const managementModules = [
   {
     title: 'Quản lý nhân viên',
     description: 'Quản lý thông tin và phân quyền nhân viên',
-    href: '/manager/staff'
+    href: '/manager/users'
+  },
+  {
+    title: 'Quản lý media',
+    description: 'Quản lý hình ảnh và video',
+    href: '/manager/media'
   }
 ];
 

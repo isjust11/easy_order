@@ -69,7 +69,7 @@ export const columns: ColumnDef<FoodItem>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => window.location.href = `/manager/food-items/${foodItem.id}`}
+              onClick={() => window.location.href = `/manager/food-items/update/${foodItem.id}`}
             >
               <Pencil className="mr-2 h-4 w-4" />
               Chỉnh sửa

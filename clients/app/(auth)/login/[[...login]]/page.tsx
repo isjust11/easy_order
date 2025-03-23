@@ -17,8 +17,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import axios from 'axios';
-import { login } from '@/services/auth-api';
+import { login, loginWithFacebook, loginWithGoogle } from '@/services/auth-api';
+import { FcGoogle } from 'react-icons/fc';
+import { FaFacebook } from 'react-icons/fa';
 
 // Schéma de validation
 const formSchema = z.object({
@@ -58,6 +59,14 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    await loginWithGoogle();
+  };
+
+  const handleFacebookLogin = async () => {
+    await loginWithFacebook();
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
@@ -66,6 +75,37 @@ export default function LoginPage() {
           <p className="text-gray-500 mt-2">
             Đăng nhập vào tài khoản Easy Order của bạn
           </p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleLogin}
+          >
+            <FcGoogle className="mr-2 h-4 w-4" />
+            Đăng nhập với Google
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleFacebookLogin}
+          >
+            <FaFacebook className="mr-2 h-4 w-4 text-blue-600" />
+            Đăng nhập với Facebook
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Hoặc</span>
+            </div>
+          </div>
         </div>
 
         <Form {...form}>

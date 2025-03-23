@@ -9,9 +9,10 @@ export const getAuthToken = (): string | null => {
   return null;
 };
 
-// Déconnexion utilisateur
+// 
 export const logout = (): void => {
   if (typeof window !== 'undefined') {
+    console.log('logout 1');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
   }
@@ -39,19 +40,6 @@ axiosApi.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
-  }
-);
-
-axiosApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      logout();
-      // if (typeof window !== 'undefined') {
-      //   window.location.href = '/login';
-      // }
-    }
     return Promise.reject(error);
   }
 );

@@ -73,3 +73,9 @@ export const podcastData = [
       "https://next-tiger-358.convex.cloud/api/storage/8023764b-5827-4472-bce7-c04a23d1f4e4",
     },
   ];
+
+export const AppConstants = {
+  AccessToken: 'accessToken',
+  User: 'user',
+  RefreshToken: 'refreshToken',
+}

@@ -51,7 +51,7 @@ export default function UserMenu() {
         .toUpperCase()
         .substring(0, 2);
     }
-    return user?.username.substring(0, 2).toUpperCase() || 'U';
+    return user?.username?.substring(0, 2).toUpperCase() || 'U';
   };
 
   return (

@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (isAuthenticated()) {
         const currentUser = getCurrentUser();
         setUser(currentUser);
+        router.push('/');
         setIsLoggedIn(true);
       } else {
         setUser(null);
@@ -81,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Gọi lại setupAxiosInterceptors sau khi đăng nhập để đảm bảo token được cập nhật
       // setupAxiosInterceptors();
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Erreur de connexion');
+      setError(error.response?.data?.message || 'Đăng nhập không thành công');
       throw error;
     } finally {
       setLoading(false);
@@ -107,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Déconnexion utilisateur
+
   const handleLogout = () => {
     logout();
     setUser(null);

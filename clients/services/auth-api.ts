@@ -1,3 +1,4 @@
+import { AppConstants } from '@/constants';
 import axiosApi from './base/api';
 
 // Type pour les données de connexion
@@ -30,8 +31,8 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
   try {
     const response = await axiosApi.post(`/auth/login`, data);
     // lưu trữ token vào localStorage
-    localStorage.setItem('accessToken', response.data.accessToken);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
+    localStorage.setItem(AppConstants.AccessToken, response.data.accessToken);
+    localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
     return response.data;
   } catch (error) {
     console.error('Lỗi đăng nhập:', error);
@@ -44,8 +45,8 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
   try {
     const response = await axiosApi.post(`/auth/register`, data);
     // lưu trữ token vào localStorage
-    localStorage.setItem('accessToken', response.data.accessToken);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
+    localStorage.setItem(AppConstants.AccessToken, response.data.accessToken);
+    localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
     return response.data;
   } catch (error) {
     console.error('Lỗi đăng ký:', error);
@@ -53,39 +54,31 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
   }
 };
 
-// login with google
-export const loginWithGoogle = async (): Promise<AuthResponse> => {
-  const response = await axiosApi.get(`/auth/google`);
-  return response.data;
-};
-
-// login with facebook
-export const loginWithFacebook = async (): Promise<AuthResponse> => {
-  const response = await axiosApi.get(`/auth/facebook`);
-  return response.data;
-};
-
-
-
 // đăng xuất người dùng
 export const logout = (): void => {
   console.log('logout 2');
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('user');
+  localStorage.removeItem(AppConstants.AccessToken);
+  localStorage.removeItem(AppConstants.User);
 };
 
 // kiểm tra xem người dùng có đăng nhập không
 export const isAuthenticated = (): boolean => {
-  return localStorage.getItem('accessToken') !== null;
+  return localStorage.getItem(AppConstants.AccessToken) !== null;
 };
 
 // lấy thông tin người dùng đã đăng nhập
 export const getCurrentUser = (): any => {
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem(AppConstants.User);
   return user ? JSON.parse(user) : null;
 };
 
 // lấy token xác thực
 export const getAuthToken = (): string | null => {
-  return localStorage.getItem('accessToken');
+  return localStorage.getItem(AppConstants.AccessToken);
+};
+
+// get profile
+export const getProfile = async (): Promise<AuthResponse> => {
+  const response = await axiosApi.get(`/auth/profile`);
+  return response.data;
 };

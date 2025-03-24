@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { login, loginWithFacebook, loginWithGoogle } from '@/services/auth-api';
+import { login } from '@/services/auth-api';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
 
@@ -60,11 +60,13 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    await loginWithGoogle();
+    // await loginWithGoogle();
+    window.location.href = 'http://localhost:4000/auth/google';
   };
 
   const handleFacebookLogin = async () => {
-    await loginWithFacebook();
+    // await loginWithFacebook();
+    window.location.href = 'http://localhost:4000/auth/facebook';
   };
 
   return (

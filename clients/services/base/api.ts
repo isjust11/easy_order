@@ -1,10 +1,11 @@
 import { API_URL, API_TIMEOUT } from "@/config/const";
+import { AppConstants } from "@/constants";
 import axios from "axios";
 
 export const getAuthToken = (): string | null => {
   // Kiểm tra xem có đang ở môi trường browser không
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('accessToken');
+    return localStorage.getItem(AppConstants.AccessToken);
   }
   return null;
 };
@@ -13,8 +14,8 @@ export const getAuthToken = (): string | null => {
 export const logout = (): void => {
   if (typeof window !== 'undefined') {
     console.log('logout 1');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem(AppConstants.AccessToken);
+    localStorage.removeItem(AppConstants.User);
   }
 };
 

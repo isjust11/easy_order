@@ -6,6 +6,17 @@
     "configurations": [
         // add debugging for nextjs
         {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug NestJS",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/nest",
+            "runtimeArgs": ["start", "--debug", "--watch"],
+            "sourceMaps": true,
+            "envFile": "${workspaceFolder}/.env",
+            "cwd": "${workspaceFolder}/server",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Next.js: debug server-side",
             "type": "node-terminal",
             "request": "launch",
@@ -27,7 +38,7 @@
                 "uriFormat": "%s",
                 "action": "debugWithChrome"
             }
-        }
-
+        },
+      
     ]
 }

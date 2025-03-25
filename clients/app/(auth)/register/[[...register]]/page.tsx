@@ -60,11 +60,10 @@ export default function RegisterPage() {
       }
 
       );
-      toast.success('Inscription réussie');
-      router.push('/');
-    } catch (error) {
-      console.error('Erreur d\'inscription:', error);
-      toast.error('Erreur lors de l\'inscription');
+      toast.success('Đăng ký thành công');
+      router.push('/verify-email');
+    } catch (error: any) {
+      toast.error('Lỗi đăng ký: ' + error.response.data.message);
     } finally {
       setIsLoading(false);
     }

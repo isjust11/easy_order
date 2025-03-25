@@ -82,6 +82,12 @@ export default function UserMenu() {
             <span>Tài khoản</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/profile/settings" className="flex w-full cursor-pointer items-center">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Cài đặt</span>
+          </Link>
+        </DropdownMenuItem>
         {user?.isAdmin && (
           <DropdownMenuItem asChild>
             <Link href="/admin" className="flex w-full cursor-pointer items-center">

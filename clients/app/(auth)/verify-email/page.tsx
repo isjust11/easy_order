@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { verifyEmail } from '@/services/auth-api';
 
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
@@ -14,7 +15,7 @@ export default function VerifyEmailPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const verifyEmail = async () => {
+    const verifyEmailHandler = async () => {
       const token = searchParams.get('token');
       
       if (!token) {
@@ -24,29 +25,24 @@ export default function VerifyEmailPage() {
       }
 
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email?token=${token}`);
-        
-        if (response.ok) {
+        const response: any = await verifyEmail(token);
+        console.log(response);
           setStatus('success');
-          setMessage('Email đã được xác thực thành công');
+          setMessage(response.message);
           setTimeout(() => {
             router.push('/login');
           }, 3000);
-        } else {
-          setStatus('error');
-          setMessage('Token xác thực không hợp lệ hoặc đã hết hạn');
-        }
       } catch (error) {
         setStatus('error');
         setMessage('Có lỗi xảy ra khi xác thực email');
       }
     };
 
-    verifyEmail();
+    verifyEmailHandler();
   }, [searchParams, router]);
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-10">
+    <div className="container flex items-center justify-center min-h-screen py-10 max-w-md mx-auto">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Xác thực Email</CardTitle>

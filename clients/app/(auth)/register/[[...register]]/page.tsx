@@ -57,11 +57,8 @@ export default function RegisterPage() {
         password: values.password,
         fullName: values.fullName || undefined,
         email: values.email || undefined
-      }
-
-      );
-      toast.success('Đăng ký thành công');
-      router.push('/verify-email');
+      });
+      toast.success(`Đã gửi email xác thực đến email ${values.email} vui lòng kiểm tra email`);
     } catch (error: any) {
       toast.error('Lỗi đăng ký: ' + error.response.data.message);
     } finally {

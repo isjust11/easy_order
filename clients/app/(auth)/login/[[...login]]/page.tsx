@@ -31,7 +31,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Initialisation du formulaire
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,7 +39,6 @@ export default function LoginPage() {
     },
   });
 
-  // Soumission du formulaire
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     

@@ -23,9 +23,19 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Pencil, Trash2, Lock, Unlock, Plus } from 'lucide-react';
+import { Role } from '@/types/permission';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getRoles } from '@/services/auth-api';
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,6 +45,7 @@ export default function Users() {
     fullName: '',
     email: '',
     isAdmin: false,
+    roleIds: [],
   });
 
   const fetchUsers = async () => {
@@ -48,8 +59,18 @@ export default function Users() {
     }
   };
 
+  const fetchRoles = async () => {
+    try {
+      const data = await getRoles();
+      setRoles(data);
+    } catch (error) {
+      toast.error('Không thể tải danh sách quyền');
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchRoles();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,6 +125,7 @@ export default function Users() {
       fullName: '',
       email: '',
       isAdmin: false,
+      roleIds: [],
     });
     setSelectedUser(null);
   };
@@ -116,6 +138,7 @@ export default function Users() {
       fullName: user.fullName || '',
       email: user.email || '',
       isAdmin: user.isAdmin,
+      roleIds: user.roles?.map(role => Number(role.id)) || [],
     });
     setIsDialogOpen(true);
   };
@@ -195,6 +218,29 @@ export default function Users() {
                   }
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="roles">Quyền</Label>
+                <Select
+                  value={formData.roleIds?.join(',')}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      roleIds: value ? value.split(',').map(Number) : [],
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn quyền" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles.map((role) => (
+                      <SelectItem key={role.id} value={role.id.toString()}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="isAdmin"
@@ -239,7 +285,10 @@ export default function Users() {
               <TableCell>{user.username}</TableCell>
               <TableCell>{user.fullName}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.isAdmin ? 'Quản trị viên' : 'Người dùng'}</TableCell>
+              <TableCell>
+                {user.roles?.map(role => role.name).join(', ') || 'Không có quyền'}
+                {user.isAdmin && ' (Quản trị viên)'}
+              </TableCell>
               <TableCell>
                 {user.isBlocked ? (
                   <span className="text-red-500">Đã khóa</span>

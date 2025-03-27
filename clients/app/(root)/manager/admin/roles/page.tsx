@@ -10,8 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Permission } from '@/types/permission';
-import { getPermissions, deletePermission } from '@/services/permission-api';
+import { Role } from '@/types/permission';
 import { toast } from 'sonner';
 import { 
   Dialog,
@@ -21,72 +20,73 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { PermissionForm } from './components/permission-form';
+import { RoleForm } from './components/role-form';
+import { getRoles, deleteRole } from '@/services/auth-api';
 
-export default function PermissionsPage() {
-  const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [selectedPermission, setSelectedPermission] = useState<Permission | null>(null);
+export default function RolesPage() {
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const fetchPermissions = async () => {
+  const fetchRoles = async () => {
     try {
-      const data = await getPermissions();
-      setPermissions(data);
+      const data = await getRoles();
+      setRoles(data);
     } catch (error: any) {
-      toast.error('Lỗi khi tải danh sách quyền: ' + error.message);
+      toast.error('Lỗi khi tải danh sách vai trò: ' + error.message);
     }
   };
 
   useEffect(() => {
-    fetchPermissions();
+    fetchRoles();
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa quyền này?')) return;
+    if (!confirm('Bạn có chắc chắn muốn xóa vai trò này?')) return;
     
     try {
-      await deletePermission(id);
-      toast.success('Xóa quyền thành công');
-      fetchPermissions();
+      await deleteRole(id);
+      toast.success('Xóa vai trò thành công');
+      fetchRoles();
     } catch (error: any) {
-      toast.error('Lỗi khi xóa quyền: ' + error.message);
+      toast.error('Lỗi khi xóa vai trò: ' + error.message);
     }
   };
 
-  const handleEdit = (permission: Permission) => {
-    setSelectedPermission(permission);
+  const handleEdit = (role: Role) => {
+    setSelectedRole(role);
     setIsDialogOpen(true);
   };
 
   const handleCreate = () => {
-    setSelectedPermission(null);
+    setSelectedRole(null);
     setIsDialogOpen(true);
   };
 
   const onSuccess = () => {
     setIsDialogOpen(false);
-    fetchPermissions();
+    fetchRoles();
   };
 
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Quản lý quyền</h1>
+        <h1 className="text-2xl font-bold">Quản lý vai trò</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={handleCreate}>
               <Plus className="w-4 h-4 mr-2" />
-              Thêm quyền mới
+              Thêm vai trò mới
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle>
-                {selectedPermission ? 'Cập nhật quyền' : 'Thêm quyền mới'}
+                {selectedRole ? 'Cập nhật vai trò' : 'Thêm vai trò mới'}
               </DialogTitle>
             </DialogHeader>
-            <PermissionForm
-              permission={selectedPermission}
+            <RoleForm
+              role={selectedRole}
               onSuccess={onSuccess}
             />
           </DialogContent>
@@ -97,33 +97,35 @@ export default function PermissionsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tên quyền</TableHead>
+              <TableHead>Tên vai trò</TableHead>
               <TableHead>Mô tả</TableHead>
+              <TableHead>Số quyền</TableHead>
               <TableHead>Ngày tạo</TableHead>
               <TableHead className="w-[100px]">Thao tác</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {permissions.map((permission) => (
-              <TableRow key={permission.id}>
-                <TableCell>{permission.name}</TableCell>
-                <TableCell>{permission.description}</TableCell>
+            {roles.map((role) => (
+              <TableRow key={role.id}>
+                <TableCell>{role.name}</TableCell>
+                <TableCell>{role.description}</TableCell>
+                <TableCell>{role.permissions.length}</TableCell>
                 <TableCell>
-                  {new Date(permission.createdAt).toLocaleDateString('vi-VN')}
+                  {new Date(role.createdAt).toLocaleDateString('vi-VN')}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleEdit(permission)}
+                      onClick={() => handleEdit(role)}
                     >
                       <Pencil className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(permission.id)}
+                      onClick={() => handleDelete(role.id)}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

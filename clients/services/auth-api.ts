@@ -1,7 +1,6 @@
 import { AppConstants } from '@/constants';
 import axiosApi from './base/api';
-import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto } from '@/types/permission';
-import { Role } from '@/types/permission';
+import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto, Role } from '@/types/permission';
 
 // Type pour les données de connexion
 interface LoginData {

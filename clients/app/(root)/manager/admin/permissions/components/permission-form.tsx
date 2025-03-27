@@ -16,11 +16,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Permission } from '@/types/permission';
-import { createPermission, updatePermission } from '@/services/permission-api';
-
+import { createPermission, updatePermission } from '@/services/auth-api';
 const formSchema = z.object({
   name: z.string().min(1, 'Tên quyền không được để trống'),
   description: z.string().optional(),
+  code: z.string().optional(),
 });
 
 type PermissionFormProps = {
@@ -33,6 +33,7 @@ export function PermissionForm({ permission, onSuccess }: PermissionFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: permission?.name || '',
+      code: permission?.code || '',
       description: permission?.description || '',
     },
   });
@@ -63,6 +64,20 @@ export function PermissionForm({ permission, onSuccess }: PermissionFormProps) {
               <FormLabel>Tên quyền</FormLabel>
               <FormControl>
                 <Input placeholder="Nhập tên quyền" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+<FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mã quyền</FormLabel>
+              <FormControl>
+                <Input placeholder="Nhập mã quyền" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

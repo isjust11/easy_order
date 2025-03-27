@@ -17,8 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Permission, Role } from '@/types/permission';
-import { createRole, updateRole } from '@/services/role-api';
-import { getPermissions } from '@/services/permission-api';
+import { createRole, updateRole } from '@/services/auth-api';
+import { getPermissions } from '@/services/auth-api';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 

@@ -1,4 +1,5 @@
 import axiosApi from './base/api';
+import { Role } from '@/types/permission';
 
 export interface User {
   id: number;
@@ -7,6 +8,7 @@ export interface User {
   email?: string;
   isAdmin: boolean;
   isBlocked: boolean;
+  roles?: Role[];
 }
 
 export interface CreateUserDto {
@@ -15,12 +17,14 @@ export interface CreateUserDto {
   fullName?: string;
   email?: string;
   isAdmin?: boolean;
+  roleIds?: number[];
 }
 
 export interface UpdateUserDto {
   fullName?: string;
   email?: string;
   isAdmin?: boolean;
+  roleIds?: number[];
 }
 
 export const userApi = {

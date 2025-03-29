@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 
-export default function AuthErrorPage() {
+function AuthError() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -30,3 +30,14 @@ export default function AuthErrorPage() {
     </div>
   );
 } 
+export default function Error(){
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    }>
+      <AuthError />
+    </Suspense>
+  )
+}

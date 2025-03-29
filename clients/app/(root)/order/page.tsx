@@ -54,15 +54,15 @@ export default function OrderPage() {
         <CardHeader>
           <CardTitle>Bienvenue!</CardTitle>
           <CardDescription>
-            Passez commande directement depuis votre appareil
+            Đặt hàng trực tiếp từ thiết bị của bạn
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="mb-4">
-            Vous êtes à la table <strong>{tableName}</strong>. Parcourez notre menu et sélectionnez les plats que vous souhaitez commander.
+            Bạn đang ở bàn <strong>{tableName}</strong>. Hãy duyệt qua menu của chúng tôi và chọn những món ăn mà bạn muốn đặt hàng.
           </p>
           <p>
-            Une fois votre commande passée, elle sera transmise directement à notre cuisine. Un serveur vous apportera vos plats dès qu'ils seront prêts.
+          Sau khi bạn đặt hàng, đơn hàng sẽ được gửi trực tiếp đến bếp của chúng tôi. Người phục vụ sẽ mang món ăn đến cho bạn ngay khi chúng đã sẵn sàng..
           </p>
         </CardContent>
         <CardFooter>

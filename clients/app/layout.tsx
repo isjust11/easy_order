@@ -32,7 +32,6 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
         >
           <div className="flex h-screen bg-background">
             <main className="flex-1 overflow-y-auto">

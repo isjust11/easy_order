@@ -17,8 +17,8 @@ export default function TableQRCodesPage() {
       try {
         const tablesData = await getTables();
         setTables(tablesData);
-      } catch (error) {
-        console.error('Error fetching tables:', error);
+      } catch (_error) {
+        console.error('Error fetching tables:', _error);
       } finally {
         setLoading(false);
       }

@@ -1,6 +1,7 @@
 import { AppConstants } from '@/constants';
 import axiosApi from './base/api';
 import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto, Role } from '@/types/permission';
+import { error } from 'console';
 
 // Type pour les données de connexion
 interface LoginData {
@@ -48,11 +49,11 @@ export const refreshToken = async (): Promise<RefreshTokenResponse> => {
     localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
 
     return response.data;
-  } catch (error) {
-    console.error('Lỗi refresh token:', error);
+  } catch (_error) {
+    console.error('Lỗi refresh token:', _error);
     // Nếu refresh token thất bại, đăng xuất người dùng
     logout();
-    throw error;
+    throw _error;
   }
 };
 
@@ -65,9 +66,9 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
     localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
     localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
     return response.data;
-  } catch (error) {
-    console.error('Lỗi đăng nhập:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Lỗi đăng nhập:', _error);
+    throw _error;
   }
 };
 
@@ -80,9 +81,9 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
     localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
     localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
     return response.data;
-  } catch (error) {
-    console.error('Lỗi đăng ký:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Lỗi đăng ký:', _error);
+    throw _error;
   }
 };
 
@@ -97,11 +98,23 @@ export const verifyEmail = async (token: string): Promise<AuthResponse> => {
   try {
     const response = await axiosApi.get(`/auth/verify-email?token=${token}`);
     return response.data;
-  } catch (error) {
-    console.error('Lỗi xác thực email:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Lỗi xác thực email:', _error);
+    throw _error;
   }
 };
+
+export const resendEmail = async (email: string): Promise<AuthResponse> => {
+  try {
+    const response = await axiosApi.post(`/auth/resend-email`, { email });
+    return response.data;
+  } catch (_error) {
+    console.error('Lỗi gửi email xác thực:', _error);
+    throw _error;
+  }
+};
+
+
 
 // kiểm tra xem người dùng có đăng nhập không
 export const isAuthenticated = (): boolean => {
@@ -173,4 +186,14 @@ export const updatePermission = async (id: string, data: UpdatePermissionDto): P
 
 export const deletePermission = async (id: string): Promise<void> => {
   await axiosApi.delete(`/permissions/${id}`);
+};
+
+export const getTokenInfo = async (token: string) => {
+  try {
+    const response = await axiosApi.get(`/auth/token-info?token=${token}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting token info:', error);
+    throw error;
+  }
 }; 

@@ -55,9 +55,9 @@ export const mediaApi = {
     try {
       const response = await axiosApi.get('/media', { params });
       return response.data;
-    } catch (error) {
-      console.error('Error fetching media:', error);
-      throw error;
+    } catch (_error) {
+      console.error('Error fetching media:', _error);
+      throw _error;
     }
   },
 
@@ -65,9 +65,9 @@ export const mediaApi = {
     try {
       const response = await axiosApi.get(`/media/${id}`);
       return response.data;
-    } catch (error) {
-      console.error('Error fetching media by id:', error);
-      throw error;
+    } catch (_error) {
+      console.error('Error fetching media by id:', _error);
+      throw _error;
     }
   },
 
@@ -82,9 +82,9 @@ export const mediaApi = {
         },
       });
       return response.data;
-    } catch (error) {
-      console.error('Error uploading media:', error);
-      throw error;
+    } catch (_error) {
+      console.error('Error uploading media:', _error);
+      throw _error;
     }
   },
 
@@ -92,18 +92,18 @@ export const mediaApi = {
     try {
       const response = await axiosApi.put(`/media/${id}`, data);
       return response.data;
-    } catch (error) {
-      console.error('Error updating media:', error);
-      throw error;
+    } catch (_error) {
+      console.error('Error updating media:', _error);
+      throw _error;
     }
   },
 
   delete: async (id: number): Promise<void> => {
     try {
       await axiosApi.delete(`/media/${id}`);
-    } catch (error) {
-      console.error('Error deleting media:', error);
-      throw error;
+    } catch (_error) {
+      console.error('Error deleting media:', _error);
+      throw _error;
     }
   },
 }; 

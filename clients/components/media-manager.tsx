@@ -55,7 +55,7 @@ export function MediaManager({ onSelect, selectedMedia, multiple = false }: Medi
       const response = await mediaApi.getAll(params);
       setMedia(response);
       // setTotalPages(response.totalPages);
-    } catch (error) {
+    } catch (_error) {
       toast.error('Không thể tải danh sách media');
     } finally {
       setLoading(false);
@@ -80,7 +80,7 @@ export function MediaManager({ onSelect, selectedMedia, multiple = false }: Medi
         }
       }
       toast.success('Tải lên media thành công');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Có lỗi xảy ra khi tải lên media');
     }
   };
@@ -92,7 +92,7 @@ export function MediaManager({ onSelect, selectedMedia, multiple = false }: Medi
         setMedia((prev) => prev.filter((item) => item.id !== id));
         setSelectedItems((prev) => prev.filter((item) => item.id !== id));
         toast.success('Xóa media thành công');
-      } catch (error) {
+      } catch (_error) {
         toast.error('Có lỗi xảy ra');
       }
     }

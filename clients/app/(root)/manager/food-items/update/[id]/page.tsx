@@ -23,7 +23,7 @@ const UpdateFoodItemPage = () => {
                 setLoading(true)
                 const response = await getFoodItem(parseInt(params.id as string))
                 setFoodItem(response)
-            } catch (error) {
+            } catch (_error) {
                 setError(error as string)
                 toast.error('Không thể tải thông tin món ăn')
             } finally {
@@ -51,7 +51,7 @@ const UpdateFoodItemPage = () => {
             await updateFoodItem(foodItem.id, foodItem)
             toast.success('Cập nhật món ăn thành công')
             router.push('/manager/food-items')
-        } catch (error) {
+        } catch (_error) {
             setError(error as string)
             toast.error('Không thể cập nhật món ăn')
         } finally {

@@ -53,7 +53,7 @@ export const columns: ColumnDef<FoodItem>[] = [
         try {
           await deleteFoodItem(id);
           toast.success('Món ăn đã được xóa thành công');
-        } catch (error) {
+        } catch (_error) {
           toast.error('Có lỗi xảy ra khi xóa món ăn');
         }
       }

@@ -53,7 +53,7 @@ export default function CreateTable() {
       // Afficher le QR code pour la table nouvellement créée
       setCreatedTable({ id: newTable.id, name: newTable.name });
       setShowForm(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Có lỗi xảy ra khi thêm bàn mới");
     }
   }

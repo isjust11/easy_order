@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { register } from '@/services/auth-api';
+import { register, resendEmail } from '@/services/auth-api';
 
 // Schéma de validation
 const formSchema = z.object({
@@ -34,7 +34,7 @@ const formSchema = z.object({
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
+  const [isSendEmail, setIsSendEmail] = useState(false);
   // Initialisation du formulaire
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,6 +58,7 @@ export default function RegisterPage() {
         fullName: values.fullName || undefined,
         email: values.email || undefined
       });
+      setIsSendEmail(true);
       toast.success(`Đã gửi email xác thực đến email ${values.email} vui lòng kiểm tra email`);
     } catch (error: any) {
       toast.error('Lỗi đăng ký: ' + error.response.data.message);
@@ -66,114 +67,139 @@ export default function RegisterPage() {
     }
   };
 
+  const handleResendEmail = async () => {
+    setIsLoading(true);
+    try {
+      await resendEmail(form.getValues('email') || '');
+      setIsSendEmail(true);
+      toast.success(`Đã gửi email xác thực đến email ${form.getValues('email')} vui lòng kiểm tra email`);
+    } catch (error: any) {
+      toast.error('Lỗi gửi email xác thực: ' + error.response.data.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Tạo tài khoản</h1>
-          <p className="text-gray-500 mt-2">
-            Đăng ký để sử dụng Easy Order
-          </p>
-        </div>
+        {isSendEmail ? (
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Đã gửi email xác thực</h1>
+            <p className="text-gray-500 mt-2">
+              Vui lòng kiểm tra email để xác thực tài khoản
+            </p>
+            <Button disabled={isLoading} onClick={handleResendEmail} className="mt-4 w-full bg-primary text-white">{isLoading ? 'Đang gửi email...' : 'Gửi lại email xác thực'}</Button>
+          </div>
+        ) : (
+          <>
+            <div className="text-center">
+              <h1 className="text-2xl font-bold">Tạo tài khoản</h1>
+              <p className="text-gray-500 mt-2">
+                Đăng ký để sử dụng Easy Order
+              </p>
+            </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tên đăng nhập</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nhập tên đăng nhập" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tên đăng nhập</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nhập tên đăng nhập" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="fullName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Họ và tên (tùy chọn)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nhập họ và tên" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Họ và tên (tùy chọn)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nhập họ và tên" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email (tùy chọn)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nhập địa chỉ email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email (tùy chọn)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nhập địa chỉ email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Mật khẩu</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Nhập mật khẩu"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mật khẩu</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Nhập mật khẩu"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Xác nhận mật khẩu</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Xác nhận mật khẩu"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Xác nhận mật khẩu</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Xác nhận mật khẩu"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
-            </Button>
-          </form>
-        </Form>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
+                </Button>
+              </form>
+            </Form>
 
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
-            Đã có tài khoản?{' '}
-            <Link href="/login" className="text-primary font-semibold hover:underline">
-              Đăng nhập
-            </Link>
-          </p>
-        </div>
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-600">
+                Đã có tài khoản?{' '}
+                <Link href="/login" className="text-primary font-semibold hover:underline">
+                  Đăng nhập
+                </Link>
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

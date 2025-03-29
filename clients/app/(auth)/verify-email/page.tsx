@@ -1,81 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { verifyEmail } from '@/services/auth-api';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [message, setMessage] = useState('');
+  const token = searchParams.get('token');
 
-  useEffect(() => {
-    const verifyEmailHandler = async () => {
-      const token = searchParams.get('token');
-      
-      if (!token) {
-        setStatus('error');
-        setMessage('Token xác thực không hợp lệ');
-        return;
-      }
-
-      try {
-        const response: any = await verifyEmail(token);
-        console.log(response);
-          setStatus('success');
-          setMessage(response.message);
-          setTimeout(() => {
-            router.push('/login');
-          }, 3000);
-      } catch (error) {
-        setStatus('error');
-        setMessage('Có lỗi xảy ra khi xác thực email');
-      }
-    };
-
-    verifyEmailHandler();
-  }, [searchParams, router]);
+  const handleVerifyEmail = async () => {
+    try {
+      await verifyEmail(token || '');
+      toast.success('Xác thực email thành công');
+      router.push('/login');
+    } catch (error: any) {
+      toast.error('Xác thực email thất bại: ' + error.response.data.message);
+    }
+  };
 
   return (
-    <div className="container flex items-center justify-center min-h-screen py-10 max-w-md mx-auto">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Xác thực Email</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {status === 'loading' && (
-            <div className="text-center">
-              <p>Đang xác thực email...</p>
-            </div>
-          )}
-          
-          {status === 'success' && (
-            <div className="text-center">
-              <p className="text-green-600 mb-4">{message}</p>
-              <p className="text-sm text-gray-500 mb-4">
-                Bạn sẽ được chuyển hướng đến trang đăng nhập sau 3 giây...
-              </p>
-              <Button asChild>
-                <Link href="/login">Đăng nhập ngay</Link>
-              </Button>
-            </div>
-          )}
-          
-          {status === 'error' && (
-            <div className="text-center">
-              <p className="text-red-600 mb-4">{message}</p>
-              <Button asChild>
-                <Link href="/login">Quay lại trang đăng nhập</Link>
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <h1 className="text-2xl font-bold mb-4">Xác thực Email</h1>
+      <p className="text-gray-600 mb-6">
+        Vui lòng nhấn nút bên dưới để xác thực email của bạn
+      </p>
+      <Button onClick={handleVerifyEmail}>Xác thực Email</Button>
     </div>
+  );
+}
+
+export default function VerifyEmail() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 } 

@@ -40,8 +40,8 @@ axiosApi.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
+  (_error) => {
+    return Promise.reject(_error);
   }
 );
 

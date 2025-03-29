@@ -52,7 +52,7 @@ export default function Users() {
     try {
       const data = await userApi.getAll();
       setUsers(data);
-    } catch (error) {
+    } catch (_error) {
       toast.error('Không thể tải danh sách người dùng');
     } finally {
       setLoading(false);
@@ -63,7 +63,7 @@ export default function Users() {
     try {
       const data = await getRoles();
       setRoles(data);
-    } catch (error) {
+    } catch (_error) {
       toast.error('Không thể tải danh sách quyền');
     }
   };
@@ -86,7 +86,7 @@ export default function Users() {
       setIsDialogOpen(false);
       fetchUsers();
       resetForm();
-    } catch (error) {
+    } catch (_error) {
       toast.error('Có lỗi xảy ra');
     }
   };
@@ -97,7 +97,7 @@ export default function Users() {
         await userApi.delete(id);
         toast.success('Xóa người dùng thành công');
         fetchUsers();
-      } catch (error) {
+      } catch (_error) {
         toast.error('Có lỗi xảy ra');
       }
     }
@@ -113,7 +113,7 @@ export default function Users() {
         toast.success('Khóa tài khoản thành công');
       }
       fetchUsers();
-    } catch (error) {
+    } catch (_error) {
       toast.error('Có lỗi xảy ra');
     }
   };

@@ -3,17 +3,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { login, register, logout, isAuthenticated, getCurrentUser } from '@/services/auth-api';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 
-// Type pour l'utilisateur
 interface User {
   id: number;
   username: string;
   fullName?: string;
   isAdmin: boolean;
+  picture?: string;
+  isGoogleUser?: boolean;
+  googleId?: string;
 }
 
-// Type pour le contexte d'authentification
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -24,10 +24,8 @@ interface AuthContextType {
   logout: () => void;
 }
 
-// Création du contexte
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Hook personnalisé pour utiliser le contexte d'authentification
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -36,7 +34,6 @@ export const useAuth = () => {
   return context;
 };
 
-// Provider du contexte d'authentification
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -56,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoggedIn(false);
         router.push('/login');
       }
-    } catch (error) {
+    } catch (_error) {
       console.error('có lỗi trong quá trình thực hiện: ', error);
       setUser(null);
       setIsLoggedIn(false);

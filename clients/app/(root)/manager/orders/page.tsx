@@ -33,7 +33,7 @@ export default function OrdersManagement() {
       await deleteTable(tableId);
       setOrders(orders.filter(table => table.id !== tableId));
       toast.success('Bàn đã được xóa thành công');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Có lỗi xảy ra khi xóa bàn');
     }
   };

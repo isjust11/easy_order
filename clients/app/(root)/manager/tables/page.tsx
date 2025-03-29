@@ -33,7 +33,7 @@ export default function TablesManagement() {
       await deleteTable(tableId);
       setTables(tables.filter(table => table.id !== tableId));
       toast.success('Bàn đã được xóa thành công');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Có lỗi xảy ra khi xóa bàn');
     }
   };

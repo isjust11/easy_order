@@ -43,7 +43,7 @@ export default function CreateFoodItem() {
         image: foodItem.image,
         isAvailable: foodItem.isAvailable,
       });
-    } catch (error) {
+    } catch (_error) {
       toast.error('Không thể tải thông tin món ăn');
       router.push('/manager/food-items');
     }
@@ -63,7 +63,7 @@ export default function CreateFoodItem() {
         toast.success('Món ăn đã được thêm thành công');
       }
       router.push('/manager/food-items');
-    } catch (error) {
+    } catch (_error) {
       toast.error(isEditing ? 'Có lỗi xảy ra khi cập nhật món ăn' : 'Có lỗi xảy ra khi thêm món ăn');
     } finally {
       setLoading(false);

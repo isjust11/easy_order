@@ -49,8 +49,8 @@ export default function LoginPage() {
       });
       toast.success('Đăng nhập thành công');
       router.push('/');
-    } catch (error) {
-      console.error('Lỗi đăng nhập:', error);
+    } catch (_error) {
+      console.error('Lỗi đăng nhập:', _error);
       toast.error('Tên đăng nhập hoặc mật khẩu không chính xác');
     } finally {
       setIsLoading(false);

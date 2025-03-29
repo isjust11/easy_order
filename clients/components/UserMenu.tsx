@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LogOut, Settings, User } from 'lucide-react';
 
 export default function UserMenu() {
@@ -62,7 +62,12 @@ export default function UserMenu() {
           className="relative h-10 w-10 rounded-full"
         >
           <Avatar>
-            <AvatarFallback>{getInitials()}</AvatarFallback>
+            {user?.picture && (
+              <AvatarImage src={user?.picture} />
+            )}
+            {!user?.picture && (
+              <AvatarFallback>{getInitials()}</AvatarFallback>
+            )}
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

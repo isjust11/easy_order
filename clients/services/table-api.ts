@@ -7,8 +7,8 @@ export const getTables = async (): Promise<Table[]> => {
   try {
     const response = await axiosApi.get(`/table`);
     return response.data;
-  } catch (error) {
-    console.error('Error fetching tables:', error);
+  } catch (_error) {
+    console.error('Error fetching tables:', _error);
     return [];
   }
 };
@@ -17,9 +17,9 @@ export const createTable = async (tableData: any): Promise<Table> => {
   try {
     const response = await axiosApi.post(`$/table`, tableData);
     return response.data;
-  } catch (error) {
-    console.error('Error creating table:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Error creating table:', _error);
+    throw _error;
   }
 };
 
@@ -27,17 +27,17 @@ export const updateTable = async (id: number, tableData: any): Promise<Table> =>
   try {
     const response = await axiosApi.put(`/table/${id}`, tableData);
     return response.data;
-  } catch (error) {
-    console.error('Error updating table:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Error updating table:', _error);
+    throw _error;
   }
 };
 
 export const deleteTable = async (id: number): Promise<void> => {
   try {
     await axiosApi.delete(`/table/${id}`);
-  } catch (error) {
-    console.error('Error deleting table:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Error deleting table:', _error);
+    throw _error;
   }
 }; 

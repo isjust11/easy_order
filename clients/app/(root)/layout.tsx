@@ -1,9 +1,4 @@
 'use client'
-import Image from "next/image";
-import { Toaster } from "@/components/ui/sonner"
-import LeftSidebar from "@/components/LeftSidebar";
-import MobileNav from "@/components/MobileNav";
-import RightSidebar from "@/components/RightSidebar";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Sidebar from "@/components/Sidebar";
 export default function RootLayout({

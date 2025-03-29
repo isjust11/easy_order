@@ -6,8 +6,8 @@ export const createOrder = async (data: CreateOrderDto): Promise<Order> => {
   try {
     const response = await axiosApi.post('/orders', data);
     return response.data;
-  } catch (error) {
-    console.error('Error creating order:', error);
-    throw error;
+  } catch (_error) {
+    console.error('Error creating order:', _error);
+    throw _error;
   }
 }; 

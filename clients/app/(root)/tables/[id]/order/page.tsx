@@ -110,7 +110,7 @@ export default function OrderPage() {
       toast.success('Đặt món thành công')
       setOrderItems([])
       setNote('')
-    } catch (error) {
+    } catch (_error) {
       toast.error('Có lỗi xảy ra khi đặt món')
     } finally {
       setLoading(false)

@@ -75,8 +75,8 @@ const Sidebar = () => {
             }));
         };
         setMenuItems(buildTree(response));
-      } catch (error) {
-        console.error('Error fetching menu items:', error);
+      } catch (_error) {
+        console.error('Error fetching menu items:', _error);
       }
     };
     fetchMenuItems();

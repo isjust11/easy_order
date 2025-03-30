@@ -18,14 +18,16 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { register, resendEmail } from '@/services/auth-api';
+import { RegisterCode, RegisterResultDto } from '@/types/dto/RegisterResultDto';
 
-// Schéma de validation
+
 const formSchema = z.object({
-  username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự'),
+  username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự')
+  .max(20, 'Tên đăng nhập phải có tối đa 20 ký tự'),
   password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
   confirmPassword: z.string(),
   fullName: z.string().optional(),
-  email: z.string().email('Email không hợp lệ').optional(),
+  email: z.string().email('Email không hợp lệ').max(50, 'Email phải có tối đa 50 ký tự'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Mật khẩu xác nhận không khớp',
   path: ['confirmPassword'],
@@ -35,7 +37,6 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isSendEmail, setIsSendEmail] = useState(false);
-  // Initialisation du formulaire
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -47,19 +48,32 @@ export default function RegisterPage() {
     },
   });
 
-  // Soumission du formulaire
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
 
     try {
-      await register({
+      const response: RegisterResultDto = await register({
         username: values.username,
         password: values.password,
         fullName: values.fullName || undefined,
         email: values.email || undefined
       });
-      setIsSendEmail(true);
-      toast.success(`Đã gửi email xác thực đến email ${values.email} vui lòng kiểm tra email`);
+      if(response.code === RegisterCode.Ok){
+        setIsSendEmail(true);
+        toast.success(`Đã gửi email xác thực đến email ${values.email} vui lòng kiểm tra email`);
+      }else if(response.code === RegisterCode.AccountValidated){
+        toast.info(response.message);
+        router.push('/login');
+      }else if(response.code === RegisterCode.AccountIsExist){
+        toast.error(response.message);
+        form.setError('username', { message: response.message });
+      }else if(response.code === RegisterCode.ExistEmail){
+        toast.error(response.message);
+        form.setError('email', { message: response.message });
+      }else {
+        toast.error(response.message);
+      }
+
     } catch (error: any) {
       toast.error('Lỗi đăng ký: ' + error.response.data.message);
     } finally {
@@ -94,7 +108,7 @@ export default function RegisterPage() {
         ) : (
           <>
             <div className="text-center">
-              <h1 className="text-2xl font-bold">Tạo tài khoản</h1>
+              <h1 className="text-2xl font-bold">Đăng ký tài khoản</h1>
               <p className="text-gray-500 mt-2">
                 Đăng ký để sử dụng Easy Order
               </p>
@@ -135,7 +149,7 @@ export default function RegisterPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email (tùy chọn)</FormLabel>
+                      <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input placeholder="Nhập địa chỉ email" {...field} />
                       </FormControl>

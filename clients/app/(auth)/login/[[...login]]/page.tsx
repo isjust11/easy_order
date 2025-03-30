@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,36 +17,77 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { login } from '@/services/auth-api';
+import { forgotPassword, login } from '@/services/auth-api';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { decrypt, encrypt } from '@/lib/utils';
+import { AppConstants } from '@/constants';
 
 // Schéma de validation
 const formSchema = z.object({
   username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự'),
   password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  remember: z.boolean().optional(),
 });
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
       password: '',
+      remember: false,
     },
   });
 
+  useEffect(() => {
+    const loadData = async () => {
+      const remember = localStorage.getItem(AppConstants.Remember);
+      if (remember) {
+        form.setValue('remember', remember === 'true');
+        form.setValue('username', localStorage.getItem(AppConstants.Username) || '');
+        const password = localStorage.getItem(AppConstants.Password);
+        // form.setValue('password', decrypt(password || ''));
+      }
+    }
+    loadData();
+  }, [form]);
+
+  const handleForgotPassword = async () => {
+    try {
+      setIsLoading(true);
+      const response = await forgotPassword(form.getValues('username'));
+      toast.success(response.message);
+    } catch (_error) {
+      toast.error('Lỗi khi gửi email');
+    } finally {
+      setIsLoading(false);
+    }
+  }
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    
+
     try {
       await login({
         username: values.username,
         password: values.password
       });
+      if (values.remember) {
+        localStorage.setItem(AppConstants.Remember, 'true');
+        localStorage.setItem(AppConstants.Username, values.username);
+        localStorage.setItem(AppConstants.Password, encrypt(values.password));
+      } else {
+        localStorage.removeItem(AppConstants.Remember);
+        localStorage.removeItem(AppConstants.Username);
+        localStorage.removeItem(AppConstants.Password);
+      }
       toast.success('Đăng nhập thành công');
       router.push('/');
     } catch (_error) {
@@ -59,12 +100,12 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     // await loginWithGoogle();
-    window.location.href = 'http://localhost:4000/auth/google';
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   const handleFacebookLogin = async () => {
     // await loginWithFacebook();
-    window.location.href = 'http://localhost:4000/auth/facebook';
+    window.location.href = `${apiUrl}/auth/facebook`;
   };
 
   return (
@@ -141,7 +182,22 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-
+            <div className="flex justify-between">
+              <div className="flex items-center gap-2">
+                <FormField
+                  control={form.control}
+                  name="remember"
+                  render={({ field }) => (
+                    <Checkbox id="remember" checked={field.value} onCheckedChange={field.onChange} />
+                  )}
+                />
+                <Label htmlFor="remember">Nhớ tài khoản</Label>
+              </div>
+              <p className={`text-primary font-semibold hover:underline cursor-pointer ${isLoading ? 'pointer-events-none' : ''}`}
+                onClick={() => isLoading ? null : handleForgotPassword()}>
+                {isLoading ? 'Đang gửi email...' : 'Quên mật khẩu?'}
+              </p>
+            </div>
             <Button
               type="submit"
               className="w-full"

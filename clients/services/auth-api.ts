@@ -2,7 +2,7 @@ import { AppConstants } from '@/constants';
 import axiosApi from './base/api';
 import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto, Role } from '@/types/permission';
 import { error } from 'console';
-
+import { RegisterResultDto } from '@/types/dto/RegisterResultDto';
 // Type pour les données de connexion
 interface LoginData {
   username: string;
@@ -72,14 +72,10 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
   }
 };
 
-// Inscription utilisateur
-export const register = async (data: RegisterData): Promise<AuthResponse> => {
+// đăng ký tài khoản
+export const register = async (data: RegisterData): Promise<RegisterResultDto> => {
   try {
     const response = await axiosApi.post(`/auth/register`, data);
-    // lưu trữ token vào localStorage
-    localStorage.setItem(AppConstants.AccessToken, response.data.accessToken);
-    localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
-    localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
     return response.data;
   } catch (_error) {
     console.error('Lỗi đăng ký:', _error);
@@ -104,6 +100,26 @@ export const verifyEmail = async (token: string): Promise<AuthResponse> => {
   }
 };
 
+export const forgotPassword = async (username: string): Promise<any> => {
+  try {
+    const response = await axiosApi.get(`/auth/forgot-password?username=${username}`);
+    return response.data;
+  } catch (_error) {
+    console.error('Lỗi quên mật khẩu:', _error);
+    throw _error;
+  }
+}
+
+export const verifyResetPassword = async (token: string, password: string): Promise<any> => {
+  try {
+    const response = await axiosApi.post(`/auth/reset-password`, { token, password });
+    return response.data;
+  } catch (_error) {
+    console.error('Lỗi xác thực mật khẩu:', _error);
+    throw _error;
+  }
+};
+
 export const resendEmail = async (email: string): Promise<AuthResponse> => {
   try {
     const response = await axiosApi.post(`/auth/resend-email`, { email });
@@ -113,8 +129,6 @@ export const resendEmail = async (email: string): Promise<AuthResponse> => {
     throw _error;
   }
 };
-
-
 
 // kiểm tra xem người dùng có đăng nhập không
 export const isAuthenticated = (): boolean => {

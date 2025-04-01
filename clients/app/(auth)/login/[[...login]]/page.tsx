@@ -34,6 +34,7 @@ const formSchema = z.object({
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
   const router = useRouter();
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -90,9 +91,9 @@ export default function LoginPage() {
       }
       toast.success('Đăng nhập thành công');
       router.push('/');
-    } catch (_error) {
-      console.error('Lỗi đăng nhập:', _error);
-      toast.error('Tên đăng nhập hoặc mật khẩu không chính xác');
+    } catch (error: any) {
+      console.error('Lỗi đăng nhập:', error);
+      toast.error(error.response.data.message);
     } finally {
       setIsLoading(false);
     }
@@ -194,8 +195,8 @@ export default function LoginPage() {
                 <Label htmlFor="remember">Nhớ tài khoản</Label>
               </div>
               <p className={`text-primary font-semibold hover:underline cursor-pointer ${isLoading ? 'pointer-events-none' : ''}`}
-                onClick={() => isLoading ? null : handleForgotPassword()}>
-                {isLoading ? 'Đang gửi email...' : 'Quên mật khẩu?'}
+                onClick={() => isForgotPasswordLoading ? null : handleForgotPassword()}>
+                {isForgotPasswordLoading ? 'Đang gửi email...' : 'Quên mật khẩu?'}
               </p>
             </div>
             <Button

@@ -56,21 +56,28 @@ export default function UserMenu() {
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-10 w-10 rounded-full"
-        >
-          <Avatar>
-            {user?.picture && (
-              <AvatarImage src={user?.picture} />
-            )}
-            {!user?.picture && (
-              <AvatarFallback>{getInitials()}</AvatarFallback>
-            )}
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
+      <div className="flex justify-start items-center gap-4">
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="relative h-10 w-10 rounded-full"
+          >
+            <Avatar>
+              {user?.picture && (
+                <AvatarImage src={user?.picture} />
+              )}
+              {!user?.picture && (
+                <AvatarFallback>{getInitials()}</AvatarFallback>
+              )}
+            </Avatar>
+
+          </Button>
+        </DropdownMenuTrigger>
+        <div className="flex flex-col items-start justify-center">
+          <p className="text-white font-bold size-4 mb-2 cursor-pointer">{user?.username}</p>
+          <p className="text-sm text-white">{user?.fullName}</p>
+        </div>
+      </div>
       <DropdownMenuContent className="w-56" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">

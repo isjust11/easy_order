@@ -24,8 +24,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Tên vai trò không được để trống'),
+  code: z.string().min(1, 'Mã vai trò không được để trống'),
   description: z.string().optional(),
-  permissionIds: z.array(z.string()).min(1, 'Phải chọn ít nhất một quyền'),
+  permissionIds: z.array(z.number()).min(1, 'Phải chọn ít nhất một quyền'),
 });
 
 type RoleFormProps = {
@@ -40,6 +41,7 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: role?.name || '',
+      code: role?.code || '',
       description: role?.description || '',
       permissionIds: role?.permissions.map(p => p.id) || [],
     },
@@ -89,7 +91,19 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
             </FormItem>
           )}
         />
-
+        <FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mã vai trò</FormLabel>
+              <FormControl>
+                <Input placeholder="Nhập mã vai trò" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="description"
@@ -133,10 +147,10 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
                                   return checked
                                     ? field.onChange([...field.value, permission.id])
                                     : field.onChange(
-                                        field.value?.filter(
-                                          (value) => value !== permission.id
-                                        )
-                                      );
+                                      field.value?.filter(
+                                        (value) => value !== permission.id
+                                      )
+                                    );
                                 }}
                               />
                             </FormControl>

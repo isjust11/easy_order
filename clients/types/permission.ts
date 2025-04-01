@@ -1,5 +1,5 @@
 export interface Permission {
-  id: string;
+  id: number;
   name: string;
   code: string;
   description?: string;
@@ -10,6 +10,7 @@ export interface Permission {
 export interface Role {
   id: string;
   name: string;
+  code: string;
   description?: string;
   permissions: Permission[];
   createdAt: string;
@@ -29,11 +30,11 @@ export interface UpdatePermissionDto {
 export interface CreateRoleDto {
   name: string;
   description?: string;
-  permissionIds: string[];
+  permissionIds: number[];
 }
 
 export interface UpdateRoleDto {
   name?: string;
   description?: string;
-  permissionIds?: string[];
+  permissionIds?: number[];
 } 

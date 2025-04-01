@@ -73,7 +73,7 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
 };
 
 // đăng ký tài khoản
-export const register = async (data: RegisterData): Promise<RegisterResultDto> => {
+export const register = async (data: RegisterData): Promise<any> => {
   try {
     const response = await axiosApi.post(`/auth/register`, data);
     return response.data;
@@ -130,9 +130,40 @@ export const resendEmail = async (email: string): Promise<AuthResponse> => {
   }
 };
 
+// kiểm tra token hợp lệ
+export const validateToken = async (token: string): Promise<boolean> => {
+  try {
+    const response = await axiosApi.get(`/auth/validate-token?token=${token}`);
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+};
+
 // kiểm tra xem người dùng có đăng nhập không
-export const isAuthenticated = (): boolean => {
-  return localStorage.getItem(AppConstants.AccessToken) !== null;
+export const isAuthenticated = async (): Promise<boolean> => {
+  const token = localStorage.getItem(AppConstants.AccessToken);
+  if (!token) {
+    return false;
+  }
+  
+  try {
+    const isValid = await validateToken(token);
+    if (!isValid) {
+      // Nếu token không hợp lệ, thử refresh token
+      try {
+        await refreshToken();
+        return true;
+      } catch (error) {
+        // Nếu refresh token cũng thất bại, đăng xuất người dùng
+        logout();
+        return false;
+      }
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 // lấy thông tin người dùng đã đăng nhập
@@ -211,3 +242,19 @@ export const getTokenInfo = async (token: string) => {
     throw error;
   }
 }; 
+
+export const updateProfile = async (data: any): Promise<any> => {
+  const response = await axiosApi.patch(`/auth/profile`, data);
+  return response.data;
+};
+
+export const updateAvatar = async (data: any): Promise<any> => {
+  const response = await axiosApi.post(`/auth/update-avatar`, data);
+  return response.data;
+};
+
+export const updatePassword = async (data: any): Promise<any> => {
+  const response = await axiosApi.patch(`/auth/update-password`, data);
+  return response.data;
+};
+

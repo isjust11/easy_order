@@ -12,6 +12,7 @@ interface User {
   picture?: string;
   isGoogleUser?: boolean;
   googleId?: string;
+  email?: string;
 }
 
 interface AuthContextType {
@@ -43,7 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAuthAndRedirect = async () => {
     try {
-      if (isAuthenticated()) {
+      const isAuth = await isAuthenticated();
+      if (isAuth) {
         const currentUser = getCurrentUser();
         setUser(currentUser);
         router.push('/');
@@ -86,14 +88,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Inscription utilisateur
+
   const handleRegister = async (username: string, password: string, fullName?: string, email?: string) => {
     setLoading(true);
     setError(null);
     
     try {
       const response = await register({ username, password, fullName, email });
-      setUser(response.user);
+      setUser(response);
       setIsLoggedIn(true);
       // Gọi lại setupAxiosInterceptors sau khi đăng ký để đảm bảo token được cập nhật
       // setupAxiosInterceptors();

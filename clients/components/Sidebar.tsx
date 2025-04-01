@@ -83,8 +83,8 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className="h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
-      <div className="p-6 flex justify-between items-center">
+    <div className="h-screen w-84 bg-sidebar border-r border-sidebar-border flex flex-col">
+      <div className="p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-sidebar-foreground">Easy Order</h1>
       </div>
       <nav className="px-4 flex-grow">

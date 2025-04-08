@@ -21,14 +21,32 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Add a response interceptor
+//handle refresh token
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (_error) => {
-    if (_error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+  async (error) => {
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
+      const originalRequest = error.config;
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        try {
+          const response = await axiosInstance.post('/auth/refresh-token', {
+            refreshToken,
+          });
+          localStorage.setItem('token', response.data.accessToken);
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+          return axiosInstance(originalRequest);
+        } catch (error) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/login';
+        }
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(_error);
+    return Promise.reject(error);
   }
-); 
+);
+
+

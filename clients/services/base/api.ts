@@ -13,7 +13,6 @@ export const getAuthToken = (): string | null => {
 // 
 export const logout = (): void => {
   if (typeof window !== 'undefined') {
-    console.log('logout 1');
     localStorage.removeItem(AppConstants.AccessToken);
     localStorage.removeItem(AppConstants.User);
   }
@@ -45,5 +44,33 @@ axiosApi.interceptors.request.use(
   }
 );
 
+//handle refresh token
+axiosApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401 && !error.config._retry) {
+      console.log('RUN refresh token');
+      error.config._retry = true;
+      const originalRequest = error.config;
+      const refreshToken = localStorage.getItem(AppConstants.RefreshToken);
+      if (refreshToken) {
+        try {
+          const response = await axiosApi.post('/auth/refresh-token', {
+            refreshToken,
+          });
+          localStorage.setItem(AppConstants.AccessToken, response.data.accessToken);
+          localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
+          return axiosApi(originalRequest);
+        } catch (error) {
+          localStorage.removeItem(AppConstants.AccessToken);
+          localStorage.removeItem(AppConstants.RefreshToken);
+          window.location.href = '/login';
+        }
+      }
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
+  }
+);
 export default axiosApi;
 

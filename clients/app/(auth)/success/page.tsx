@@ -21,6 +21,7 @@ function AuthSuccessPage() {
           
           // Lưu thông tin vào localStorage
           localStorage.setItem(AppConstants.AccessToken, userInfo.accessToken);
+          localStorage.setItem(AppConstants.RefreshToken, userInfo.refreshToken);
           localStorage.setItem(AppConstants.User, JSON.stringify(userInfo.user));
           
           toast.success('Đăng nhập thành công');

@@ -10,8 +10,12 @@ export const useSocket = () => {
     // Khởi tạo kết nối socket
     socketRef.current = io(SOCKET_SERVER_URL, {
       withCredentials: true,
+      transports: ['websocket', 'polling'], // or just ['websocket']
     });
-
+    socketRef.current.on("initial_headers", (headers, req) => {
+      headers["Access-Control-Allow-Origin"] = process.env.CLIENT_URL || 'http://localhost:3000';
+      headers["Access-Control-Allow-Credentials"] = "true";
+    });
     // Cleanup khi component unmount
     return () => {
       if (socketRef.current) {

@@ -15,7 +15,7 @@ export const getTables = async (): Promise<Table[]> => {
 
 export const createTable = async (tableData: any): Promise<Table> => {
   try {
-    const response = await axiosApi.post(`$/table`, tableData);
+    const response = await axiosApi.post(`/table`, tableData);
     return response.data;
   } catch (_error) {
     console.error('Error creating table:', _error);

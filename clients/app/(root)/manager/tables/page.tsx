@@ -81,7 +81,7 @@ export default function TablesManagement() {
                   variant="outline" 
                   size="icon"
                   title='Đặt món'
-                  onClick={() => router.push(`/manager/tables/${table.id}/order`)}
+                  onClick={() => router.push(`/tables/${table.id}/order`)}
                 >
                   <Utensils className="w-4 h-4" />
                 </Button>

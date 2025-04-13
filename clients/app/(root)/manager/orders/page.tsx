@@ -28,10 +28,11 @@ export default function OrdersManagement() {
     fetchOrders();
   }, []);
 
+  // load danh sách món ăn lên modal
   const handleDelete = async (tableId: number) => {
     try {
       await deleteTable(tableId);
-      setOrders(orders.filter(table => table.id !== tableId));
+      setOrders(orders.filter((table: Order) => table.id !== tableId));
       toast.success('Bàn đã được xóa thành công');
     } catch (_error) {
       toast.error('Có lỗi xảy ra khi xóa bàn');
@@ -59,22 +60,27 @@ export default function OrdersManagement() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Id Bàn</TableHead>
+
             <TableHead>Trạng thái</TableHead>
-            <TableHead>Mô tả</TableHead>
+            <TableHead>Ghi chú</TableHead>
+            <TableHead>Tổng tiền</TableHead>
             <TableHead className="text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {orders.map((table) => (
             <TableRow key={table.id}>
+              <TableCell>{table.id}</TableCell>
               <TableCell>{table.status}</TableCell>
               <TableCell>{table.note}</TableCell>
+              <TableCell>{table.totalAmount}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button 
                   variant="default" 
                   size="icon"
-                  title='Đặt món'
-                  onClick={() => router.push(`/manager/orders/${table.id}/items`)}
+                  title='Chi tiết đơn hàng'
+                  onClick={() => router.push(`/manager/orders/${table.id}`)}
                 >
                   <Plus className="w-4 h-4" />
                 </Button>

@@ -1,5 +1,5 @@
 import { Guest } from "../guest";
-import { OrderItem } from "../orderItem";
+import { OrderItem } from "../order-item";
 import { User } from "../user";
 
 export interface CreateOrderDto {

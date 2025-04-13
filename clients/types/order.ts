@@ -1,9 +1,9 @@
 import { Guest } from "./guest";
-import { OrderItem } from "./orderItem";
+import { OrderItem } from "./order-item";
 import { User } from "./user";
 
 export interface Order {
-    id: string;
+    id: number;
     tableId: number;
     status: 'pending' | 'processing' | 'completed';
     totalAmount: number;
@@ -15,12 +15,4 @@ export interface Order {
     orderItems: OrderItem[];
     createdAt: string;
     updatedAt: string;
-}
-
-export interface OrderItem {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    notes?: string;
 }

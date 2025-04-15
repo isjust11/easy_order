@@ -16,17 +16,48 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { getOrders } from '@/services/manager-api';
 import { Order } from '@/types/order';
+import { useSocket } from '@/hooks/useSocket';
 export default function OrdersManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
   const router = useRouter();
+  const { subscribeToEvent, unsubscribeFromEvent, joinRoom, leaveRoom } = useSocket();
+
   useEffect(() => {
-    const fetchOrders = async () => {
+    // Đăng ký lắng nghe các sự kiện
+    const handleOrderCreated = (data: any) => {
+      console.log('New order created:', data);
+      toast.success('Đơn hàng mới đã được tạo', {
+        description: `Đơn hàng #${data.id} đã được thêm vào hệ thống`,
+      });
+      onGetOrders();
+    };
+
+    const handleOrderUpdated = (data: any) => {
+      console.log('Order updated:', data);
+      toast.info('Thông tin đơn hàng đã được cập nhật', {
+        description: `Đơn hàng #${data.id} đã được cập nhật`,
+      });
+      onGetOrders();
+    };
+
+    const onGetOrders = async () => {
       const data = await getOrders();
       setOrders(data);
     };
 
-    fetchOrders();
-  }, []);
+    // Chỉ đăng ký sự kiện một lần
+    subscribeToEvent('newOrder', handleOrderCreated);
+    subscribeToEvent('orderUpdated', handleOrderUpdated);
+
+    // Gọi getOrders lần đầu tiên
+    onGetOrders();
+
+    // Cleanup khi component unmount
+    return () => {
+      unsubscribeFromEvent('newOrder', handleOrderCreated);
+      unsubscribeFromEvent('orderUpdated', handleOrderUpdated);
+    };
+  }, []); // Bỏ các dependencies không cần thiết
 
   // load danh sách món ăn lên modal
   const handleDelete = async (tableId: number) => {

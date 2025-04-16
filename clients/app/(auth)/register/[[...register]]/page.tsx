@@ -23,7 +23,7 @@ import { RegisterCode, RegisterResultDto } from '@/types/dto/RegisterResultDto';
 
 const formSchema = z.object({
   username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự')
-  .max(20, 'Tên đăng nhập phải có tối đa 20 ký tự'),
+    .max(20, 'Tên đăng nhập phải có tối đa 20 ký tự'),
   password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
   confirmPassword: z.string(),
   fullName: z.string().optional(),
@@ -58,19 +58,19 @@ export default function RegisterPage() {
         fullName: values.fullName || undefined,
         email: values.email || undefined
       });
-      if(response.code === RegisterCode.Ok){
+      if (response.code === RegisterCode.Ok) {
         setIsSendEmail(true);
         toast.success(`Đã gửi email xác thực đến email ${values.email} vui lòng kiểm tra email`);
-      }else if(response.code === RegisterCode.AccountValidated){
+      } else if (response.code === RegisterCode.AccountValidated) {
         toast.info(response.message);
         router.push('/login');
-      }else if(response.code === RegisterCode.AccountIsExist){
+      } else if (response.code === RegisterCode.AccountIsExist) {
         toast.error(response.message);
         form.setError('username', { message: response.message });
-      }else if(response.code === RegisterCode.ExistEmail){
+      } else if (response.code === RegisterCode.ExistEmail) {
         toast.error(response.message);
         form.setError('email', { message: response.message });
-      }else {
+      } else {
         toast.error(response.message);
       }
 
@@ -95,8 +95,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
+      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         {isSendEmail ? (
           <div className="text-center">
             <h1 className="text-2xl font-bold">Đã gửi email xác thực</h1>
@@ -107,9 +107,9 @@ export default function RegisterPage() {
           </div>
         ) : (
           <>
-            <div className="text-center">
-              <h1 className="text-2xl font-bold">Đăng ký tài khoản</h1>
-              <p className="text-gray-500 mt-2">
+            <div className="mb-5 sm:mb-8">
+              <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">Đăng ký tài khoản</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Đăng ký để sử dụng Easy Order
               </p>
             </div>
@@ -121,9 +121,9 @@ export default function RegisterPage() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tên đăng nhập</FormLabel>
+                      <FormLabel>Tên đăng nhập<span className="text-error-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="Nhập tên đăng nhập" {...field} />
+                        <Input className='input-focus' placeholder="Nhập tên đăng nhập" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -135,9 +135,9 @@ export default function RegisterPage() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Họ và tên (tùy chọn)</FormLabel>
+                      <FormLabel>Họ và tên</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nhập họ và tên" {...field} />
+                        <Input className='input-focus' placeholder="Nhập họ và tên" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -149,9 +149,9 @@ export default function RegisterPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Email<span className="text-error-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="Nhập địa chỉ email" {...field} />
+                        <Input className='input-focus' placeholder="Nhập địa chỉ email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -163,9 +163,10 @@ export default function RegisterPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mật khẩu</FormLabel>
+                      <FormLabel>Mật khẩu<span className="text-error-500">*</span></FormLabel>
                       <FormControl>
                         <Input
+                          className='input-focus'
                           type="password"
                           placeholder="Nhập mật khẩu"
                           {...field}
@@ -181,9 +182,10 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Xác nhận mật khẩu</FormLabel>
+                      <FormLabel>Xác nhận mật khẩu<span className="text-error-500">*</span></FormLabel>
                       <FormControl>
                         <Input
+                          className='input-focus'
                           type="password"
                           placeholder="Xác nhận mật khẩu"
                           {...field}
@@ -196,7 +198,7 @@ export default function RegisterPage() {
 
                 <Button
                   type="submit"
-                  className="w-full"
+                  className="w-full py-3 text-sm font-normal text-white transition-colors bg-brand-500 rounded-lg hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Đang đăng ký...' : 'Đăng ký'}
@@ -204,10 +206,10 @@ export default function RegisterPage() {
               </form>
             </Form>
 
-            <div className="text-center mt-4">
-              <p className="text-sm text-gray-600">
+            <div className="text-center mt-5">
+              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 Đã có tài khoản?{' '}
-                <Link href="/login" className="text-primary font-semibold hover:underline">
+                <Link href="/login" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">
                   Đăng nhập
                 </Link>
               </p>

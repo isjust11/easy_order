@@ -8,7 +8,7 @@ interface ManagerLayoutProps {
 }
 
 export default function ManagerLayout({ children }: ManagerLayoutProps) {
-  const { subscribeToEvent, unsubscribeFromEvent } = useSocket();
+  const { subscribeToEvent, unsubscribeFromEvent, joinRoom, leaveRoom } = useSocket();
 
   useEffect(() => {
     // Đăng ký lắng nghe các sự kiện
@@ -34,13 +34,14 @@ export default function ManagerLayout({ children }: ManagerLayoutProps) {
     subscribeToEvent('tableUpdated', handleTableUpdated);
     subscribeToEvent('tableDeleted', handleTableDeleted);
 
+    joinRoom('manager');
     // Cleanup khi component unmount
     return () => {
       unsubscribeFromEvent('tableCreated', handleTableCreated);
       unsubscribeFromEvent('tableUpdated', handleTableUpdated);
       unsubscribeFromEvent('tableDeleted', handleTableDeleted);
     };
-  }, [subscribeToEvent, unsubscribeFromEvent]);
+  }, [subscribeToEvent, unsubscribeFromEvent, joinRoom, leaveRoom]);
 
   return (
     <div className="p-6">

@@ -1,11 +1,11 @@
 import { Guest } from "./guest";
-import { OrderItem } from "./orderItem";
+import { OrderItem } from "./order-item";
 import { User } from "./user";
 
 export interface Order {
     id: number;
     tableId: number;
-    status: 'pending' | 'preparing' | 'ready' | 'served' | 'completed' | 'cancelled';
+    status: 'pending' | 'processing' | 'completed';
     totalAmount: number;
     note?: string;
     userId?: number;
@@ -13,6 +13,6 @@ export interface Order {
     user?: User;
     guest?: Guest;
     orderItems: OrderItem[];
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }

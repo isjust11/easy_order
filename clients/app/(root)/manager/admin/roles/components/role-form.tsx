@@ -143,7 +143,7 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
                             <FormControl>
                               <Checkbox
                                 checked={field.value?.includes(permission.id)}
-                                onCheckedChange={(checked) => {
+                                onCheckedChange={(checked: any) => {
                                   return checked
                                     ? field.onChange([...field.value, permission.id])
                                     : field.onChange(

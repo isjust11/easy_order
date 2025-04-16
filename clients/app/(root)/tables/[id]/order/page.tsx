@@ -13,12 +13,7 @@ import { Plus, Minus, ShoppingCart } from 'lucide-react'
 import { toast } from 'sonner'
 import { CreateOrderDto } from '@/types/dto/CreateOrderDto'
 import { getCurrentUser } from '@/services/auth-api'
-
-interface OrderItem {
-  foodItem: FoodItem
-  quantity: number
-  note?: string
-}
+import { OrderItem } from '@/types/order-item'
 
 export default function OrderPage() {
   const params = useParams()
@@ -36,10 +31,10 @@ export default function OrderPage() {
   }, [])
 
   const handleAddItem = (foodItem: FoodItem) => {
-    setOrderItems(prev => {
-      const existingItem = prev.find(item => item.foodItem.id === foodItem.id)
+    setOrderItems((prev: any) => {
+      const existingItem = prev.find((item: any) => item.foodItem.id === foodItem.id)
       if (existingItem) {
-        return prev.map(item =>
+        return prev.map((item: any) =>
           item.foodItem.id === foodItem.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
@@ -50,22 +45,22 @@ export default function OrderPage() {
   }
 
   const handleRemoveItem = (foodItem: FoodItem) => {
-    setOrderItems(prev => {
-      const existingItem = prev.find(item => item.foodItem.id === foodItem.id)
+    setOrderItems((prev: any) => {
+      const existingItem = prev.find((item: any) => item.foodItem.id === foodItem.id)
       if (existingItem && existingItem.quantity > 1) {
-        return prev.map(item =>
+        return prev.map((item: any) =>
           item.foodItem.id === foodItem.id
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
       }
-      return prev.filter(item => item.foodItem.id !== foodItem.id)
+      return prev.filter((item: any) => item.foodItem.id !== foodItem.id)
     })
   }
 
   const handleUpdateNote = (foodItemId: number, note: string) => {
-    setOrderItems(prev =>
-      prev.map(item =>
+    setOrderItems((prev: any) =>
+      prev.map((item: any) =>
         item.foodItem.id === foodItemId
           ? { ...item, note }
           : item
@@ -92,9 +87,11 @@ export default function OrderPage() {
             tableId: parseInt(params.id as string),
             note,
             orderItems: orderItems.map(item => ({
-                foodItemId: item.foodItem.id,
+                foodItem: item.foodItem,
                 quantity: item.quantity,
-                note: item.note
+                note: item.note,
+                id: 0,
+                price: item.foodItem.price,
             })),
             userId: user.id,
             guestId: user.id,

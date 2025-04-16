@@ -46,8 +46,8 @@ function ResetPasswordContent() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+        <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
+            <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
                 <h1 className="text-2xl font-bold mb-4">Thiết lập mật khẩu mới</h1>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleResetPassword)} className="space-y-6">
@@ -58,7 +58,7 @@ function ResetPasswordContent() {
                                 <FormItem>
                                     <FormLabel>Mật khẩu</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="Nhập mật khẩu" {...field} />
+                                        <Input className='input-focus' type="password" placeholder="Nhập mật khẩu" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

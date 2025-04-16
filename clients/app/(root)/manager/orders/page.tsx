@@ -16,22 +16,54 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { getOrders } from '@/services/manager-api';
 import { Order } from '@/types/order';
+import { useSocket } from '@/hooks/useSocket';
 export default function OrdersManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
   const router = useRouter();
+  const { subscribeToEvent, unsubscribeFromEvent, joinRoom, leaveRoom } = useSocket();
+
   useEffect(() => {
-    const fetchOrders = async () => {
+    // Đăng ký lắng nghe các sự kiện
+    const handleOrderCreated = (data: any) => {
+      console.log('New order created:', data);
+      toast.success('Đơn hàng mới đã được tạo', {
+        description: `Đơn hàng #${data.id} đã được thêm vào hệ thống`,
+      });
+      onGetOrders();
+    };
+
+    const handleOrderUpdated = (data: any) => {
+      console.log('Order updated:', data);
+      toast.info('Thông tin đơn hàng đã được cập nhật', {
+        description: `Đơn hàng #${data.id} đã được cập nhật`,
+      });
+      onGetOrders();
+    };
+
+    const onGetOrders = async () => {
       const data = await getOrders();
       setOrders(data);
     };
 
-    fetchOrders();
-  }, []);
+    // Chỉ đăng ký sự kiện một lần
+    subscribeToEvent('newOrder', handleOrderCreated);
+    subscribeToEvent('orderUpdated', handleOrderUpdated);
 
+    // Gọi getOrders lần đầu tiên
+    onGetOrders();
+
+    // Cleanup khi component unmount
+    return () => {
+      unsubscribeFromEvent('newOrder', handleOrderCreated);
+      unsubscribeFromEvent('orderUpdated', handleOrderUpdated);
+    };
+  }, []); // Bỏ các dependencies không cần thiết
+
+  // load danh sách món ăn lên modal
   const handleDelete = async (tableId: number) => {
     try {
       await deleteTable(tableId);
-      setOrders(orders.filter(table => table.id !== tableId));
+      setOrders(orders.filter((table: Order) => table.id !== tableId));
       toast.success('Bàn đã được xóa thành công');
     } catch (_error) {
       toast.error('Có lỗi xảy ra khi xóa bàn');
@@ -59,22 +91,27 @@ export default function OrdersManagement() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Id Bàn</TableHead>
+
             <TableHead>Trạng thái</TableHead>
-            <TableHead>Mô tả</TableHead>
+            <TableHead>Ghi chú</TableHead>
+            <TableHead>Tổng tiền</TableHead>
             <TableHead className="text-right">Thao tác</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {orders.map((table) => (
             <TableRow key={table.id}>
+              <TableCell>{table.id}</TableCell>
               <TableCell>{table.status}</TableCell>
               <TableCell>{table.note}</TableCell>
+              <TableCell>{table.totalAmount}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button 
                   variant="default" 
                   size="icon"
-                  title='Đặt món'
-                  onClick={() => router.push(`/manager/orders/${table.id}/items`)}
+                  title='Chi tiết đơn hàng'
+                  onClick={() => router.push(`/manager/orders/${table.id}`)}
                 >
                   <Plus className="w-4 h-4" />
                 </Button>

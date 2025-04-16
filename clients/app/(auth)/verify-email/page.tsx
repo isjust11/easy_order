@@ -23,7 +23,7 @@ function VerifyEmailContent() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <h1 className="text-2xl font-bold mb-4">Xác thực Email</h1>
       <p className="text-gray-600 mb-6">
         Vui lòng nhấn nút bên dưới để xác thực email của bạn
@@ -36,7 +36,7 @@ function VerifyEmailContent() {
 export default function VerifyEmail() {
   return (
     <Suspense fallback={
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
     }>

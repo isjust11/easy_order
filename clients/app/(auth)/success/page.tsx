@@ -40,7 +40,7 @@ function AuthSuccessPage() {
   }, [searchParams, router]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <div className="text-center">
         <h1 className="text-2xl font-bold mb-4">Đang xử lý đăng nhập...</h1>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -52,7 +52,7 @@ function AuthSuccessPage() {
 export default function Success() {
   return (
     <Suspense fallback={
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
     }>

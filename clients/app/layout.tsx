@@ -1,24 +1,14 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/theme-provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import { Outfit } from 'next/font/google';
+import './globals.css';
+
+import { SidebarProvider } from '@/contexts/SidebarContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { Toaster } from 'sonner';
+
+const outfit = Outfit({
   subsets: ["latin"],
 });
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Easy Order - Restaurant Management",
-  description: "Restaurant table and order management system",
-};
 
 export default function RootLayout({
   children,
@@ -26,19 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
-          <div className="flex h-screen bg-background">
-            <main className="flex-1 overflow-y-auto">
-              {children}
-              <Toaster/>
-            </main>
-          </div>
+    <html lang="en">
+      <body className={`${outfit.className} dark:bg-gray-900`}>
+        <ThemeProvider>
+          <SidebarProvider>{children}</SidebarProvider>
+          <Toaster/>
         </ThemeProvider>
       </body>
     </html>

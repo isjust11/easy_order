@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState,useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useSidebar } from "@/contexts/SidebarContext";
 import {
   BoxCubeIcon,
   CalenderIcon,
@@ -15,9 +16,8 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
-} from "../app/icons/index";
+} from "@/public/icons/index";
 import SidebarWidget from "./SidebarWidget";
-import { useSidebar } from "@/contexts/SidebarContext";
 
 type NavItem = {
   name: string;

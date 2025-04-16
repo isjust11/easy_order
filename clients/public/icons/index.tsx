@@ -51,7 +51,11 @@ import HorizontaLDots from "./horizontal-dots.svg";
 import ChatIcon from "./chat.svg";
 import MoreDotIcon from "./more-dot.svg";
 import BellIcon from "./bell.svg";
-
+import MobileOpenIcon from "./mobile-open.svg";
+import MobileCloseIcon from "./mobile-close.svg";
+import ViewMoreIcon from "./view-more.svg";
+import SquareIcon from "./square.svg";
+import  CircleAvatarIcon  from "./circle-avatar.svg";
 export {
   DownloadIcon,
   BellIcon,
@@ -106,4 +110,9 @@ export {
   HorizontaLDots,
   ChevronUpIcon,
   ChatIcon,
+  MobileOpenIcon,
+  MobileCloseIcon,
+  ViewMoreIcon,
+  SquareIcon,
+  CircleAvatarIcon
 };

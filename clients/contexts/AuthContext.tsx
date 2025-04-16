@@ -112,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout();
     setUser(null);
     setIsLoggedIn(false);
+    router.push('/login');
   };
 
   const value = {

@@ -1,26 +1,42 @@
 'use client'
 import { AuthProvider } from "@/contexts/AuthContext";
-import Sidebar from "@/components/Sidebar";
+import { useSidebar } from "@/contexts/SidebarContext";
+import AppHeader from "@/layouts/AppHeader";
+import AppSidebar from "@/layouts/AppSidebar";
+import Backdrop from "@/layouts/Backdrop";
+
+import React from "react";
+
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+
+  // Dynamic class for main content margin based on sidebar state
+  const mainContentMargin = isMobileOpen
+    ? "ml-0"
+    : isExpanded || isHovered
+    ? "lg:ml-[290px]"
+    : "lg:ml-[90px]";
+
   return (
-    <div className="relative flex flex-col">
-      <AuthProvider>
-      <main className="relative flex bg-black-3">
-      <Sidebar />
-        <section className="min-h-screen flex-1 flex-col flex px-4 sm:px-14">
-          <div className="mx-auto flex w-full flex-col max-sm:px-4 mt-6">
-            <div className="flex flex-col md:pb-14">
-              {children}
-            </div>
-          </div>
-        </section>
-        {/* <RightSidebar /> */}
-      </main>
-      </AuthProvider>
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen xl:flex">
+        {/* Sidebar and Backdrop */}
+        <AppSidebar />
+        <Backdrop /> 
+        {/* Main Content Area */}
+        <div
+          className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
+        >
+          {/* Header */}
+          <AppHeader />
+          {/* Page Content */}
+          <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+        </div>
+      </div>
+    </AuthProvider>
   );
 }

@@ -34,19 +34,24 @@ const navItems: NavItem[] = [
   },
   {
     icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    name: "Quản lý bàn",
+    path: "/tables",
   },
   {
     icon: <UserCircleIcon />,
     name: "User Profile",
     path: "/profile",
   },
-
   {
-    name: "Forms",
+    name: "Quản lý",
     icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    subItems: [
+      { name: "Quản lý thực đơn", path: "/manager/food-items", pro: false },
+      { name: "Quản lý bàn", path: "/manager/tables", pro: false },
+      { name: "Quản lý tài khoản", path: "/manager/users", pro: false },
+      { name: "Quản lý hóa đơn", path: "/manager/invoices", pro: false },
+      { name: "Quản lý đơn hàng", path: "/manager/orders", pro: false },
+    ],
   },
   {
     name: "Tables",

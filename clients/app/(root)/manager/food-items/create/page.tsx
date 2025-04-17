@@ -10,6 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { CreateFoodItemDto, FoodItem } from '@/types/food-item';
 import { createFoodItem, updateFoodItem, getFoodItem } from '@/services/manager-api';
+import ComponentCard from '@/components/common/ComponentCard';
+import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 
 export default function CreateFoodItem() {
   const router = useRouter();
@@ -88,88 +90,96 @@ export default function CreateFoodItem() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">{isEditing ? 'Cập nhật món ăn' : 'Thêm món ăn mới'}</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="name">Tên món</Label>
-          <Input
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+      <div>
+        <PageBreadcrumb pageTitle="Danh sách món ăn" />
+        <div className="space-y-6">
+          <ComponentCard title="Danh sách món ăn">
+            <div className="max-w-2xl mx-auto">
+              <h1 className="text-2xl font-bold mb-6">{isEditing ? 'Cập nhật món ăn' : 'Thêm món ăn mới'}</h1>
 
-        <div className="space-y-2">
-          <Label htmlFor="description">Mô tả</Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-        </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Tên món</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="price">Giá</Label>
-          <Input
-            id="price"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleChange}
-            required
-            min="0"
-            step="1000"
-          />
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Mô tả</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="category">Danh mục</Label>
-          <Input
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-          />
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Giá</Label>
+                  <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    value={formData.price}
+                    onChange={handleChange}
+                    required
+                    min="0"
+                    step="1000"
+                  />
+                </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="image">Hình ảnh URL</Label>
-          <Input
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-          />
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Danh mục</Label>
+                  <Input
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                  />
+                </div>
 
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isAvailable"
-            checked={formData.isAvailable}
-            onCheckedChange={handleSwitchChange}
-          />
-          <Label htmlFor="isAvailable">Còn phục vụ</Label>
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="image">Hình ảnh URL</Label>
+                  <Input
+                    id="image"
+                    name="image"
+                    value={formData.image}
+                    onChange={handleChange}
+                  />
+                </div>
 
-        <div className="flex justify-end space-x-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
-            Hủy
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? (isEditing ? 'Đang cập nhật...' : 'Đang thêm...') : (isEditing ? 'Cập nhật món' : 'Thêm món')}
-          </Button>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isAvailable"
+                    checked={formData.isAvailable}
+                    onCheckedChange={handleSwitchChange}
+                  />
+                  <Label htmlFor="isAvailable">Còn phục vụ</Label>
+                </div>
+
+                <div className="flex justify-end space-x-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.back()}
+                  >
+                    Hủy
+                  </Button>
+                  <Button type="submit" disabled={loading}>
+                    {loading ? (isEditing ? 'Đang cập nhật...' : 'Đang thêm...') : (isEditing ? 'Cập nhật món' : 'Thêm món')}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </ComponentCard>
         </div>
-      </form>
-    </div>
-  );
+      </div>
+
+      );
 } 

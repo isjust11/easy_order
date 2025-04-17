@@ -18,12 +18,12 @@ function AuthSuccessPage() {
         try {
           // Lấy thông tin user và access token từ server
           const userInfo = await getTokenInfo(tempToken);
-          
+
           // Lưu thông tin vào localStorage
           localStorage.setItem(AppConstants.AccessToken, userInfo.accessToken);
           localStorage.setItem(AppConstants.RefreshToken, userInfo.refreshToken);
           localStorage.setItem(AppConstants.User, JSON.stringify(userInfo.user));
-          
+
           toast.success('Đăng nhập thành công');
           router.push('/');
         } catch (error) {
@@ -41,7 +41,7 @@ function AuthSuccessPage() {
 
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
-      <div className="text-center">
+      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <h1 className="text-2xl font-bold mb-4">Đang xử lý đăng nhập...</h1>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
       </div>

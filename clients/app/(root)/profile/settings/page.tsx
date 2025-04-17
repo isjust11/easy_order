@@ -20,7 +20,7 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
-    // <div className="container mx-auto py-10">
+    // <div className="container mx-auto">
     //   <h1 className="text-2xl font-bold mb-6">Cài đặt tài khoản</h1>
 
     //   <div className="grid gap-6">

@@ -21,8 +21,8 @@ function AuthError() {
   }, [searchParams, router]);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
-      <div className="text-center">
+    <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
+      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-red-600 mb-4">Đăng nhập thất bại</h1>
         <p className="text-gray-600 mb-4">Đang chuyển hướng về trang đăng nhập...</p>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>

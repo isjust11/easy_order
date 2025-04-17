@@ -115,7 +115,7 @@ export default function OrderPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto">
       <h1 className="text-3xl font-bold mb-6">Đặt món - Bàn {params.id}</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

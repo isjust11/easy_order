@@ -69,7 +69,7 @@ export default function PermissionsPage() {
   };
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Quản lý quyền</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -123,7 +123,7 @@ export default function PermissionsPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDelete(permission.id)}
+                      onClick={() => handleDelete(permission.id.toString())}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

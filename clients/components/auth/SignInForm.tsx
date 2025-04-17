@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/app/icons";
+import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/public/icons";
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";

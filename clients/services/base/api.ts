@@ -10,6 +10,7 @@ export const getAuthToken = (): string | null => {
   return null;
 };
 
+
 // 
 export const logout = (): void => {
   if (typeof window !== 'undefined') {

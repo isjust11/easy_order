@@ -85,7 +85,7 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
             <FormItem>
               <FormLabel>Tên vai trò</FormLabel>
               <FormControl>
-                <Input placeholder="Nhập tên vai trò" {...field} />
+                <Input className='input-focus' placeholder="Nhập tên vai trò" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +98,7 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
             <FormItem>
               <FormLabel>Mã vai trò</FormLabel>
               <FormControl>
-                <Input placeholder="Nhập mã vai trò" {...field} />
+                <Input className='input-focus' placeholder="Nhập mã vai trò" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,7 +111,7 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
             <FormItem>
               <FormLabel>Mô tả</FormLabel>
               <FormControl>
-                <Textarea
+                <Textarea className='input-focus'
                   placeholder="Nhập mô tả cho vai trò này"
                   {...field}
                 />

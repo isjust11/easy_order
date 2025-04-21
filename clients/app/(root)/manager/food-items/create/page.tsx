@@ -25,7 +25,7 @@ export default function CreateFoodItem() {
     category: '',
     isAvailable: true,
   });
-
+  const title=isEditing ? 'Cập nhật món ăn' : 'Thêm món ăn mới';
   useEffect(() => {
     const id = searchParams.get('id');
     if (id) {
@@ -35,6 +35,7 @@ export default function CreateFoodItem() {
   }, [searchParams]);
 
   const loadFoodItem = async (id: number) => {
+    
     try {
       const foodItem = await getFoodItem(id);
       setFormData({
@@ -91,12 +92,10 @@ export default function CreateFoodItem() {
 
   return (
       <div>
-        <PageBreadcrumb pageTitle="Danh sách món ăn" />
+        <PageBreadcrumb pageTitle="Thêm mới món ăn" />
         <div className="space-y-6">
-          <ComponentCard title="Danh sách món ăn">
+          <ComponentCard title={title}>
             <div className="max-w-2xl mx-auto">
-              <h1 className="text-2xl font-bold mb-6">{isEditing ? 'Cập nhật món ăn' : 'Thêm món ăn mới'}</h1>
-
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Tên món</Label>

@@ -4,6 +4,8 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import AppHeader from "@/layouts/AppHeader";
 import AppSidebar from "@/layouts/AppSidebar";
 import Backdrop from "@/layouts/Backdrop";
+import { LoadingProvider } from "@/contexts/LoadingContext";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 import React from "react";
 
@@ -23,20 +25,23 @@ export default function RootLayout({
 
   return (
     <AuthProvider>
-      <div className="min-h-screen xl:flex">
-        {/* Sidebar and Backdrop */}
-        <AppSidebar />
-        <Backdrop /> 
-        {/* Main Content Area */}
-        <div
-          className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
-        >
-          {/* Header */}
-          <AppHeader />
-          {/* Page Content */}
-          <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+      <LoadingProvider>
+        <div className="min-h-screen xl:flex">
+          {/* Sidebar and Backdrop */}
+          <AppSidebar />
+          <Backdrop /> 
+          {/* Main Content Area */}
+          <div
+            className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
+          >
+            {/* Header */}
+            <AppHeader />
+            {/* Page Content */}
+            <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+          </div>
         </div>
-      </div>
+        <LoadingIndicator />
+      </LoadingProvider>
     </AuthProvider>
   );
 }

@@ -39,8 +39,8 @@ const navItems: NavItem[] = [
   },
   {
     icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
+    name: "Quản lý order",
+    path: "/order",
   },
   {
     name: "Quản lý",
@@ -51,6 +51,7 @@ const navItems: NavItem[] = [
       { name: "Quản lý tài khoản", path: "/manager/users", pro: false },
       { name: "Quản lý hóa đơn", path: "/manager/invoices", pro: false },
       { name: "Quản lý đơn hàng", path: "/manager/orders", pro: false },
+      
     ],
   },
   {
@@ -71,30 +72,25 @@ const navItems: NavItem[] = [
 const othersItems: NavItem[] = [
   {
     icon: <PieChartIcon />,
-    name: "Charts",
+    name: "Danh mục",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "Ngôn ngữ", path: "/category/language", pro: false },
     ],
   },
   {
     icon: <BoxCubeIcon />,
-    name: "UI Elements",
+    name: "Đa phương tiện",
     subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
+      { name: "Đa phương tiện", path: "/manager/media", pro: false },
+      { name: "Chức năng", path: "/manager/navigator", pro: false },
     ],
   },
   {
     icon: <PlugInIcon />,
-    name: "Authentication",
+    name: "Quản trị",
     subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
+      { name: "Phân quyền", path: "/manager/permissions", pro: false },
+      { name: "Chức năng", path: "/manager/roles", pro: false },
     ],
   },
 ];

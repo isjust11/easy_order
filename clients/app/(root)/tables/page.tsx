@@ -7,14 +7,17 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
+import { useLoading } from '@/contexts/LoadingContext';
 
 const TablesPage = () => {
     const [tables, setTables] = useState<Table[]>([]);
-
+    const { setLoading } = useLoading();
     useEffect(() => {
+        setLoading(true);
         const fetchTables = async () => {
             const data = await getTables();
             setTables(data);
+            setLoading(false);
         };
         fetchTables();
     }, []);

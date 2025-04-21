@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpDown, MoreHorizontal, Pencil, Trash } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,16 +10,60 @@ import {
 import { FoodItem } from "@/types/food-item"
 import { deleteFoodItem } from "@/services/manager-api"
 import { toast } from "sonner"
+import { Checkbox } from "@/components/ui/checkbox"
 
 
 export const columns: ColumnDef<FoodItem>[] = [
   {
+    id: "select",
+    accessorKey: "id",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Chọn tất cả"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "name",
-    header: "Tên món",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Tên món
+          {column.getIsSorted() === "asc" ? <ArrowUp /> : <ArrowDown />}
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "price",
-    header: "Giá",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Giá
+          {column.getIsSorted() === "asc" ? <ArrowUp /> : <ArrowDown />}
+        </Button>
+      )
+    },
     cell: ({ row }) => {
       const price = parseFloat(row.getValue("price"))
       const formatted = new Intl.NumberFormat("vi-VN", {
@@ -47,6 +91,7 @@ export const columns: ColumnDef<FoodItem>[] = [
   },
   {
     id: "actions",
+    header: 'Thao tác',
     cell: ({ row }) => {
       const foodItem = row.original
       const handleDelete = async (id: number) => {
@@ -57,8 +102,6 @@ export const columns: ColumnDef<FoodItem>[] = [
           toast.error('Có lỗi xảy ra khi xóa món ăn');
         }
       }
-
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

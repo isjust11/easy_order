@@ -12,6 +12,7 @@ import { CreateFoodItemDto, FoodItem } from '@/types/food-item';
 import { createFoodItem, updateFoodItem, getFoodItem } from '@/services/manager-api';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
+import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
 
 export default function CreateFoodItem() {
   const router = useRouter();
@@ -93,9 +94,9 @@ export default function CreateFoodItem() {
   return (
       <div>
         <PageBreadcrumb pageTitle="Thêm mới món ăn" />
-        <div className="space-y-6">
+        <div className="space-y-2">
           <ComponentCard title={title}>
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Tên món</Label>
@@ -110,13 +111,9 @@ export default function CreateFoodItem() {
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Mô tả</Label>
-                  <Textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    required
-                  />
+                  <div className="ring-1 ring-gray-100/5 rounded-md shadow-sm p-2">
+                    <SimpleEditor initialContent='hello' onContentChange={(content)=>handleChange} />
+                  </div>
                 </div>
 
                 <div className="space-y-2">

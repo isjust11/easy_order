@@ -1,3 +1,4 @@
+import axiosApi from "@/services/base/api"
 import { Editor } from "@tiptap/react"
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -24,23 +25,31 @@ export const isNodeInSchema = (nodeName: string, editor: Editor | null) =>
  * Handles image upload with progress tracking and abort capability
  */
 export const handleImageUpload = async (
-  _file: File,
+  file: File,
   onProgress?: (event: { progress: number }) => void,
   abortSignal?: AbortSignal
 ): Promise<string> => {
-  // Simulate upload progress
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error("Upload cancelled")
+  try {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const response = await axiosApi.post('/media/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (!response.data) {
+      throw new Error("Upload failed")
     }
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    onProgress?.({ progress })
+
+    // const data = await response.data.json()
+    const url ='http://localhost:4000'+ response.data.url;
+    return url;
+  } catch (error) {
+    console.error("Upload error:", error)
+    throw error
   }
-
-  return "/images/placeholder-image.png"
-
-  // Uncomment to use actual file conversion:
-  // return convertFileToBase64(file, abortSignal)
 }
 
 /**

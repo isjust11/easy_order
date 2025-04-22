@@ -5,6 +5,7 @@ interface ComponentCardProps {
   children: React.ReactNode;
   className?: string; // Additional custom classes for styling
   desc?: string; // Description text
+  maxHeight?: string; // Optional max height for the card body
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -12,6 +13,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
+  maxHeight = "calc(100vh - 280px)", // Default max height
 }) => {
   return (
     <div
@@ -30,7 +32,10 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
       </div>
 
       {/* Card Body */}
-      <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+      <div 
+        className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6 overflow-y-auto"
+        style={{ maxHeight }}
+      >
         <div className="space-y-6">{children}</div>
       </div>
     </div>

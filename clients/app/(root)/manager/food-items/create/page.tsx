@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { CreateFoodItemDto, FoodItem } from '@/types/food-item';
@@ -84,6 +83,14 @@ export default function CreateFoodItem() {
     }));
   };
 
+  const changeDescription =(description: string) =>{
+    console.log(description)
+    setFormData(prev => ({
+      ...prev,
+      description: description,
+    }));
+  }
+
   const handleSwitchChange = (checked: boolean) => {
     setFormData(prev => ({
       ...prev,
@@ -112,7 +119,8 @@ export default function CreateFoodItem() {
                 <div className="space-y-2">
                   <Label htmlFor="description">Mô tả</Label>
                   <div className="ring-1 ring-gray-100/5 rounded-md shadow-sm p-2">
-                    <SimpleEditor initialContent='hello' onContentChange={(content)=>handleChange} />
+                    <SimpleEditor initialContent={formData.description}
+                     onContentChange={(content)=>changeDescription(content)} />
                   </div>
                 </div>
 

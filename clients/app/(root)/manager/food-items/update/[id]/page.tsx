@@ -7,13 +7,14 @@ import { getFoodItem, updateFoodItem } from '@/services/manager-api'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import ComponentCard from '@/components/common/ComponentCard'
+import {Action} from '@/types/actions'
 import PageBreadcrumb from '@/components/common/PageBreadCrumb'
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor'
-import { Switch } from '@radix-ui/react-switch'
-import { title } from 'process'
+
+import { Save, X } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 
 const UpdateFoodItemPage = () => {
     const params = useParams()
@@ -62,8 +63,8 @@ const UpdateFoodItemPage = () => {
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleSubmit = async () => {
+      console.log(foodItem);
         if (!foodItem) return
 
         try {
@@ -86,19 +87,38 @@ const UpdateFoodItemPage = () => {
     if (error) {
         return <div className="flex items-center justify-center min-h-screen text-red-500">Lỗi: {error}</div>
     }
+    const listAction: Action[] = [
+      {
+        icon: <X className="h-4 w-4" />,
+        onClick: () => {
+          router.back();
+        },
+        title: "Hủy",
+        className: "hover:bg-gray-100 dark:hover:bg-gray-500 rounded-md transition-colors text-gray-300",
+        variant: 'outline'
+      },
+      {
+        icon: <Save className="h-4 w-4" />,
+        onClick: () => handleSubmit(),
+        title: "Cập nhật",
+        className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
+        isLoading: loading
+      },
+    ];
 
     return (
         <div>
-        <PageBreadcrumb pageTitle="Thêm mới món ăn" />
+        <PageBreadcrumb pageTitle="Cập nhật món ăn" />
         <div className="space-y-2">
-          <ComponentCard title={title}>
+          <ComponentCard title="Cập nhật món ăn" listAction={listAction} >
             <div className="max-w-3xl mx-auto">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Tên món</Label>
                   <Input
                     id="name"
                     name="name"
+                    className='input-focus'
                     value={foodItem?.name}
                     onChange={handleChange}
                     required
@@ -119,6 +139,7 @@ const UpdateFoodItemPage = () => {
                     id="price"
                     name="price"
                     type="number"
+                     className='input-focus'
                     value={foodItem?.price}
                     onChange={handleChange}
                     required
@@ -132,6 +153,7 @@ const UpdateFoodItemPage = () => {
                   <Input
                     id="category"
                     name="category"
+                     className='input-focus'
                     value={foodItem?.category}
                     onChange={handleChange}
                   />
@@ -142,6 +164,7 @@ const UpdateFoodItemPage = () => {
                   <Input
                     id="image"
                     name="image"
+                     className='input-focus'
                     value={foodItem?.image}
                     onChange={handleChange}
                   />
@@ -156,18 +179,6 @@ const UpdateFoodItemPage = () => {
                   <Label htmlFor="isAvailable">Còn phục vụ</Label>
                 </div>
 
-                <div className="flex justify-end space-x-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
-                  >
-                    Hủy
-                  </Button>
-                  <Button type="submit" disabled={loading}>
-                    {loading ? (isEditing ? 'Đang cập nhật...' : 'Đang thêm...') : (isEditing ? 'Cập nhật món' : 'Thêm món')}
-                  </Button>
-                </div>
               </form>
             </div>
           </ComponentCard>

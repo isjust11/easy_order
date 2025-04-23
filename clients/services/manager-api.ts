@@ -214,7 +214,7 @@ export const createCategoryType = async (data: CategoryType): Promise<CategoryTy
   return response.data;
 };
 
-export const updateCategoryType = async (id: number, data: Partial<CategoryType>): Promise<CategoryType> => {
+export const updateCategoryType = async (id: string, data: Partial<CategoryType>): Promise<CategoryType> => {
   const response = await axiosApi.post(`/category-types/${id}`, 
     data,
   );
@@ -224,13 +224,8 @@ export const updateCategoryType = async (id: number, data: Partial<CategoryType>
   return response.data;
 };
 
-export const deleteCategoryType = async (id: number): Promise<void> => {
-  const response = await fetch(`/category-types/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete category type');
-  }
+export const deleteCategoryType = async (id: string): Promise<void> => {
+  await axiosApi.delete(`/category-types/${id}`);
 };
 
 export const getCategoryByCode = async (code: string): Promise<any> => {

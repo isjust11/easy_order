@@ -111,38 +111,49 @@ export default function CategoryTypesManagement() {
       header: 'Thao tác',
       cell: ({ row }) => {
         const categoryType = row.original
-        const handleDelete = async (id: number) => {
+        const handleDelete = async (id: string) => {
           try {
             await deleteCategoryType(id);
             toast.success('Loại danh mục đã được xóa thành công');
+            try {
+              const typesData = await getCategoryTypes();
+              setCategoryTypes(typesData);
+            } catch (error) {
+              console.error('Error fetching data:', error);
+              toast.error('Có lỗi xảy ra khi tải dữ liệu');
+            } finally {
+              setLoading(false);
+            }
           } catch (_error) {
             toast.error('Có lỗi xảy ra khi xóa loại danh mục');
           }
         }
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Mở menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedCategoryType(categoryType);
-                  openModal();
-                }}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                Chỉnh sửa
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(categoryType.id)}>
-                <Trash className="mr-2 h-4 w-4" />
-                Xóa
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="p-2 ">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Mở menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                  onClick={() => {
+                    setSelectedCategoryType(categoryType);
+                    openModal();
+                  }}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(categoryType.id)}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  Xóa
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       },
     },
@@ -167,6 +178,7 @@ export default function CategoryTypesManagement() {
 
   const handleSave = async (values: any) => {
     try {
+      setLoading(true)
       console.log(values)
       if (selectedCategoryType) {
         await updateCategoryType(selectedCategoryType.id, values);
@@ -181,6 +193,8 @@ export default function CategoryTypesManagement() {
       setCategoryTypes(typesData);
     } catch (error) {
       toast.error('Có lỗi xảy ra khi lưu dữ liệu');
+    }finally{
+      setLoading(false);
     }
   }
 

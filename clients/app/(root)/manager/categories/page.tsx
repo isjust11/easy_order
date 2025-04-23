@@ -104,7 +104,7 @@ export const columns: ColumnDef<Category>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className='bg-amber-400'>
             <DropdownMenuItem
               onClick={() => window.location.href = `/manager/categories/update/${category.id}`}
             >

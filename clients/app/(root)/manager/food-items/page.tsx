@@ -106,30 +106,32 @@ const FoodItemsPage = () => {
           }
         }
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Mở menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => router.push(`/manager/food-items/update/${foodItem.id}`)}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                Chỉnh sửa
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(foodItem.id)}>
-                <Trash className="mr-2 h-4 w-4" />
-                Xóa
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="p-2 ">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Mở menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                  onClick={() => router.push(`/manager/food-items/update/${foodItem.id}`)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(foodItem.id)}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  Xóa
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       },
     },
-  ] 
+  ]
   const [foodItems, setFoodItems] = useState<FoodItem[]>([])
   useEffect(() => {
     const fetchFoodItems = async () => {

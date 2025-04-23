@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal } from 'lucide-react';
-import { deleteCategory, getCategories } from '@/services/category-api';
-import { Category } from '@/types/category';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import ComponentCard from '@/components/common/ComponentCard';
@@ -13,6 +11,10 @@ import { DataTable } from '@/components/DataTable';
 import { Checkbox } from "@/components/ui/checkbox"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
+import { getCategories, getCategoryTypes } from '@/services/manager-api';
+import { CategoryType } from '@/types/category-type';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Category } from '@/types/category';
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -54,7 +56,7 @@ export const columns: ColumnDef<Category>[] = [
   },
   {
     accessorKey: "description",
-    header:"Mô tả",
+    header: "Mô tả",
   },
   {
     accessorKey: "type",
@@ -122,32 +124,70 @@ export const columns: ColumnDef<Category>[] = [
 
 export default function CategoriesManagement() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryTypes, setCategoryTypes] = useState<CategoryType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedType, setSelectedType] = useState<string>('all');
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const data = await getCategories();
-      setCategories(data);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [categoriesData, typesData] = await Promise.all([
+          getCategories(),
+          getCategoryTypes()
+        ]);
+        setCategories(categoriesData);
+        setCategoryTypes(typesData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast.error('Có lỗi xảy ra khi tải dữ liệu');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchCategories();
+    fetchData();
   }, []);
+
+  const filteredCategories = selectedType === 'all' 
+    ? categories 
+    : categories.filter(category => category.type === selectedType);
 
   return (
     <div>
       <PageBreadcrumb pageTitle="Danh sách danh mục" />
       <div className="space-y-6">
         <ComponentCard title="Danh sách danh mục">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold">Quản lý danh mục</h2>
             <Button className='bg-blue-500 text-white' onClick={() => router.push('/manager/categories/create')}>
               <Plus className="w-4 h-4 mr-2" />
               Thêm danh mục mới
             </Button>
           </div>
-          <DataTable columns={columns} data={categories}/>
+          <div className="mb-4">
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Chọn loại danh mục" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả</SelectItem>
+                {categoryTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.code}>
+                    {type.code === 'food' ? 'Đồ ăn' : type.code === 'drink' ? 'Đồ uống' : 'Khác'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DataTable columns={columns} data={filteredCategories} />
         </ComponentCard>
       </div>
     </div>
   );
-} 
+}
+
+function deleteCategory(id: number) {
+  throw new Error('Function not implemented.');
+}

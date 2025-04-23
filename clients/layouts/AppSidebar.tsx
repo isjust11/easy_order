@@ -74,7 +74,8 @@ const othersItems: NavItem[] = [
     icon: <PieChartIcon />,
     name: "Danh mục",
     subItems: [
-      { name: "Ngôn ngữ", path: "/category/language", pro: false },
+      { name: "Loại danh mục", path: "/manager/category-types", pro: false },
+      { name: "Quản lý danh mục", path: "/manager/categories", pro: false },
     ],
   },
   {

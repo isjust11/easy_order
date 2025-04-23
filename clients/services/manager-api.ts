@@ -5,6 +5,7 @@ import { CreateOrderDto } from '@/types/dto/CreateOrderDto';
 import { error } from 'console';
 import { Permission } from '@/types/permission';
 import { Navigator } from '@/types/navigator';
+import { CategoryType } from '@/types/category-type';
 
 // todo: api manager fooditem
 export const getAllFoods = async (): Promise<FoodItem[]> => {
@@ -152,6 +153,92 @@ export const getNavigatorPermissions = async (id: number): Promise<Permission[]>
     return response.data;
   } catch (_error) {
     console.error('Error fetching navigator permissions:', _error);
+    throw _error;
+  }
+};
+// todo: api category 
+export const getCategories = async (): Promise<any[]> => {
+  try {
+    const response = await axiosApi.get(`/categories`);
+    return response.data;
+  } catch (_error) {
+    console.error('Error fetching categories:', _error);
+    throw _error;
+  }
+};
+
+export const createCategory = async (data: any): Promise<any> => {
+  try {
+    const response = await axiosApi.post(`/categories`, data);
+    return response.data;
+  } catch (_error) {
+    console.error('Error creating category:', _error);
+    throw _error;
+  }
+};  
+
+export const updateCategory = async (id: string, data: any): Promise<any> => {
+  try {
+    const response = await axiosApi.put(`/categories/${id}`, data);
+    return response.data;
+  } catch (_error) {
+    console.error('Error updating category:', _error);
+    throw _error;
+  }
+};
+
+export const deleteCategory = async (id: string): Promise<void> => {
+  try {
+    await axiosApi.delete(`/categories/${id}`);
+  } catch (_error) {
+    console.error('Error deleting category:', _error);
+    throw _error;
+  }
+};
+
+// todo: api category type
+export const getCategoryTypes = async (): Promise<CategoryType[]> => {
+  const response = await axiosApi.get('/category-types');
+  if (!response.data) {
+    throw new Error('Failed to fetch category types');
+  }
+  return response.data;
+};
+
+export const createCategoryType = async (data: CategoryType): Promise<CategoryType> => {
+  const response = await axiosApi.post('/category-types', data,
+  );
+  if (!response.data) {
+    throw new Error('Failed to create category type');
+  }
+  return response.data;
+};
+
+export const updateCategoryType = async (id: number, data: Partial<CategoryType>): Promise<CategoryType> => {
+  const response = await axiosApi.post(`/category-types/${id}`, 
+    data,
+  );
+  if (!response.data) {
+    throw new Error('Failed to update category type');
+  }
+  return response.data;
+};
+
+export const deleteCategoryType = async (id: number): Promise<void> => {
+  const response = await fetch(`/category-types/${id}`, {
+    method: 'DELETE',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete category type');
+  }
+};
+
+export const getCategoryByCode = async (code: string): Promise<any> => {
+  try {
+    const response = await axiosApi.get(`/category-types/code/${code}`);
+    return response.data;
+  } catch (_error) {
+    console.error('Error fetching category type:', _error);
     throw _error;
   }
 };

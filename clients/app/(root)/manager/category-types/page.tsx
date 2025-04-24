@@ -18,13 +18,14 @@ import { useModal } from '@/hooks/useModal';
 import { Modal } from '@/components/ui/modal';
 import { CategoryTypeForm } from './components/CategoryTypeForm';
 import Badge from '@/components/ui/badge/Badge';
+import { unicodeToEmoji } from '@/lib/utils';
 
 
 
 export default function CategoryTypesManagement() {
   const [categoryTypes, setCategoryTypes] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCategoryType, setSelectedCategoryType] = useState<CategoryType | undefined>(undefined);
+  const [selectedCategoryType, setSelectedCategoryType] = useState<CategoryType>();
   const { isOpen, openModal, closeModal } = useModal();
   const router = useRouter();
   const listAction: Action[] = [
@@ -103,6 +104,18 @@ export default function CategoryTypesManagement() {
           <Badge variant="light" color={status === true ? 'success' : 'error'} >
            {status == true ? 'Hoạt động' : 'Ngừng hoạt động'}
         </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "icon",
+      header: "Icon",
+      cell: ({ row }) => {
+        const icon = row.getValue("icon") as string
+        return (
+          <div className="flex items-center justify-start">
+            {icon && unicodeToEmoji(icon)}
+          </div>
         )
       },
     },

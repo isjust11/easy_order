@@ -14,8 +14,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CategoryType } from "@/types/category-type"
 import Switch from "@/components/form/switch/Switch"
-import { Loader2 } from "lucide-react"
-
+import { SmilePlus } from "lucide-react"
+import { useState } from "react";
+import { IconPickerModal } from "@/components/IconPickerModal"
+import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils"
 const formSchema = z.object({
   code: z.string().min(2, {
     message: "Mã loại phải có ít nhất 2 ký tự.",
@@ -24,7 +26,8 @@ const formSchema = z.object({
     message: "Tên loại phải có ít nhất 2 ký tự.",
   }),
   description: z.string().optional(),
-  status: z.enum(["1", "0"]),
+  isActive: z.boolean(),
+  icon: z.string().optional(),
 })
 
 interface CategoryTypeFormProps {
@@ -34,19 +37,31 @@ interface CategoryTypeFormProps {
 }
 
 export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTypeFormProps) {
+  if(initialData && initialData?.icon !==null){
+    initialData.icon = unicodeToEmoji(initialData.icon ??'');
+  }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       code: "",
       name: "",
       description: "",
-      status: "1",
+      isActive: true,
+      icon: "",
     },
   })
-
+   const handleSubmit = (values: z.infer<typeof formSchema>) => {
+          // Chuyển đổi icon thành mã Unicode trước khi submit
+          if (values.icon) {
+              values.icon = emojiToUnicode(values.icon);
+          }
+          onSubmit(values);
+      };
+  
+  const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="code"
@@ -86,19 +101,50 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <Switch
-                label="Sử dụng"
-                defaultChecked={field.value == "1" ? true : false}
-                {...field}
-              />
-            </FormItem>
-          )}
-        />
+        <div className="flex flex-start items-center gap-2">
+          <FormField
+            control={form.control}
+            name="isActive"
+            render={({ field }) => (
+              <FormItem className="w-1/2">
+                <Switch
+                  label="Trạng thái"
+                  defaultChecked={field.value}
+                  {...field}
+                />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="icon"
+            render={({ field }) => (
+              <FormItem className="w-1/2">
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input
+                      disabled
+                      className="input-focus"
+                      {...field}
+                      value={field.value || ""}
+                      placeholder="Chọn icon"
+                    />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-9 w-10 p-0"
+                    onClick={() => setIsIconPickerOpen(true)}
+                  >
+                    <SmilePlus className="h-4 w-4 text-amber-300" />
+                  </Button>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+        </div>
         <div className="flex justify-end space-x-2">
           <Button type="button" variant="outline" onClick={onCancel}>
             Hủy
@@ -107,7 +153,15 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
             {initialData ? "Cập nhật" : "Tạo mới"}
           </Button>
         </div>
+        <IconPickerModal
+          isOpen={isIconPickerOpen}
+          onClose={() => setIsIconPickerOpen(false)}
+          onSelect={(icon) => {
+            form.setValue("icon", icon);
+          }}
+        />
       </form>
     </Form>
   )
-} 
+}
+

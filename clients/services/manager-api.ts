@@ -215,7 +215,7 @@ export const createCategoryType = async (data: CategoryType): Promise<CategoryTy
 };
 
 export const updateCategoryType = async (id: string, data: Partial<CategoryType>): Promise<CategoryType> => {
-  const response = await axiosApi.post(`/category-types/${id}`, 
+  const response = await axiosApi.put(`/category-types/${id}`, 
     data,
   );
   if (!response.data) {

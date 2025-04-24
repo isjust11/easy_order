@@ -1,9 +1,13 @@
+import { CategoryType } from "./category-type";
+
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  status: 'active' | 'inactive';
-  type: 'food' | 'drink' | 'other';
+  isActive: boolean;
+  icon: string;
+  createBy: string;
+  type: CategoryType;
   createdAt: string;
   updatedAt: string;
 } 

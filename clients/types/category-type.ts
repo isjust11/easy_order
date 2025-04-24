@@ -6,6 +6,7 @@ export interface CategoryType {
   name: string;
   description?: string;
   isActive: boolean;
+  icon?: string;
   categories: Category[];
   createdAt: string;
   updatedAt: string;

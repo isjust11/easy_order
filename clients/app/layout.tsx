@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Toaster } from 'sonner';
+import Loading from '@/components/ui/loading';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -21,7 +22,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans dark:bg-gray-900`}>
         <ThemeProvider>
-          <SidebarProvider>{children}</SidebarProvider>
+          <SidebarProvider>
+            
+            {children}
+          </SidebarProvider>
           <Toaster
             position="top-center"
             duration={4000}
@@ -37,6 +41,7 @@ export default function RootLayout({
               // },
             }}
           />
+          <Loading />
         </ThemeProvider>
       </body>
     </html>

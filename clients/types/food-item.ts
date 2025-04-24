@@ -6,6 +6,13 @@ export interface FoodItem {
   image?: string;
   category?: string;
   isAvailable: boolean;
+  preparationTime?: number;
+  unitCategoryId?: string;
+  foodCategoryId?: string;
+  statusCategoryId?: string;
+  discountPercent?: number;
+  discountStartTime?: Date;
+  discountEndTime?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +24,13 @@ export interface CreateFoodItemDto {
   image?: string;
   category?: string;
   isAvailable: boolean;
+  preparationTime?: number;
+  unitCategoryId?: string;
+  foodCategoryId?: string;
+  statusCategoryId?: string;
+  discountPercent?: number;
+  discountStartTime?: Date;
+  discountEndTime?: Date;
 }
 
 export interface UpdateFoodItemDto extends Partial<CreateFoodItemDto> {} 

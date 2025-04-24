@@ -231,7 +231,7 @@ export const deleteCategoryType = async (id: string): Promise<void> => {
 export const getCategoryByCode = async (code: string): Promise<any> => {
   try {
     const response = await axiosApi.get(`/category-types/code/${code}`);
-    return response.data;
+    return response.data.categories;
   } catch (_error) {
     console.error('Error fetching category type:', _error);
     throw _error;

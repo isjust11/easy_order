@@ -159,17 +159,6 @@ const UpdateFoodItemPage = () => {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image">Hình ảnh URL</Label>
-                  <Input
-                    id="image"
-                    name="image"
-                     className='input-focus'
-                    value={foodItem?.image}
-                    onChange={handleChange}
-                  />
-                </div>
-
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="isAvailable"

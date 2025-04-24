@@ -8,10 +8,12 @@ import { deleteFoodItem, getAllFoods } from '@/services/manager-api'
 import { FoodItem } from '@/types/food-item'
 import ComponentCard from '@/components/common/ComponentCard'
 import PageBreadcrumb from '@/components/common/PageBreadCrumb'
-import { Checkbox } from '@radix-ui/react-checkbox'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
+import Badge from '@/components/ui/badge/Badge'
+import { Action } from '@/types/actions'
+import { Checkbox } from '@/components/ui/checkbox'
 
 
 const FoodItemsPage = () => {
@@ -53,6 +55,14 @@ const FoodItemsPage = () => {
           </Button>
         )
       },
+      cell:({row})=>{
+        const name = row.getValue('name') as string;
+        return (
+          <div className='font-bold'>
+            {name}
+          </div>
+        )
+      }
     },
     {
       accessorKey: "price",
@@ -81,14 +91,14 @@ const FoodItemsPage = () => {
       header: "Danh mục",
     },
     {
-      accessorKey: "status",
+      accessorKey: "isAvailable",
       header: "Trạng thái",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string
+        const status = row.getValue("isAvailable") as boolean
         return (
-          <div className={`capitalize ${status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
-            {status === 'active' ? 'Đang bán' : 'Ngừng bán'}
-          </div>
+          <Badge className={status?'ring-green-400': 'ring-red-400'} variant="light" color={status ? 'success' : 'error'} >
+            {status ? 'Đang bán' : 'Ngừng bán'}
+          </Badge>
         )
       },
     },
@@ -140,19 +150,22 @@ const FoodItemsPage = () => {
     }
     fetchFoodItems()
   }, [])
+  const lstActions:Action[]=[
+    {
+      icon: <Plus className="w-4 h-4 mr-2" />,
+      onClick: () => {
+        router.push('/manager/food-items/create')
+      },
+      title: "Thêm món mới",
+      className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
+    },
+  ]
   return (
     <div>
       <PageBreadcrumb pageTitle="Danh sách món ăn" />
       <div className="space-y-6">
-        <ComponentCard title="Danh sách món ăn">
+        <ComponentCard title="Danh sách món ăn" listAction={lstActions}>
           <div className="container mx-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Quản lý món ăn</h1>
-              <Button className='flex items-center justify-center p-3 font-medium text-white rounded-lg bg-brand-500 hover:bg-brand-600' onClick={() => router.push('/manager/food-items/create')}>
-                <Plus className="mr-2 h-4 w-4" />
-                Thêm món mới
-              </Button>
-            </div>
             <DataTable columns={columns} data={foodItems} />
           </div>
         </ComponentCard>

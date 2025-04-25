@@ -3,8 +3,7 @@ export interface FoodItem {
   name: string;
   description: string;
   price: number;
-  image?: string;
-  category?: string;
+  imageUrl?: string;
   isAvailable: boolean;
   preparationTime?: number;
   unitCategoryId?: string;
@@ -21,8 +20,7 @@ export interface CreateFoodItemDto {
   name: string;
   description: string;
   price: number;
-  image?: string;
-  category?: string;
+  imageUrl?: string;
   isAvailable: boolean;
   preparationTime?: number;
   unitCategoryId?: string;

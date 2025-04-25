@@ -1,3 +1,5 @@
+import { Category } from "./category";
+
 export interface FoodItem {
   id: number;
   name: string;
@@ -6,6 +8,9 @@ export interface FoodItem {
   imageUrl?: string;
   isAvailable: boolean;
   preparationTime?: number;
+  foodCategory?: Category;
+  statusCategory?: Category;
+  unitCategory?: Category;
   unitCategoryId?: string;
   foodCategoryId?: string;
   statusCategoryId?: string;

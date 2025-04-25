@@ -4,7 +4,7 @@ import React from 'react'
 import FoodItemForm from '../../components/FoodItemForm'
 
 const UpdateFoodItemPage = () => {
-   return (
+    return (
       <FoodItemForm />
     )
 }

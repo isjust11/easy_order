@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { ArrowDown, ArrowUp, MoreHorizontal, Pencil, Plus, Trash } from 'lucide-react'
+import { ArrowDown, ArrowUp, BadgeInfo, ImageOff, MoreHorizontal, Pencil, Plus, Trash } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { DataTable } from '@/components/DataTable'
 import { deleteFoodItem, getAllFoods } from '@/services/manager-api'
@@ -14,6 +14,9 @@ import { toast } from 'sonner'
 import Badge from '@/components/ui/badge/Badge'
 import { Action } from '@/types/actions'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Category } from '@/types/category'
+import { mergeImageUrl, unicodeToEmoji } from '@/lib/utils'
+import Image from 'next/image'
 
 
 const FoodItemsPage = () => {
@@ -43,6 +46,27 @@ const FoodItemsPage = () => {
       enableHiding: false,
     },
     {
+      accessorKey: "imageUrl",
+      header: "Hình ảnh",
+      cell: ({ row }) => {
+        const imageUrl = mergeImageUrl(row.getValue("imageUrl") as string)
+        return (
+          imageUrl ? <Image
+            width={164}
+            height={124}
+            src={imageUrl}
+            alt="food-item"
+            className="w-16 h-16 object-cover rounded-md"
+          /> :
+            <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+              <span className="text-gray-500">
+                <ImageOff className="w-8 h-8" />
+              </span>
+            </div>
+        )
+      },
+    },
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -55,7 +79,7 @@ const FoodItemsPage = () => {
           </Button>
         )
       },
-      cell:({row})=>{
+      cell: ({ row }) => {
         const name = row.getValue('name') as string;
         return (
           <div className='font-bold'>
@@ -87,8 +111,21 @@ const FoodItemsPage = () => {
       },
     },
     {
-      accessorKey: "category",
+      accessorKey: "foodCategory",
       header: "Danh mục",
+      cell: ({ row }) => {
+        const category = row.getValue("foodCategory") as Category
+        return (
+          <div className="flex flex-center">
+            <div className="mr-2">
+              {category?.icon && unicodeToEmoji(category.icon)}
+            </div>
+            <div className="text-sm text-gray-500">
+              {category?.name}
+            </div>
+          </div>
+        )
+      },
     },
     {
       accessorKey: "isAvailable",
@@ -96,7 +133,7 @@ const FoodItemsPage = () => {
       cell: ({ row }) => {
         const status = row.getValue("isAvailable") as boolean
         return (
-          <Badge className={status?'ring-green-400': 'ring-red-400'} variant="light" color={status ? 'success' : 'error'} >
+          <Badge className={status ? 'ring-green-400' : 'ring-red-400'} variant="light" color={status ? 'success' : 'error'} >
             {status ? 'Đang bán' : 'Ngừng bán'}
           </Badge>
         )
@@ -125,6 +162,11 @@ const FoodItemsPage = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                  onClick={() => router.push(`/manager/food-items/${foodItem.id}`)}>
+                  <BadgeInfo className="mr-2 h-4 w-4" />
+                  Xem chi tiết
+                </DropdownMenuItem>
                 <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
                   onClick={() => router.push(`/manager/food-items/update/${foodItem.id}`)}
                 >
@@ -150,7 +192,7 @@ const FoodItemsPage = () => {
     }
     fetchFoodItems()
   }, [])
-  const lstActions:Action[]=[
+  const lstActions: Action[] = [
     {
       icon: <Plus className="w-4 h-4 mr-2" />,
       onClick: () => {
@@ -162,7 +204,7 @@ const FoodItemsPage = () => {
   ]
   return (
     <div>
-      <PageBreadcrumb pageTitle="Danh sách món ăn" />
+      <PageBreadcrumb pageTitle="Danh sách món ăn" items={[]} />
       <div className="space-y-6">
         <ComponentCard title="Danh sách món ăn" listAction={lstActions}>
           <div className="container mx-auto">

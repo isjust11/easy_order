@@ -73,8 +73,6 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss"
 
-import content from "@/components/tiptap-templates/simple/data/content.json"
-import { init } from "next/dist/compiled/webpack/webpack"
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -179,9 +177,11 @@ const MobileToolbarContent = ({
 
 export function SimpleEditor({
   initialContent,
+  placeholder,
   onContentChange,
 }: {
   initialContent: string
+  placeholder?: string
   onContentChange: (content: string) => void
 }) {
   const isMobile = useMobile()
@@ -326,6 +326,7 @@ export function SimpleEditor({
         <EditorContent
           editor={editor}
           role="presentation"
+          placeholder={placeholder}
           className="simple-editor-content"
         />
       </div>

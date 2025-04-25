@@ -1,8 +1,13 @@
 import Link from "next/link";
 import React from "react";
 
+interface BreadCrumbItem{
+  title:string;
+  href: string;
+}
 interface BreadcrumbProps {
   pageTitle: string;
+  items?: BreadCrumbItem[]
 }
 
 const PageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {

@@ -74,6 +74,7 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 import "@/components/tiptap-templates/simple/simple-editor.scss"
 
 import content from "@/components/tiptap-templates/simple/data/content.json"
+import { init } from "next/dist/compiled/webpack/webpack"
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -215,7 +216,7 @@ export function SimpleEditor({
       window.removeEventListener("scroll", updateRect)
     }
   }, [])
-
+  console.log(initialContent)
   const editor = useEditor({
     immediatelyRender: false,
     editorProps: {

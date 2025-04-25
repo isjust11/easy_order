@@ -32,3 +32,18 @@ export function encrypt(data: string) {
 export function decrypt(data: string) {
   return crypto.createHash('sha256').update(data).digest('hex');
 }
+
+export const mergeImageUrl = (relativeUrl: string): string => {
+  if (!relativeUrl) return '';
+  
+  // Nếu URL đã là absolute URL thì không cần merge
+  if (relativeUrl.startsWith('http://') || relativeUrl.startsWith('https://')) {
+    return relativeUrl;
+  }
+  
+  // Lấy API_URL từ biến môi trường
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  
+  // Merge URL
+  return `${apiUrl}${relativeUrl.startsWith('/') ? relativeUrl : `/${relativeUrl}`}`;
+};

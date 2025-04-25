@@ -61,7 +61,7 @@ const FoodItemDetailPage = () => {
       icon: <Trash className="w-4 h-4 mr-2" />,
       onClick: handleDelete,
       title: 'Xóa',
-      className: 'hover:bg-red-100 dark:hover:bg-red-800 rounded-md transition-colors text-red-500',
+      className: 'bg-red-500 hover:bg-red-600 dark:hover:bg-red-800 rounded-md transition-colors text-red-500',
     },
   ]
 
@@ -115,8 +115,8 @@ const FoodItemDetailPage = () => {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center  mb-3 border-b border-gray-300 pb-3">
-                  <span className="font-semibold w-32">Giá:</span>
+                <div className="flex mb-3 border-b border-gray-300 pb-3">
+                  <span className="w-32">Giá:</span>
                   <span className="text-lg">
                     {new Intl.NumberFormat("vi-VN", {
                       style: "currency",
@@ -126,8 +126,8 @@ const FoodItemDetailPage = () => {
                 </div>
 
                 <div className="flex items-center  mb-3 border-b border-gray-300 pb-3">
-                  <span className="font-semibold w-32">Danh mục:</span>
-                  <div className="flex items-center">
+                  <span className="w-32">Danh mục:</span>
+                  <div className="flex">
                     {foodItem.foodCategory?.icon && (
                       <span className="mr-2">{unicodeToEmoji(foodItem.foodCategory.icon)}</span>
                     )}
@@ -136,8 +136,8 @@ const FoodItemDetailPage = () => {
                 </div>
 
                 <div className="flex items-center mb-3 border-b border-gray-200/100 pb-3">
-                  <span className="font-semibold w-32">Đơn vị tính:</span>
-                  <div className="flex items-center">
+                  <span className="w-32">Đơn vị tính:</span>
+                  <div className="flex">
                     {foodItem.unitCategory?.icon && (
                       <span className="mr-2">{unicodeToEmoji(foodItem.unitCategory.icon)}</span>
                     )}
@@ -146,17 +146,17 @@ const FoodItemDetailPage = () => {
                 </div>
 
                 <div className="flex items-center mb-3 border-b border-gray-200/100 pb-3">
-                  <span className="font-semibold w-32">Trạng thái:</span>
-                  <div className="flex items-center">
+                  <span className="w-32">Trạng thái:</span>
+                  <div className="flex">
                     {foodItem.statusCategory?.icon && (
                       <span className="mr-2">{unicodeToEmoji(foodItem.statusCategory.icon)}</span>
                     )}
                     <span>{foodItem.statusCategory?.name}</span>
                   </div>
                 </div>
-                <div className="flex items-center mb-3 ">
-                  <span className="font-semibold w-32">Mô tả:</span>
-                  <div className="flex items-center px-3 py-2 border border-gray-200/100 rounded-md bg-gray-50">
+                <div className="flex mb-3 ">
+                  <span className="w-32">Mô tả:</span>
+                  <div className="flex px-3 py-2 border border-gray-200/100 rounded-md w-full min-h-20 bg-gray-50">
                     <span dangerouslySetInnerHTML={{ __html: foodItem.description || 'Không có mô tả' }}></span>
                     </div>
                 </div>

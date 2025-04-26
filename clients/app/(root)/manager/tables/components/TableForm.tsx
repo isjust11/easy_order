@@ -3,47 +3,42 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { CreateFoodItemDto, FoodItem } from '@/types/food-item';
-import { createFoodItem, updateFoodItem, getFoodItem, getCategoryByCode } from '@/services/manager-api';
+import { createTable, getCategoryByCode, getTable, getTables, updateTable } from '@/services/manager-api';
 import { uploadFile } from '@/services/media-api';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
-import { Switch } from '@/components/ui/switch';
 import { Action } from '@/types/actions';
 import { Plus, Save, X } from 'lucide-react';
 import { useDropzone } from "react-dropzone";
 import { Category } from '@/types/category';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { unicodeToEmoji, mergeImageUrl } from '@/lib/utils';
+import { Table } from '@/types/table';
 
-const FoodItemForm = () => {
+const TableForm = () => {
   const router = useRouter();
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [statusCategory, setStatusCategory] = useState<Category[]>([]);
-  const [foodCategory, setFoodCategory] = useState<Category[]>([]);
-  const [unitCategory, setUnitCategory] = useState<Category[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<Category | null>(null);
-  const [selectedFood, setSelectedFood] = useState<Category | null>(null);
-  const [selectedUnit, setSelectedUnit] = useState<Category | null>(null);
-  const [foodItem, setFoodItem] = useState<FoodItem>();
-  const [formData, setFormData] = useState<CreateFoodItemDto>({
+  const [tableTypeCategory, setTableTypeCategory] = useState<Category[]>([]);
+  const [tableStatusCategory, setTableStatusCategory] = useState<Category[]>([]);
+  const [tableAreaCategory, setTableAreaCategory] = useState<Category[]>([]);
+  const [selectedTableType, setSelectedTableType] = useState<Category | null>(null);
+  const [selectedTableStatus, setSelectedTableStatus] = useState<Category | null>(null);
+  const [selectedTableArea, setSelectedTableArea] = useState<Category | null>(null);
+  const [table, setTable] = useState<Table>();
+  const [formData, setFormData] = useState<Partial<Table>>({
     name: '',
     description: '',
-    price: 0,
     imageUrl: '',
-    isAvailable: true,
-    preparationTime: 0,
-    unitCategoryId: '',
-    foodCategoryId: '',
-    statusCategoryId: '',
-    discountPercent: 0,
-    discountStartTime: undefined,
-    discountEndTime: undefined,
+    capacity: 0,
+    areaId: '',
+    tableStatusId: '',
+    tableTypeId: '',
+    qrCodeUrl: '',
   });
   const id = Number(params.id);
 
@@ -66,67 +61,63 @@ const FoodItemForm = () => {
     },
   });
 
-  const title = id ? 'Cập nhật món ăn' : 'Thêm món ăn mới';
+  const title = id ? 'Cập nhật bàn' : 'Thêm bàn mới';
   useEffect(() => {
     if (id) {
       setIsEditing(true);
-      loadFoodItem(Number(id));
+      loadTable(id.toString());
     }
-    loadCategory();
+    loadCategories();
   }, []);
 
   useEffect(() => {
-    if (formData.unitCategoryId && unitCategory.length > 0) {
-      const unit = unitCategory.find(cat => cat.id === formData.unitCategoryId);
-      setSelectedUnit(unit || null);
+    if (formData.tableTypeId && tableTypeCategory.length > 0) {
+      const tableType = tableTypeCategory.find(cat => cat.id === formData.tableTypeId);
+      setSelectedTableType(tableType || null);
     }
 
-    if (formData.foodCategoryId && foodCategory.length > 0) {
-      const food = foodCategory.find(cat => cat.id === formData.foodCategoryId);
-      setSelectedFood(food || null);
+    if (formData.tableStatusId && tableStatusCategory.length > 0) {
+      const tableStatus = tableStatusCategory.find(cat => cat.id === formData.tableStatusId);
+      setSelectedTableStatus(tableStatus || null);
     }
 
-    if (formData.statusCategoryId && statusCategory.length > 0) {
-      const status = statusCategory.find(cat => cat.id === formData.statusCategoryId);
-      setSelectedStatus(status || null);
+    if (formData.areaId && tableAreaCategory.length > 0) {
+      const tableArea = tableAreaCategory.find(cat => cat.id === formData.areaId);
+      setSelectedTableArea(tableArea || null);
     }
-  }, [formData.unitCategoryId, formData.foodCategoryId, formData.statusCategoryId, unitCategory, foodCategory, statusCategory]);
+  }, [formData.tableTypeId, formData.tableStatusId, formData.areaId, tableTypeCategory, tableStatusCategory, tableAreaCategory]);
 
-  const loadFoodItem = async (id: number) => {
+  const loadTable = async (id: string) => {
     try {
-      const foodItem = await getFoodItem(id);
-      setFoodItem(foodItem)
+      const tableData = await getTable(id);
+      setTable(tableData)
       setFormData({
-        name: foodItem.name,
-        description: foodItem.description,
-        price: foodItem.price,
-        imageUrl: foodItem.imageUrl ? mergeImageUrl(foodItem.imageUrl) : '',
-        isAvailable: foodItem.isAvailable,
-        preparationTime: foodItem.preparationTime || 0,
-        unitCategoryId: foodItem.unitCategoryId || '',
-        foodCategoryId: foodItem.foodCategoryId || '',
-        statusCategoryId: foodItem.statusCategoryId || '',
-        discountPercent: foodItem.discountPercent || 0,
-        discountStartTime: foodItem.discountStartTime,
-        discountEndTime: foodItem.discountEndTime,
+        name: tableData.name,
+        description: tableData.description,
+        imageUrl: tableData.imageUrl ? mergeImageUrl(tableData.imageUrl) : '',
+        capacity: tableData.capacity,
+        areaId: tableData.areaId,
+        tableStatusId: tableData.tableStatusId,
+        tableTypeId: tableData.tableTypeId,
+        qrCodeUrl: tableData.qrCodeUrl,
       });
     } catch (_error) {
-      toast.error('Không thể tải thông tin món ăn');
-      router.push('/manager/food-items');
+      toast.error('Không thể tải thông tin bàn');
+      router.push('/manager/tables');
     }
   };
 
-  const loadCategory = async () => {
+  const loadCategories = async () => {
     try {
-      const [statusCategory, unitCategory, foodCategory] = await Promise.all([
-        getCategoryByCode('food-status'),
-        getCategoryByCode('food-unit'),
-        getCategoryByCode('food-category')
+      const [tableTypeCategory, tableStatusCategory, tableAreaCategory] = await Promise.all([
+        getCategoryByCode('table-type'),
+        getCategoryByCode('table-status'),
+        getCategoryByCode('table-area')
       ]);
 
-      setStatusCategory(statusCategory);
-      setUnitCategory(unitCategory);
-      setFoodCategory(foodCategory)
+      setTableTypeCategory(tableTypeCategory);
+      setTableStatusCategory(tableStatusCategory);
+      setTableAreaCategory(tableAreaCategory)
     } catch (_error) {
       toast.error('Không thể load danh mục');
     }
@@ -149,15 +140,15 @@ const FoodItemForm = () => {
       };
 
       if (isEditing) {
-        await updateFoodItem(id, submitData);
-        toast.success('Món ăn đã được cập nhật thành công');
+        await updateTable(id, submitData);
+        toast.success('Bàn đã được cập nhật thành công');
       } else {
-        await createFoodItem(submitData);
-        toast.success('Món ăn đã được thêm thành công');
+        await createTable(submitData);
+        toast.success('Bàn đã được thêm thành công');
       }
-      router.push('/manager/food-items');
+      router.push('/manager/tables');
     } catch (_error) {
-      toast.error(isEditing ? 'Có lỗi xảy ra khi cập nhật món ăn' : 'Có lỗi xảy ra khi thêm món ăn');
+      toast.error(isEditing ? 'Có lỗi xảy ra khi cập nhật bàn' : 'Có lỗi xảy ra khi thêm bàn');
     } finally {
       setLoading(false);
     }
@@ -174,30 +165,30 @@ const FoodItemForm = () => {
     }));
   };
 
-  const handleSelectUnitChange = (value: string) => {
-    const selectedCategory = unitCategory.find((category) => category.id === value);
-    setSelectedUnit(selectedCategory || null);
+  const handleSelectTableTypeChange = (value: string) => {
+    const selectedCategory = tableTypeCategory.find((category) => category.id === value);
+    setSelectedTableType(selectedCategory || null);
     setFormData(prev => ({
       ...prev,
-      unitCategoryId: value,
+      tableTypeId: value,
     }));
   };
 
-  const handleSelectFoodChange = (value: string) => {
-    const selectedCategory = foodCategory.find((category) => category.id === value);
-    setSelectedFood(selectedCategory || null);
+  const handleSelectTableStatusChange = (value: string) => {
+    const selectedCategory = tableStatusCategory.find((category) => category.id === value);
+    setSelectedTableStatus(selectedCategory || null);
     setFormData(prev => ({
       ...prev,
-      foodCategoryId: value,
+      tableStatusId: value,
     }));
   };
 
-  const handleSelectStatusChange = (value: string) => {
-    const selectedCategory = statusCategory.find((category) => category.id === value);
-    setSelectedStatus(selectedCategory || null);
+  const handleSelectTableAreaChange = (value: string) => {
+    const selectedCategory = tableAreaCategory.find((category) => category.id === value);
+    setSelectedTableArea(selectedCategory || null);
     setFormData(prev => ({
       ...prev,
-      statusCategoryId: value,
+      areaId: value,
     }));
   };
 
@@ -213,13 +204,6 @@ const FoodItemForm = () => {
       description: description,
     }));
   }
-
-  const handleSwitchChange = (checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      isAvailable: checked,
-    }));
-  };
 
   const listAction: Action[] = [
     {
@@ -242,8 +226,8 @@ const FoodItemForm = () => {
 
   return (
     <div>
-      <PageBreadcrumb pageTitle="Thêm mới món ăn" items={[
-        { title: 'Danh sách món ăn', href: '/manager/food-items' },
+      <PageBreadcrumb pageTitle="Thêm mới bàn" items={[
+        { title: 'Danh sách bàn', href: '/manager/tables' },
         { title: '', href: '#' }
       ]} />
       <div className="space-y-2">
@@ -331,11 +315,11 @@ const FoodItemForm = () => {
               <form className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Tên món</Label>
+                    <Label htmlFor="name">Tên bàn</Label>
                     <Input
                       id="name"
                       name="name"
-                      placeholder='Nhập tên món ăn'
+                      placeholder='Nhập tên bàn'
                       type="text"
                       value={formData.name}
                       onChange={handleChange}
@@ -344,39 +328,26 @@ const FoodItemForm = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="price">Giá</Label>
+                    <Label htmlFor="capacity">Sức chứa</Label>
                     <Input
-                      id="price"
-                      name="price"
+                      id="capacity"
+                      name="capacity"
                       type="number"
-                      value={formData.price}
+                      value={formData.capacity}
                       onChange={handleChange}
                       required
-                      min="0"
-                      step="1000"
+                      min="1"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="preparationTime">Thời gian chuẩn bị (phút)</Label>
-                    <Input
-                      id="preparationTime"
-                      name="preparationTime"
-                      type="number"
-                      value={formData.preparationTime || 0}
-                      onChange={handleChange}
-                      min="0"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="unitCategoryId">Đơn vị tính</Label>
-                    <Select value={selectedUnit?.id || formData.unitCategoryId} onValueChange={(value) => handleSelectUnitChange(value)}>
+                    <Label htmlFor="tableTypeId">Loại bàn</Label>
+                    <Select value={selectedTableType?.id || formData.tableTypeId} onValueChange={(value) => handleSelectTableTypeChange(value)}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn loại danh mục" />
+                        <SelectValue placeholder="Chọn loại bàn" />
                       </SelectTrigger>
                       <SelectContent className="w-full bg-white" >
-                        {unitCategory?.length ? (unitCategory?.map((type) => (
+                        {tableTypeCategory?.length ? (tableTypeCategory?.map((type) => (
                           <SelectItem key={type.id} value={type.id}>
                             <div className="flex flex-start items-center">
                               <span className="text-2xl mr-2"> {type.icon && unicodeToEmoji(type.icon)}</span>
@@ -390,17 +361,16 @@ const FoodItemForm = () => {
                         )}
                       </SelectContent>
                     </Select>
-
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="foodCategoryId">Danh mục món ăn</Label>
-                    <Select value={selectedFood?.id || formData?.foodCategoryId} onValueChange={(value) => handleSelectFoodChange(value)}>
+                    <Label htmlFor="tableStatusId">Trạng thái bàn</Label>
+                    <Select value={selectedTableStatus?.id || formData.tableStatusId} onValueChange={(value) => handleSelectTableStatusChange(value)}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn loại món ăn" />
+                        <SelectValue placeholder="Chọn trạng thái bàn" />
                       </SelectTrigger>
                       <SelectContent className="w-full bg-white" >
-                        {foodCategory?.length > 0 ? (foodCategory?.map((type) => (
+                        {tableStatusCategory?.length ? (tableStatusCategory?.map((type) => (
                           <SelectItem key={type.id} value={type.id}>
                             <div className="flex flex-start items-center">
                               <span className="text-2xl mr-2"> {type.icon && unicodeToEmoji(type.icon)}</span>
@@ -408,7 +378,7 @@ const FoodItemForm = () => {
                             </div>
                           </SelectItem>
                         ))) : (
-                          <div className='h-16 flex justify-items-center'>
+                          <div className='h-14 flex justify-items-center'>
                             Không có dữ liệu
                           </div>
                         )}
@@ -417,13 +387,13 @@ const FoodItemForm = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="statusCategoryId">Trạng thái</Label>
-                    <Select value={selectedStatus?.id || formData.statusCategoryId} onValueChange={(value) => handleSelectStatusChange(value)}>
+                    <Label htmlFor="areaId">Khu vực</Label>
+                    <Select value={selectedTableArea?.id || formData.areaId} onValueChange={(value) => handleSelectTableAreaChange(value)}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Chọn trạng thái" />
+                        <SelectValue placeholder="Chọn khu vực" />
                       </SelectTrigger>
                       <SelectContent className="w-full bg-white" >
-                        {statusCategory?.length ? (statusCategory?.map((type) => (
+                        {tableAreaCategory?.length ? (tableAreaCategory?.map((type) => (
                           <SelectItem key={type.id} value={type.id}>
                             <div className="flex flex-start items-center">
                               <span className="text-2xl mr-2"> {type.icon && unicodeToEmoji(type.icon)}</span>
@@ -431,10 +401,8 @@ const FoodItemForm = () => {
                             </div>
                           </SelectItem>
                         ))) : (
-                          <div className='h-14 flex align-middle justify-items-center'>
-                            <span className='text-center'>
-                              Không có dữ liệu
-                            </span>
+                          <div className='h-14 flex justify-items-center'>
+                            Không có dữ liệu
                           </div>
                         )}
                       </SelectContent>
@@ -446,59 +414,12 @@ const FoodItemForm = () => {
                   <Label htmlFor="description">Mô tả</Label>
                   <div className="ring-1 ring-gray-100/5 rounded-md shadow-sm p-2">
                     <SimpleEditor
-                      key={foodItem?.id || 'new'}
-                      initialContent={foodItem?.description || ''}
-                      placeholder="Nhập mô tả món ăn (tối đa 2500 ký tự)"
+                      key={table?.id || 'new'}
+                      initialContent={table?.description || ''}
+                      placeholder="Nhập mô tả bàn (tối đa 2500 ký tự)"
                       onContentChange={(content) => changeDescription(content)}
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="discountPercent">Phần trăm giảm giá</Label>
-                    <Input
-                      id="discountPercent"
-                      name="discountPercent"
-                      type="number"
-                      value={formData.discountPercent}
-                      onChange={handleChange}
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="discountStartTime">Thời gian bắt đầu giảm giá</Label>
-                    <Input
-                      id="discountStartTime"
-                      name="discountStartTime"
-                      type="datetime-local"
-                      value={formData.discountStartTime ? formData.discountStartTime.toISOString().slice(0, 16) : ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="discountEndTime">Thời gian kết thúc giảm giá</Label>
-                    <Input
-                      id="discountEndTime"
-                      name="discountEndTime"
-                      type="datetime-local"
-                      value={formData.discountEndTime ? formData.discountEndTime.toISOString().slice(0, 16) : ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isAvailable"
-                    name="isAvailable"
-                    checked={formData.isAvailable}
-                    onCheckedChange={handleSwitchChange}
-                  />
-                  <Label htmlFor="isAvailable">Còn phục vụ</Label>
                 </div>
               </form>
             </div>
@@ -509,4 +430,4 @@ const FoodItemForm = () => {
   );
 }
 
-export default FoodItemForm
+export default TableForm;

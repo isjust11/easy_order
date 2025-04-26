@@ -30,11 +30,19 @@ import { Input } from "./ui/input"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  pageCount?: number
+  onPaginationChange?: (pageIndex: number, pageSize: number) => void
+  onSearchChange?: (search: string) => void
+  manualPagination?: boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageCount,
+  onPaginationChange,
+  onSearchChange,
+  manualPagination = false,
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -69,11 +77,21 @@ export function DataTable<TData, TValue>({
       if (typeof updater === 'function') {
         const newState = updater({ pageIndex, pageSize })
         setPageIndex(newState.pageIndex)
+        if (onPaginationChange) {
+          onPaginationChange(newState.pageIndex, pageSize)
+        }
       }
     },
-    manualPagination: false,
-    pageCount: Math.ceil(data.length / pageSize),
+    manualPagination: manualPagination,
+    pageCount: pageCount,
   })
+
+  function delay(callback: () => void, ms: number): void {
+    const timeout = setTimeout(() => {
+      callback();
+      clearTimeout(timeout);
+    }, ms);
+  }
 
   return (
     <div className="w-full">
@@ -82,14 +100,17 @@ export function DataTable<TData, TValue>({
           placeholder="Tìm tên..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            // table.getColumn("name")?.setFilterValue(event.target.value)
+            delay(() => {
+              onSearchChange?.(event.target.value)
+            }, 500)
           }
           className="max-w-sm"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
+              Hiển thị <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -160,56 +181,59 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          Đã chọn 
+          Đã chọn
           <span className="text-bold"> {table.getFilteredSelectedRowModel().rows.length} /{" "}
-          {table.getFilteredRowModel().rows.length} </span>
+            {table.getFilteredRowModel().rows.length} </span>
         </div>
-        <div className="flex items-center space-x-2">
+        {data.length > 0 ?
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Số hàng trên trang</p>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value))
-                table.setPageIndex(0)
-              }}
-              className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm"
-            >
-              {[5, 10, 20, 30, 40, 50].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          {Array.from({ length: table.getPageCount() }, (_, i) => i + 1).map((page) => (
+            <div className="flex items-center space-x-2">
+              <p className="text-sm font-medium">Số hàng trên trang</p>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value))
+                  table.setPageIndex(0)
+                }}
+                className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm"
+              >
+                {[5, 10, 20, 30, 40, 50].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
             <Button
-              // className="text-white"
-              key={page}
-              variant={table.getState().pagination.pageIndex === page - 1 ? "default" : "outline"}
+              variant="outline"
               size="sm"
-              onClick={() => table.setPageIndex(page - 1)}
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
             >
-              {page}
+              Previous
             </Button>
-          ))}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+            {Array.from({ length: table.getPageCount() }, (_, i) => i + 1).map((page) => (
+              <Button
+                // className="text-white"
+                key={page}
+                variant={table.getState().pagination.pageIndex === page - 1 ? "default" : "outline"}
+                size="sm"
+                onClick={() => table.setPageIndex(page - 1)}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div> :
+          <></>
+        }
       </div>
     </div>
   )

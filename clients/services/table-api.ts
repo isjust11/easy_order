@@ -2,14 +2,26 @@ import axios from 'axios';
 import { Table } from '@/types/table';
 import axiosApi from './base/api';
 
+interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  size: number;
+}
 
-export const getTables = async (): Promise<Table[]> => {
+interface PaginationParams {
+  page?: number;
+  size?: number;
+  search?: string;
+}
+
+export const getTables = async (params?: PaginationParams): Promise<PaginatedResponse<Table>> => {
   try {
-    const response = await axiosApi.get(`/table`);
+    const response = await axiosApi.get(`/table`, {params} );
     return response.data;
   } catch (_error) {
     console.error('Error fetching tables:', _error);
-    return [];
+    return { data: [], total: 0, page: 0, size: 10 };
   }
 };
 

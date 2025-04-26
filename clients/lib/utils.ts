@@ -47,3 +47,11 @@ export const mergeImageUrl = (relativeUrl: string): string => {
   // Merge URL
   return `${apiUrl}${relativeUrl.startsWith('/') ? relativeUrl : `/${relativeUrl}`}`;
 };
+
+export function base64encrypt(text: string | number): string {
+  return Buffer.from(text.toString()).toString('base64');
+}
+
+export function base64decrypt(encryptedText: string): string {
+  return Buffer.from(encryptedText, 'base64').toString('ascii');
+}

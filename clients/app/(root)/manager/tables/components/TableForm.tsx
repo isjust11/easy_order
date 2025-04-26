@@ -3,7 +3,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { createTable, getCategoryByCode, getTable, getTables, updateTable } from '@/services/manager-api';
+import { createTable, getCategoryByCode, getTable, updateTable } from '@/services/manager-api';
 import { uploadFile } from '@/services/media-api';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
@@ -13,7 +13,7 @@ import { Plus, Save, X } from 'lucide-react';
 import { useDropzone } from "react-dropzone";
 import { Category } from '@/types/category';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { unicodeToEmoji, mergeImageUrl } from '@/lib/utils';
+import { unicodeToEmoji, mergeImageUrl, base64decrypt } from '@/lib/utils';
 import { Table } from '@/types/table';
 
 const TableForm = () => {
@@ -40,7 +40,7 @@ const TableForm = () => {
     tableTypeId: '',
     qrCodeUrl: '',
   });
-  const id = Number(params.id);
+  const id = params.id as string;
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
@@ -96,9 +96,9 @@ const TableForm = () => {
         description: tableData.description,
         imageUrl: tableData.imageUrl ? mergeImageUrl(tableData.imageUrl) : '',
         capacity: tableData.capacity,
-        areaId: tableData.areaId,
-        tableStatusId: tableData.tableStatusId,
-        tableTypeId: tableData.tableTypeId,
+        areaId: base64decrypt(tableData.areaId),
+        tableStatusId: base64decrypt(tableData.tableStatusId),
+        tableTypeId: base64decrypt(tableData.tableTypeId),
         qrCodeUrl: tableData.qrCodeUrl,
       });
     } catch (_error) {

@@ -269,7 +269,7 @@ export const createTable = async (tableData: any): Promise<Table> => {
   }
 };
 
-export const updateTable = async (id: number, tableData: any): Promise<Table> => {
+export const updateTable = async (id: string, tableData: any): Promise<Table> => {
   try {
     const response = await axiosApi.put(`/table/${id}`, tableData);
     return response.data;
@@ -279,7 +279,7 @@ export const updateTable = async (id: number, tableData: any): Promise<Table> =>
   }
 };
 
-export const deleteTable = async (id: number): Promise<void> => {
+export const deleteTable = async (id: string): Promise<void> => {
   try {
     await axiosApi.delete(`/table/${id}`);
   } catch (_error) {

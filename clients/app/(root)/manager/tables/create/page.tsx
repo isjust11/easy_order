@@ -2,7 +2,7 @@
 
 import TableForm from "../components/TableForm";
 
-export default function CreateFoodItem() {
+export default function CreateTableItem() {
   return (
     <TableForm />
   )

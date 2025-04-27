@@ -55,6 +55,7 @@ export default function TablesManagement() {
     try {
       await deleteTable(tableId);
       setTables(tables.filter(table => table.id !== tableId));
+      fetchTables(pageIndex, pageSize,search);
       toast.success('Bàn đã được xóa thành công');
     } catch (_error) {
       toast.error('Có lỗi xảy ra khi xóa bàn');
@@ -153,14 +154,6 @@ export default function TablesManagement() {
       header: 'Thao tác',
       cell: ({ row }) => {
         const table = row.original
-        const handleDelete = async (id: number) => {
-          try {
-            await deleteTable(id);
-            toast.success('Món ăn đã được xóa thành công');
-          } catch (_error) {
-            toast.error('Có lỗi xảy ra khi xóa món ăn');
-          }
-        }
         return (
           <div className="p-2 ">
               <DropdownMenu>

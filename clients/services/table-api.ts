@@ -52,4 +52,14 @@ export const deleteTable = async (id: number): Promise<void> => {
     console.error('Error deleting table:', _error);
     throw _error;
   }
+};
+
+export const getTableById = async (id: string): Promise<Table> => {
+  try {
+    const response = await axiosApi.get(`/table/${id}`);
+    return response.data;
+  } catch (_error) {
+    console.error('Error fetching table:', _error);
+    throw _error;
+  }
 }; 

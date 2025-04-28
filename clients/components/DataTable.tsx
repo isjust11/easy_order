@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table"
 import React from "react"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Search } from "lucide-react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 
@@ -51,7 +51,8 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({})
   const [pageSize, setPageSize] = React.useState(10)
   const [pageIndex, setPageIndex] = React.useState(0)
-
+  const [search, setSearch] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
   const table = useReactTable({
     data,
     columns,
@@ -96,17 +97,20 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Tìm tên..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            // table.getColumn("name")?.setFilterValue(event.target.value)
-            delay(() => {
-              onSearchChange?.(event.target.value)
-            }, 500)
-          }
-          className="max-w-sm"
-        />
+        <div className="relative flex items-center w-full max-w-sm mr-4">
+          <Input
+            placeholder="Tìm tên..."
+            value={(search) ?? ""}
+            className="input-focus"
+            onChange={(event) => {
+              setSearch(event.target.value)
+              delay(() => {
+                onSearchChange!(event.target.value)
+              }, 500)
+            }}
+          />
+          <Search className="absolute right-2 text-gray-800" />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

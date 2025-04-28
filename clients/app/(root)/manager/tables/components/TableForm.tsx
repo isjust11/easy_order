@@ -101,6 +101,7 @@ const TableForm = () => {
         tableTypeId: base64decrypt(tableData.tableTypeId),
         qrCodeUrl: tableData.qrCodeUrl,
       });
+      console.log(formData)
     } catch (_error) {
       toast.error('Không thể tải thông tin bàn');
       router.push('/manager/tables');
@@ -166,6 +167,7 @@ const TableForm = () => {
   };
 
   const handleSelectTableTypeChange = (value: string) => {
+    if (value === '') return;
     const selectedCategory = tableTypeCategory.find((category) => category.id === value);
     setSelectedTableType(selectedCategory || null);
     setFormData(prev => ({
@@ -175,6 +177,7 @@ const TableForm = () => {
   };
 
   const handleSelectTableStatusChange = (value: string) => {
+    if (value === '') return;
     const selectedCategory = tableStatusCategory.find((category) => category.id === value);
     setSelectedTableStatus(selectedCategory || null);
     setFormData(prev => ({
@@ -184,6 +187,7 @@ const TableForm = () => {
   };
 
   const handleSelectTableAreaChange = (value: string) => {
+    if (value === '') return;
     const selectedCategory = tableAreaCategory.find((category) => category.id === value);
     setSelectedTableArea(selectedCategory || null);
     setFormData(prev => ({

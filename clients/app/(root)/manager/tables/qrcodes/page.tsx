@@ -7,16 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import QRCodeGenerator from '@/components/QRCodeGenerator';
 import Link from 'next/link';
-
+import ComponentCard from '@/components/common/ComponentCard';
+import PageBreadcrumb from '@/components/common/PageBreadCrumb';
+import { Action } from '@/types/actions';
+import router from 'next/router';
+import { List, Printer } from 'lucide-react';
+import React from "react";
 export default function TableQRCodesPage() {
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [pageCount, setPageCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
   useEffect(() => {
     const fetchTables = async () => {
       try {
-        const tablesData = await getTables();
-        setTables(tablesData);
+        const tablesData = await getTables({ page: pageIndex + 1, size: pageSize, search });
+        setPageCount(Math.ceil(tablesData.total / pageSize));
+        setTables(tablesData.data);
       } catch (_error) {
         console.error('Error fetching tables:', _error);
       } finally {
@@ -89,10 +98,10 @@ export default function TableQRCodesPage() {
           </head>
           <body>
             ${tables.map((table, index) => {
-              const baseUrl = window.location.origin;
-              const orderUrl = `${baseUrl}/order?tableId=${table.id}&tableName=${encodeURIComponent(table.name)}`;
-              
-              return `
+        const baseUrl = window.location.origin;
+        const orderUrl = `${baseUrl}/order?tableId=${table.id}&tableName=${encodeURIComponent(table.name)}`;
+
+        return `
                 <div class="qr-container ${index < tables.length - 1 ? 'page-break' : ''}">
                   <div class="qr-card">
                     <h2>Table ${table.name}</h2>
@@ -106,10 +115,11 @@ export default function TableQRCodesPage() {
                     size: 200,
                     level: "H"
                   });
+                  console.log(qrCode${table.id});
                   ReactDOM.render(qrCode${table.id}, document.getElementById('qrcode-${table.id}'));
                 </script>
               `;
-            }).join('')}
+      }).join('')}
             <script>
               setTimeout(() => {
                 window.print();
@@ -139,7 +149,7 @@ export default function TableQRCodesPage() {
             <Button variant="outline">Quản lý bàn</Button>
           </Link>
         </div>
-        
+
         <div className="bg-slate-50 rounded-lg p-8 text-center">
           <h2 className="text-xl font-semibold mb-4">Thêm mới bàn</h2>
           <p className="text-gray-500 mb-6">Tạo bàn mới.</p>
@@ -150,109 +160,31 @@ export default function TableQRCodesPage() {
       </div>
     );
   }
+  const lstActions: Action[] = [
+    { title: 'In tất cả mã QR', onClick: handlePrintAll, icon: <Printer className="w-4 h-4" /> },
+    { title: 'Quản lý bàn', onClick: () => router.push('/manager/tables'), icon: <List className="w-4 h-4" /> },
+  ];
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">QR Codes des Tables</h1>
-        <div className="flex gap-2">
-          <Button onClick={handlePrintAll}>In tất cả mã QR</Button>
-          <Link href="/manager/tables">
-            <Button variant="outline">Quản lý bàn</Button>
-          </Link>
-        </div>
-      </div>
+    <div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tables.map((table) => (
-          <Card key={table.id} className="overflow-hidden">
-            <CardHeader className="bg-slate-50">
-              <CardTitle className="text-center">Table {table.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center py-6">
-              <QRCodeGenerator 
-                tableId={table.id} 
-                tableName={table.name} 
-                showPrintButton={false}
-              />
-            </CardContent>
-            <CardFooter className="flex justify-center border-t bg-slate-50 py-4">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  const printWindow = window.open('', '_blank');
-                  if (printWindow) {
-                    const baseUrl = window.location.origin;
-                    const orderUrl = `${baseUrl}/order?tableId=${table.id}&tableName=${encodeURIComponent(table.name)}`;
-                    
-                    printWindow.document.write(`
-                      <html>
-                        <head>
-                          <title>QR Code - Table ${table.name}</title>
-                          <style>
-                            body {
-                              display: flex;
-                              flex-direction: column;
-                              align-items: center;
-                              justify-content: center;
-                              height: 100vh;
-                              padding: 20px;
-                              font-family: Arial, sans-serif;
-                            }
-                            .qr-container {
-                              padding: 20px;
-                              background: white;
-                              border-radius: 10px;
-                              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                              text-align: center;
-                            }
-                            h2 {
-                              margin-bottom: 10px;
-                            }
-                            p {
-                              margin-top: 20px;
-                              color: #666;
-                            }
-                            @media print {
-                              .qr-container {
-                                box-shadow: none;
-                              }
-                            }
-                          </style>
-                          <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-                          <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-                          <script src="https://unpkg.com/react-qr-code@2.0.0/lib/index.js"></script>
-                        </head>
-                        <body>
-                          <div class="qr-container">
-                            <h2>Table ${table.name}</h2>
-                            <div id="qrcode"></div>
-                            <p>Scannez ce code pour commander</p>
-                          </div>
-                          <script>
-                            const qrCode = React.createElement(QRCode, {
-                              value: "${orderUrl}",
-                              size: 256,
-                              level: "H"
-                            });
-                            ReactDOM.render(qrCode, document.getElementById('qrcode'));
-                            setTimeout(() => {
-                              window.print();
-                              window.close();
-                            }, 500);
-                          </script>
-                        </body>
-                      </html>
-                    `);
-                  }
-                }}
-              >
-                Imprimer QR Code
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+      <PageBreadcrumb pageTitle="Danh sách bàn" />
+      <div className="space-y-6">
+        <ComponentCard title="Danh sách bàn" listAction={lstActions}>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {tables.map((table) => (
+              <div key={table.id} className="overflow-hidden bg-white shadow-md rounded-lg p-4 ring-1 ring-gray-200">
+               
+                  <QRCodeGenerator
+                    tableId={table.id}
+                    tableName={table.name}
+                    showPrint={true}
+                    showDownload={true}
+                  />
+              </div>
+            ))}
+          </div>
+        </ComponentCard>
       </div>
     </div>
   );

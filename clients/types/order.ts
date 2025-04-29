@@ -1,11 +1,14 @@
+import { Category } from "./category";
 import { Guest } from "./guest";
 import { OrderItem } from "./order-item";
+import { Table } from "./table";
 import { User } from "./user";
 
 export interface Order {
     id: number;
     tableId: number;
-    status: 'pending' | 'processing' | 'completed';
+    table: Table;
+    orderStatus: Category;
     totalAmount: number;
     note?: string;
     userId?: number;

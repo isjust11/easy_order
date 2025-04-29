@@ -53,5 +53,5 @@ export function base64encrypt(text: string | number): string {
 }
 
 export function base64decrypt(encryptedText: string): string {
-  return Buffer.from(encryptedText, 'base64').toString('ascii');
+  return Buffer.from(encryptedText, 'base64').toString('utf8');
 }

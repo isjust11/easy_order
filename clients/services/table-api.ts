@@ -25,6 +25,15 @@ export const getTables = async (params?: PaginationParams): Promise<PaginatedRes
   }
 };
 
+export const getAllTables = async () => {
+  try {
+    const response = await axiosApi.get(`/table/all`,);
+    return response.data;
+  } catch (_error) {
+    console.error('Error fetching tables:', _error);
+  }
+};
+
 export const createTable = async (tableData: any): Promise<Table> => {
   try {
     const response = await axiosApi.post(`/table`, tableData);

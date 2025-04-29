@@ -3,9 +3,9 @@ import { OrderItem } from "../order-item";
 import { User } from "../user";
 
 export interface CreateOrderDto {
-    tableId: number;
-    userId: number;
-    guestId: number;
+    tableId: string;
+    userId: string;
+    guestId: string;
     totalAmount: number;
     note: string;
     orderItems: OrderItem[];

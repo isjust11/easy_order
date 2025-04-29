@@ -1,5 +1,5 @@
 'use client'
-import { getTables } from '@/services/table-api';
+import { getAllTables } from '@/services/table-api';
 import { Table } from '@/types/table';
 import { Plus, Utensils } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
@@ -7,20 +7,27 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
-import { useLoading } from '@/contexts/LoadingContext';
+import { toast } from 'sonner';
 
 const TablesPage = () => {
     const [tables, setTables] = useState<Table[]>([]);
-    const { setLoading } = useLoading();
-    useEffect(() => {
-        setLoading(true);
-        const fetchTables = async () => {
-            const data = await getTables();
-            setTables(data);
+    const [loading, setLoading] = useState<boolean>(false);
+    const fetchTables = async () => {
+        try {
+            setLoading(true);
+            const response = await getAllTables();
+            setTables(response);
+        } catch (error) {
+            toast.error('Có lỗi xảy ra khi tải danh sách bàn');
+        } finally {
             setLoading(false);
-        };
+        }
+    };
+
+    useEffect(() => {
         fetchTables();
     }, []);
+
     return (
         <div>
             <PageBreadcrumb pageTitle="Danh sách bàn" />
@@ -32,16 +39,18 @@ const TablesPage = () => {
                             border-border hover:border-primary/50 transition-colors shadow-sm">
                                 <div className="flex items-center justify-between mb-4 ">
                                     <h2 className="text-xl font-semibold">{table.name}</h2>
-                                    <span className={`px-3 py-1 rounded-full text-sm ${table.status === 'available'
+                                    <span className={`px-3 py-1 rounded-full text-sm ${table.tableStatus.name === 'available'
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-red-100 text-red-800'
                                         }`}>
-                                        {table?.status??'Đang sử dụng'}
+                                        {table?.tableStatus.name ?? 'Đang sử dụng'}
                                     </span>
                                 </div>
-                                <p className="text-muted-foreground mb-4">{table.description}</p>
-                                <Link href={`/tables/${table.id}/order`}>
-                                    <Button className="w-full flex items-center justify-center p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm hover:bg-brand-600 text-white">
+                                <p className="text-muted-foreground mb-4">
+                                    <span dangerouslySetInnerHTML={{ __html: table.description || 'Không có mô tả' }}></span>
+                                </p>
+                                <Link href={`/tables/order/${table.id}`}>
+                                    <Button className="w-full flex items-center justify-center p-3 font-medium rounded-lg bg-brand-500 text-theme-sm hover:bg-brand-600 text-white">
                                         <Utensils className="mr-2" size={16} />
                                         Đặt món
                                     </Button>

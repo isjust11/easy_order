@@ -24,48 +24,47 @@ export default function QRCodeGenerator({ tableId, tableName, showPrint = true, 
   });
 
   const handleDownload = () => {
+    // Lấy SVG element của QR code
+    const svgElement = document.querySelector('.template-container svg') as SVGElement;
+    if (!svgElement) return;
+
+    // Tạo một canvas để vẽ SVG
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (context && contentRef.current) {
-      const content = contentRef.current;
-      const width = content.offsetWidth;
-      const height = content.offsetHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-      canvas.width = width;
-      canvas.height = height;
+    // Đặt kích thước canvas bằng với kích thước QR code
+    canvas.width = size;
+    canvas.height = size;
 
-      // Set white background
-      context.fillStyle = '#ffffff';
-      context.fillRect(0, 0, width, height);
+    // Chuyển đổi SVG thành XML string
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
 
-      // Draw the content onto the canvas
-      const tempCanvas = document.createElement('canvas');
-      const tempContext = tempCanvas.getContext('2d');
-      if (tempContext) {
-        tempCanvas.width = width;
-        tempCanvas.height = height;
-        tempContext.fillStyle = '#ffffff';
-        tempContext.fillRect(0, 0, width, height);
-        tempContext.font = '16px Arial';
-        tempContext.fillStyle = '#000000';
-        tempContext.fillText(`Bàn ${tableName}`, 10, 20);
+    // Tạo một hình ảnh từ SVG URL
+    const img = new Image();
+    img.onload = () => {
+      // Vẽ hình ảnh lên canvas
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, size, size);
 
-        const qrCodeElement = content.querySelector('canvas');
-        if (qrCodeElement) {
-          tempContext.drawImage(qrCodeElement, 0, 40, width, height - 40);
-          context.drawImage(tempCanvas, 0, 0, width, height);
-        }
-      }
-
-      // Convert canvas to PNG and trigger download
+      // Chuyển đổi canvas thành PNG
       const pngUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = pngUrl;
-      link.download = `QRCode-${tableName}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+
+      // Tạo link tải xuống
+      const downloadLink = document.createElement('a');
+      downloadLink.href = pngUrl;
+      downloadLink.download = `qr-code-ban-${tableName}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      // Giải phóng URL
+      URL.revokeObjectURL(svgUrl);
+    };
+    img.src = svgUrl;
   };
 
   return (
@@ -89,7 +88,7 @@ export default function QRCodeGenerator({ tableId, tableName, showPrint = true, 
           variant="outline"
           size="sm"
           title='In QR Code'
-          className="flex-8 bg-amber-500 hover:bg-amber-600 text-white"
+          className="flex-8 bg-amber-500 hover:bg-amber-600 text-white mr-2"
           onClick={() => handlePrint()}>In QR Code</Button>}
         {showDownload && <Button
           variant="outline"

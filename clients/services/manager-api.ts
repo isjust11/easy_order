@@ -69,9 +69,9 @@ export const getOrders = async (): Promise<Order[]> => {
   }
 };
 
-export const createOrder = async (data: CreateOrderDto): Promise<Order> => {
+export const createOrder = async (tableId: any,data: CreateOrderDto): Promise<Order> => {
   try {
-    const response = await axiosApi.post(`/orders`, data);
+    const response = await axiosApi.post(`/orders/${tableId}`, data);
     return response.data;
   } catch (_error) {
     console.error('Error creating order:', _error);

@@ -73,15 +73,19 @@ export default function OrdersManagement() {
   //     unsubscribeFromEvent('orderUpdated', handleOrderUpdated);
   //   };
   // }, []); // Bỏ các dependencies không cần thiết
-  const onGetOrders = async () => {
+  const onGetOrders = async (page: number, size: number, search: string) => {
     const data = await getOrders();
     setOrders(data);
+    setPageCount(Math.ceil(data.length / pageSize));
+    console.log('Page count:', Math.ceil(data.length / pageSize));
     console.log('Orders:', data);
   };
   useEffect(() => {
 
-    onGetOrders();
+    onGetOrders(pageIndex, pageSize, search);
   }, [])
+
+  
   const columns: ColumnDef<Order>[] = [
     {
       id: "select",

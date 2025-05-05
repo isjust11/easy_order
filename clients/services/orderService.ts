@@ -1,49 +1,35 @@
 import { Order } from '../types/order';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
-
+import axiosApi from './base/api';
 export const orderService = {
-  async getOrders(): Promise<Order[]> {
-    const response = await fetch(`${API_URL}/api/orders`);
-    if (!response.ok) {
+   async getOrders(): Promise<Order[]> {
+    const response = await axiosApi.get(`/orders`);
+    if (!response.data) {
       throw new Error('Failed to fetch orders');
     }
-    return response.json();
+    return response.data;
   },
 
   async getOrderById(id: string): Promise<Order> {
-    const response = await fetch(`${API_URL}/api/orders/${id}`);
-    if (!response.ok) {
+    const response = await axiosApi.get(`/orders/${id}`);
+    if (!response.data) {
       throw new Error('Failed to fetch order');
     }
-    return response.json();
+    return response.data;
   },
 
-  async updateOrderStatus(id: string, status: Order['status']): Promise<Order> {
-    const response = await fetch(`${API_URL}/api/orders/${id}/status`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status }),
-    });
-    if (!response.ok) {
+  async updateOrderStatus(id: string, status: any): Promise<Order> {
+    const response = await axiosApi.post(`/orders/${id}/status`,status);
+    if (!response.data) {
       throw new Error('Failed to update order status');
     }
-    return response.json();
+    return response.data;
   },
 
   async createOrder(order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<Order> {
-    const response = await fetch(`${API_URL}/api/orders`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(order),
-    });
-    if (!response.ok) {
+    const response = await axiosApi.post(`/orders`,order,);
+    if (!response.data) {
       throw new Error('Failed to create order');
     }
-    return response.json();
+    return response.data;
   },
 }; 

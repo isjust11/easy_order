@@ -152,11 +152,13 @@ export const isAuthenticated = async (): Promise<boolean> => {
     if (!isValid) {
       // Nếu token không hợp lệ, thử refresh token
       try {
+        console.log('run get refresh token');
         await refreshToken();
         return true;
       } catch (error) {
         // Nếu refresh token cũng thất bại, đăng xuất người dùng
         logout();
+        console.log('run logout');
         return false;
       }
     }

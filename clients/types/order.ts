@@ -6,7 +6,7 @@ import { User } from "./user";
 
 export interface Order {
     id: number;
-    tableId: number;
+    tableId: any;
     table: Table;
     orderStatus: Category;
     totalAmount: number;

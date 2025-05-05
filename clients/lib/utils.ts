@@ -55,3 +55,10 @@ export function base64encrypt(text: string | number): string {
 export function base64decrypt(encryptedText: string): string {
   return Buffer.from(encryptedText, 'base64').toString('utf8');
 }
+
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(amount);
+};

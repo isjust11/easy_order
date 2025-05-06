@@ -10,6 +10,7 @@ import { SidebarProvider } from '@/contexts/SidebarContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Toaster } from 'sonner';
 import Loading from '@/components/ui/loading';
+import SocketManager from '@/store/socketManager';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -46,6 +47,7 @@ export default function RootLayout({
               }}
             />
             <Loading />
+            <SocketManager />
           </ThemeProvider>
         </Provider>
       </body>

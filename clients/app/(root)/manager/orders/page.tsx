@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { deleteFoodItem, getAllFoods, getOrders } from '@/services/manager-api';
 import { Order } from '@/types/order';
-import { useSocket } from '@/hooks/useSocket';
+// import { useSocket } from '@/hooks/useSocket';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { ColumnDef } from '@tanstack/react-table';
@@ -23,7 +23,7 @@ import { User } from '@/types/user';
 export default function OrdersManagement() {
   const [orders, setOrders] = useState<Order[]>([]);
   const router = useRouter();
-  const { subscribeToEvent, unsubscribeFromEvent, joinRoom, leaveRoom } = useSocket();
+  // const { subscribeToEvent, unsubscribeFromEvent, joinRoom, leaveRoom } = useSocket();
   const [pageCount, setPageCount] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);

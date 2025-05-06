@@ -26,6 +26,7 @@ export default function OrderPage() {
   const dispatch = useAppDispatch()
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const tableDetail = useAppSelector((state: RootState) => state.order.tableDetail)
+  const notifyDetail = useAppSelector((state: RootState) => state.notifycation.orderItems)
  
   const tableId = params.id as string;
   useEffect(() => {

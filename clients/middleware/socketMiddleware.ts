@@ -13,11 +13,20 @@ import { Socket } from 'socket.io-client'
 const EVENT_TIMEOUT = 5000; // 5 giây
 const MAX_RETRIES = 3;
 const INITIAL_BACKOFF = 1000; // 1 giây
+const RECONNECTION_ATTEMPTS = 5;
+const RECONNECTION_DELAY = 1000;
 
 interface EventTimeout {
   timeoutId: NodeJS.Timeout;
   retries: number;
 }
+
+// Queue để lưu các event khi mất kết nối
+interface QueuedEvent {
+  event: string;
+  payload: any;
+}
+const eventQueue: QueuedEvent[] = [];
 
 const eventTimeouts = new Map<string, EventTimeout>();
 
@@ -71,9 +80,49 @@ const handleEventWithTimeout = (
 };
 
 export const socketMiddleware = (socket: Socket): Middleware => (store) => (next) => (action: any) => {
+  console.log('Socket action:', action);
   
+  // Thêm các event listener cho socket
+  socket.on('connect', () => {
+    store.dispatch({ type: 'socket/connected' });
+    
+    // Gửi lại các event trong queue khi kết nối lại
+    while (eventQueue.length > 0) {
+      const queuedEvent = eventQueue.shift();
+      if (queuedEvent) {
+        handleEventWithTimeout(socket, queuedEvent.event, queuedEvent.payload, store.dispatch)
+          .catch(console.error);
+      }
+    }
+  });
+
+  socket.on('disconnect', (reason) => {
+    store.dispatch({ 
+      type: 'socket/disconnected',
+      payload: { reason } 
+    });
+  });
+
+  socket.on('connect_error', (error) => {
+    store.dispatch({
+      type: 'socket/error',
+      payload: { error: error.message }
+    });
+  });
+
+  socket.io.on('reconnect_attempt', (attempt) => {
+    store.dispatch({
+      type: 'socket/reconnecting',
+      payload: { attempt }
+    });
+  });
+
   switch (action.type) {
     case SOCKET_CONNECT:
+      console.log('Connecting to socket...')
+      // Cấu hình reconnect
+      socket.io.reconnectionAttempts(RECONNECTION_ATTEMPTS);
+      socket.io.reconnectionDelay(RECONNECTION_DELAY);
       socket.connect()
       break
 
@@ -84,10 +133,22 @@ export const socketMiddleware = (socket: Socket): Middleware => (store) => (next
       break
 
     case SOCKET_EMIT:
-      handleEventWithTimeout(socket, action.event, action.payload, store.dispatch)
-        .catch((error) => {
-          console.error('Socket emit error:', error);
+      if (!socket.connected) {
+        // Nếu không có kết nối, thêm vào queue
+        eventQueue.push({
+          event: action.event,
+          payload: action.payload
         });
+        store.dispatch({
+          type: 'socket/queued',
+          payload: { event: action.event }
+        });
+      } else {
+        handleEventWithTimeout(socket, action.event, action.payload, store.dispatch)
+          .catch((error) => {
+            console.error('Socket emit error:', error);
+          });
+      }
       break
 
     case SOCKET_ON:

@@ -8,6 +8,7 @@ import { LoadingProvider } from "@/contexts/LoadingContext";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
 import React from "react";
+import SocketManager from "@/store/socketManager";
 
 export default function RootLayout({
   children,
@@ -38,6 +39,7 @@ export default function RootLayout({
             <AppHeader />
             {/* Page Content */}
             <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+            <SocketManager />
           </div>
         </div>
         <LoadingIndicator />

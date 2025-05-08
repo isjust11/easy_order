@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useSocket } from '@/hooks/useSocket';
+// import { useSocket } from '@/hooks/useSocket';
 import { getNavigators } from '@/services/manager-api';
 import { Navigator } from '@/types/navigator';
 import { Role } from '@/types/role';
@@ -38,7 +38,7 @@ export default function NavigatorPage() {
     order: 0,
     roles: [] as Role[],
   });
-  const { socket } = useSocket();
+  // const { socket } = useSocket();
 
   useEffect(() => {
     const fetchNavigators = async () => {
@@ -52,51 +52,51 @@ export default function NavigatorPage() {
     e.preventDefault();
     if (selectedNavigator) {
       // Cập nhật navigator
-      socket?.emit('updateNavigator', {
-        id: selectedNavigator.id,
-        ...formData,
-      }, (response: any) => {
-        if (response.success) {
-          toast.success('Cập nhật navigator thành công');
-          setIsOpen(false);
-          setSelectedNavigator(null);
-          setFormData({
-            icon: '',
-            label: '',
-            link: '',
-            parentId: undefined,
-            isActive: true,
-            order: 0,
-            roles: [],
-          });
-        }
-      });
+      // socket?.emit('updateNavigator', {
+      //   id: selectedNavigator.id,
+      //   ...formData,
+      // }, (response: any) => {
+      //   if (response.success) {
+      //     toast.success('Cập nhật navigator thành công');
+      //     setIsOpen(false);
+      //     setSelectedNavigator(null);
+      //     setFormData({
+      //       icon: '',
+      //       label: '',
+      //       link: '',
+      //       parentId: undefined,
+      //       isActive: true,
+      //       order: 0,
+      //       roles: [],
+      //     });
+      //   }
+      // });
     } else {
       // Thêm navigator mới
-      socket?.emit('createNavigator', formData, (response: any) => {
-        if (response.success) {
-          toast.success('Thêm navigator thành công');
-          setIsOpen(false);
-          setFormData({
-            icon: '',
-            label: '',
-            link: '',
-            parentId: undefined,
-            isActive: true,
-            order: 0,
-            roles: [],
-          });
-        }
-      });
+      // socket?.emit('createNavigator', formData, (response: any) => {
+      //   if (response.success) {
+      //     toast.success('Thêm navigator thành công');
+      //     setIsOpen(false);
+      //     setFormData({
+      //       icon: '',
+      //       label: '',
+      //       link: '',
+      //       parentId: undefined,
+      //       isActive: true,
+      //       order: 0,
+      //       roles: [],
+      //     });
+      //   }
+      // });
     }
   };
 
   const handleDelete = (id: any) => {
-    socket?.emit('deleteNavigator', { id }, (response: any) => {
-      if (response.success) {
-        toast.success('Xóa navigator thành công');
-      }
-    });
+    // socket?.emit('deleteNavigator', { id }, (response: any) => {
+    //   if (response.success) {
+    //     toast.success('Xóa navigator thành công');
+    //   }
+    // });
   };
 
   const handleEdit = (navigator: Navigator) => {

@@ -25,6 +25,7 @@ const SocketManager = () => {
     let reconnectAttempts = 0;
 
     const connect = () => {
+      console.log('Connecting to socket f');
       dispatch({ type: SOCKET_CONNECT });
     };
 

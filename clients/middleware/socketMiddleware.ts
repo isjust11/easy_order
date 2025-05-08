@@ -81,41 +81,6 @@ const handleEventWithTimeout = (
 
 export const socketMiddleware = (socket: Socket): Middleware => (store) => (next) => (action: any) => {
   console.log('Socket action:', action);
-  
-  // Thêm các event listener cho socket
-  socket.on('connect', () => {
-    store.dispatch({ type: 'socket/connected' });
-    
-    // Gửi lại các event trong queue khi kết nối lại
-    while (eventQueue.length > 0) {
-      const queuedEvent = eventQueue.shift();
-      if (queuedEvent) {
-        handleEventWithTimeout(socket, queuedEvent.event, queuedEvent.payload, store.dispatch)
-          .catch(console.error);
-      }
-    }
-  });
-
-  socket.on('disconnect', (reason) => {
-    store.dispatch({ 
-      type: 'socket/disconnected',
-      payload: { reason } 
-    });
-  });
-
-  socket.on('connect_error', (error) => {
-    store.dispatch({
-      type: 'socket/error',
-      payload: { error: error.message }
-    });
-  });
-
-  socket.io.on('reconnect_attempt', (attempt) => {
-    store.dispatch({
-      type: 'socket/reconnecting',
-      payload: { attempt }
-    });
-  });
 
   switch (action.type) {
     case SOCKET_CONNECT:

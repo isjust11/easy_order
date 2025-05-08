@@ -3,6 +3,8 @@ export const SOCKET_DISCONNECT = 'SOCKET_DISCONNECT'
 export const SOCKET_EMIT = 'SOCKET_EMIT'
 export const SOCKET_ON = 'SOCKET_ON'
 export const SOCKET_OFF = 'SOCKET_OFF'
+export const SOCKET_QUEUED = 'SOCKET_QUEUED'
+export const SOCKET_ERROR = 'SOCKET_ERROR'
 
 interface SocketConnectAction {
   type: typeof SOCKET_CONNECT
@@ -63,3 +65,4 @@ export const socketOff = (event: string): SocketOffAction => ({
   type: SOCKET_OFF,
   event,
 })
+

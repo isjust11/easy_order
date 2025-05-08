@@ -1,4 +1,4 @@
-import { SOCKET_CONNECT, SOCKET_DISCONNECT, SOCKET_EMIT, SOCKET_ON, SOCKET_OFF } from "./actions/socketAction";
+import { SOCKET_CONNECT, SOCKET_DISCONNECT, SOCKET_EMIT, SOCKET_ON, SOCKET_OFF, SOCKET_ERROR } from "./actions/socketAction";
 
 // Định nghĩa interface cho socket state
 interface SocketState {
@@ -24,6 +24,8 @@ interface SocketState {
     retries: {}
   };
 const socketReducer = (state = initialState, action: any) => {
+  console.log('Socket reducer action:', action);
+  console.log('Socket reducer state:', state);
     switch (action.type) {
       case SOCKET_CONNECT:
         return {
@@ -60,7 +62,7 @@ const socketReducer = (state = initialState, action: any) => {
           ...state,
           events: newEvents
         };
-      case 'socket/error':
+      case SOCKET_ERROR:
         return {
           ...state,
           error: action.payload.error,

@@ -84,7 +84,7 @@ export const socketMiddleware = (socket: Socket): Middleware => (store) => (next
 
   switch (action.type) {
     case SOCKET_CONNECT:
-      console.log('Connecting to socket...')
+      console.log('Connecting to socket... 1')
       // Cấu hình reconnect
       socket.io.reconnectionAttempts(RECONNECTION_ATTEMPTS);
       socket.io.reconnectionDelay(RECONNECTION_DELAY);

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { RootState } from '@/store';
 import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useAppSelector } from '@/hooks/useAppSelector';
-import { SOCKET_CONNECT, SOCKET_DISCONNECT, socketEmit } from './actions/socketAction';
+import { SOCKET_CONNECT, SOCKET_DISCONNECT, SOCKET_ON, socketEmit } from './actions/socketAction';
 import SocketStatus from '@/components/SocketStatus';
 
 const RECONNECT_INTERVAL = 5000; // 5 seconds
@@ -25,10 +25,20 @@ const SocketManager = () => {
     let reconnectAttempts = 0;
 
     const connect = () => {
-      console.log('Connecting to socket f');
+      console.log('Connecting to socket 1');
       dispatch({ type: SOCKET_CONNECT });
     };
 
+    const socketOn = () =>{
+      dispatch({
+        type: SOCKET_ON,
+        event: SOCKET_ON,
+        // Callback function to handle incoming data,
+        callback: (data: any)=>{
+         console.log('Nhận được dữ liệu:', data); 
+        }// Tên event cần lắng nghe
+      });
+    }
     const handleReconnect = () => {
       if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
         reconnectAttempts++;
@@ -46,14 +56,25 @@ const SocketManager = () => {
     };
 
     connect();
+    socketOn();
+    // lắng nghe sự kiện socket on
 
     return () => {
       dispatch({ type: SOCKET_DISCONNECT });
+       // Remove socket listener
+       dispatch({
+        type: SOCKET_ON,
+        event: SOCKET_ON
+      });
+      dispatch({
+        type: SOCKET_CONNECT,
+      });
+      // Clear reconnect timer
       if (reconnectTimer) {
         clearTimeout(reconnectTimer);
       }
     };
-  }, [dispatch]);
+  }, []);
 
   const sendMessage = (message: any) => {
     dispatch({

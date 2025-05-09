@@ -24,7 +24,7 @@ interface SocketState {
     retries: {}
   };
 const socketReducer = (state = initialState, action: any) => {
-  console.log('Socket reducer action:', action);
+  console.log('Socket reducer action: 2', action); 
   console.log('Socket reducer state:', state);
     switch (action.type) {
       case SOCKET_CONNECT:

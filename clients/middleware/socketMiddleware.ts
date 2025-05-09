@@ -80,11 +80,11 @@ const handleEventWithTimeout = (
 };
 
 export const socketMiddleware = (socket: Socket): Middleware => (store) => (next) => (action: any) => {
-  console.log('Socket action:', action);
+  console.log('run socket middle ware:', action);
 
   switch (action.type) {
     case SOCKET_CONNECT:
-      console.log('Connecting to socket...')
+      console.log('Connecting to socket... 1')
       // Cấu hình reconnect
       socket.io.reconnectionAttempts(RECONNECTION_ATTEMPTS);
       socket.io.reconnectionDelay(RECONNECTION_DELAY);
@@ -123,6 +123,7 @@ export const socketMiddleware = (socket: Socket): Middleware => (store) => (next
           action.callback(data, store.dispatch)
         }
       }
+      console.log('run socket in middle warre:')
 
       socket.on(action.event, timeoutCallback)
       break

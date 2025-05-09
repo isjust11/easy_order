@@ -216,7 +216,6 @@ export function SimpleEditor({
       window.removeEventListener("scroll", updateRect)
     }
   }, [])
-  console.log(initialContent)
   const editor = useEditor({
     immediatelyRender: false,
     editorProps: {

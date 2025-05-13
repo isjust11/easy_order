@@ -2,14 +2,17 @@
 import { getAllTables } from '@/services/table-api';
 import { Table } from '@/types/table';
 import { Plus, Utensils } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { toast } from 'sonner';
+import { NEW_ORDER, SOCKET_ON } from '@/store/actions/socketAction';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 const TablesPage = () => {
+    const dispatch = useAppDispatch();
     const [tables, setTables] = useState<Table[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const fetchTables = async () => {
@@ -26,8 +29,17 @@ const TablesPage = () => {
 
     useEffect(() => {
         fetchTables();
+        socketOn();
     }, []);
-
+    const socketOn = useCallback(() => {
+        dispatch({
+          type: SOCKET_ON,
+          event: NEW_ORDER,
+          callback: (data: any) => {
+            console.log('Dữ liệu order:', data);
+          }
+        });
+      }, [dispatch]);
     return (
         <div>
             <PageBreadcrumb pageTitle="Danh sách bàn" />

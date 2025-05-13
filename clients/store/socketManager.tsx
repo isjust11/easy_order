@@ -82,7 +82,7 @@ const SocketManager = () => {
     // Đăng ký lắng nghe sự kiện disconnect
     dispatch({
       type: SOCKET_ON,
-      event: 'disconnect',
+      event: SOCKET_DISCONNECT,
       callback: handleDisconnect
     });
 

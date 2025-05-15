@@ -80,7 +80,7 @@ const handleEventWithTimeout = (
 };
 
 export const socketMiddleware = (socket: Socket): Middleware => (store) => (next) => (action: any) => {
-  console.log('Socket action:', action);
+  console.log('run socket middle ware:', action);
 
   switch (action.type) {
     case SOCKET_CONNECT:
@@ -123,6 +123,7 @@ export const socketMiddleware = (socket: Socket): Middleware => (store) => (next
           action.callback(data, store.dispatch)
         }
       }
+      console.log('run socket in middle warre:')
 
       socket.on(action.event, timeoutCallback)
       break

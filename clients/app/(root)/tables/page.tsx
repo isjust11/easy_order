@@ -30,13 +30,36 @@ const TablesPage = () => {
     useEffect(() => {
         fetchTables();
         socketOn();
-    }, []);
+          // Cleanup function
+    return () => {
+        // Remove socket listeners
+        dispatch({
+          type: SOCKET_ON,
+          event: NEW_ORDER
+        });
+      };
+    }, [dispatch]);
     const socketOn = useCallback(() => {
         dispatch({
           type: SOCKET_ON,
           event: NEW_ORDER,
           callback: (data: any) => {
             console.log('Dữ liệu order:', data);
+            // Cập nhật trạng thái bàn khi có order mới
+            setTables(prevTables => {
+              return prevTables.map(table => {
+                if (table.id === data.tableId) {
+                  return {
+                    ...table,
+                    tableStatus: {
+                      ...table.tableStatus,
+                      name: 'occupied'
+                    }
+                  };
+                }
+                return table;
+              });
+            });
           }
         });
       }, [dispatch]);

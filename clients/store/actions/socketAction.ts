@@ -7,7 +7,7 @@ export const SOCKET_QUEUED = 'SOCKET_QUEUED'
 export const SOCKET_ERROR = 'SOCKET_ERROR'
 
 // order event
-export const NEW_ORDER =  'NEW_ORDER';
+export const NEW_ORDER =  'newOrder';
 
 interface SocketConnectAction {
   type: typeof SOCKET_CONNECT

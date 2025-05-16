@@ -123,7 +123,7 @@ export const socketMiddleware = (socket: Socket): Middleware => (store) => (next
           action.callback(data, store.dispatch)
         }
       }
-      console.log('run socket in middle warre:')
+      console.log('run socket on:')
 
       socket.on(action.event, timeoutCallback)
       break

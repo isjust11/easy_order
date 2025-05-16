@@ -79,12 +79,6 @@ const SocketManager = () => {
       reconnectTimer = handleReconnect();
     };
 
-    // Đăng ký lắng nghe sự kiện disconnect
-    dispatch({
-      type: SOCKET_ON,
-      event: SOCKET_DISCONNECT,
-      callback: handleDisconnect
-    });
 
     // Cleanup function
     return () => {

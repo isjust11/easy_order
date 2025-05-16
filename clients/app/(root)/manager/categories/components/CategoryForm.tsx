@@ -10,7 +10,7 @@ import Switch from "@/components/form/switch/Switch";
 import { Textarea } from "@/components/ui/textarea";
 import { CategoryType } from "@/types/category-type";
 import { useState } from "react";
-import { Icon, Image, SmilePlus } from "lucide-react";
+import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils";
 
@@ -54,7 +54,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                 isActive: true,
                 type: "",
                 icon: "",
-
+                code: "",
             },
     });
 
@@ -77,6 +77,19 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                             <FormLabel>Tên danh mục</FormLabel>
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập tên danh mục" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Mã danh mục</FormLabel>
+                            <FormControl>
+                                <Input className="input-focus" placeholder="Nhập mã danh mục" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

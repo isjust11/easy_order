@@ -55,11 +55,6 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
     name: "Pages",
     icon: <PageIcon />,
     subItems: [
@@ -83,15 +78,16 @@ const othersItems: NavItem[] = [
     name: "Đa phương tiện",
     subItems: [
       { name: "Đa phương tiện", path: "/manager/media", pro: false },
-      { name: "Chức năng", path: "/manager/navigator", pro: false },
+     
     ],
   },
   {
     icon: <PlugInIcon />,
     name: "Quản trị",
     subItems: [
-      { name: "Phân quyền", path: "/manager/permissions", pro: false },
-      { name: "Chức năng", path: "/manager/roles", pro: false },
+      { name: "Phân quyền", path: "/manager/admin/permissions", pro: false },
+      { name: "Vai trò", path: "/manager/admin/roles", pro: false },
+      { name: "Chức năng", path: "/manager/navigator", pro: false },
     ],
   },
 ];

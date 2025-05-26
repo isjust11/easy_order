@@ -2,32 +2,33 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Role } from '@/types/permission';
 import { toast } from 'sonner';
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { RoleForm } from './components/role-form';
+import { Plus, Pencil, Trash2, ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, QrCode, Trash } from 'lucide-react';
 import { getRoles, deleteRole } from '@/services/auth-api';
+import { Checkbox } from '@radix-ui/react-checkbox';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { ColumnDef } from '@tanstack/react-table';
+import router from 'next/router';
+import { Action } from '@/types/actions';
+import { Navigator } from '@/types/navigator';
+import { DataTable } from '@/components/DataTable';
+import PageBreadcrumb from '@/components/common/PageBreadCrumb';
+import ComponentCard from '@/components/common/ComponentCard';
+import { Modal } from '@/components/ui/modal';
+import { CategoryTypeForm } from '../../category-types/components/CategoryTypeForm';
+import { RoleForm } from './components/role-form';
+import { useModal } from '@/hooks/useModal';
+import Badge from '@/components/ui/badge/Badge';
 
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  const { isOpen, openModal, closeModal } = useModal();
+  const [pageCount, setPageCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
   const fetchRoles = async () => {
     try {
       const data = await getRoles();
@@ -53,89 +54,162 @@ export default function RolesPage() {
     }
   };
 
-  const handleEdit = (role: Role) => {
-    setSelectedRole(role);
-    setIsDialogOpen(true);
+  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
   };
 
-  const handleCreate = () => {
-    setSelectedRole(null);
-    setIsDialogOpen(true);
-  };
-
-  const onSuccess = () => {
-    setIsDialogOpen(false);
-    fetchRoles();
-  };
+  const handleSearch=(searchValue: string)=>{
+    setSearch(searchValue);
+  }
+  const columns: ColumnDef<Role>[] = [
+    {
+      id: "select",
+      accessorKey: "id",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Chọn tất cả"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Chọn tất cả"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Tên vai trò
+            {column.getIsSorted() === "asc" ? <ArrowUp /> : <ArrowDown />}
+          </Button>
+        )
+      },
+    },
+    {
+      accessorKey: "description",
+      header:"Mô tả",
+    },
+    {
+      accessorKey: "code",
+      header:"Mã vai trò",
+      cell: ({ row }) => {
+        const code = row.getValue("code") as string
+        return (
+          <div className="text-sm text-gray-500">
+            {code}
+          </div>
+        )
+      }
+    },
+    {
+      accessorKey: "isActive",
+      header: "Trạng thái",
+      cell: ({ row }) => {
+        const status = row.getValue("isActive") as boolean
+        return (
+          <Badge variant="light" color={status === true ? 'success' : 'error'} >
+            {status == true ? 'Hoạt động' : 'Ngừng hoạt động'}
+          </Badge>
+        )
+      },
+    },
+    {
+      id: "actions",
+      header: 'Thao tác',
+      cell: ({ row }) => {
+        const role = row.original
+        return (
+          <div className="p-2 ">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Mở menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+                  <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                    onClick={() => router.push(`/manager/admin/roles/${role.id}`)}>
+                    <BadgeInfo className="mr-2 h-4 w-4" />
+                    Xem chi tiết
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                    onClick={() => {
+                      setSelectedRole(role);
+                      openModal();
+                    }}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Chỉnh sửa
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(role.id)}>
+                    <Trash className="mr-2 h-4 w-4" />
+                    Xóa
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+        )
+      },
+    },
+  ] 
+   const lstActions: Action[] = [
+      {
+        icon: <Plus className="w-4 h-4 mr-2" />,
+        onClick: () => {
+          openModal();
+        },
+        title: "Thêm bàn mới",
+        className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
+      },
+    ]
 
   return (
-    <div className="container mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Quản lý vai trò</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={handleCreate}>
-              <Plus className="w-4 h-4 mr-2" />
-              Thêm vai trò mới
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>
-                {selectedRole ? 'Cập nhật vai trò' : 'Thêm vai trò mới'}
-              </DialogTitle>
-            </DialogHeader>
+    <div>
+    <PageBreadcrumb pageTitle="Danh sách vai trò" />
+    <div className="space-y-6">
+      <ComponentCard title="Danh sách vai trò" listAction={lstActions}>
+        <DataTable 
+          columns={columns} 
+          data={roles}
+          pageCount={pageCount}
+          onPaginationChange={handlePaginationChange}
+          onSearchChange={handleSearch}
+          manualPagination={true}
+        />
+         <Modal
+            isOpen={isOpen}
+            onClose={closeModal}
+            className="max-w-[600px] p-5 lg:p-10"
+          >
+            <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
+              {selectedRole ? 'Cập nhật vai trò' : 'Thêm vai trò mới'}
+            </h4>
             <RoleForm
               role={selectedRole}
-              onSuccess={onSuccess}
+              onSuccess={() => {
+                fetchRoles();
+                closeModal();
+              }}
             />
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tên vai trò</TableHead>
-              <TableHead>Mô tả</TableHead>
-              <TableHead>Số quyền</TableHead>
-              <TableHead>Ngày tạo</TableHead>
-              <TableHead className="w-[100px]">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {roles.map((role) => (
-              <TableRow key={role.id}>
-                <TableCell>{role.name}</TableCell>
-                <TableCell>{role.description}</TableCell>
-                <TableCell>{role.permissions.length}</TableCell>
-                <TableCell>
-                  {new Date(role.createdAt).toLocaleDateString('vi-VN')}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(role)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(role.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          </Modal>
+      </ComponentCard>
     </div>
+  </div>
   );
 } 

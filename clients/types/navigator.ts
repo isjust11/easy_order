@@ -1,7 +1,7 @@
 import { Role } from "./role";
 
 export interface Navigator {
-    id: number;
+    id: string;
     icon: string;
     label: string;
     link?: string;

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Role } from '@/types/permission';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, QrCode, Trash } from 'lucide-react';
-import { getRoles, deleteRole } from '@/services/auth-api';
+import { getRoles, deleteRole, createRole, updateRole } from '@/services/auth-api';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
@@ -62,6 +62,22 @@ export default function RolesPage() {
   const handleSearch=(searchValue: string)=>{
     setSearch(searchValue);
   }
+
+  const onSubmit = async (values: any) => {
+    try {
+
+      if (selectedRole) {
+        await updateRole(selectedRole.id, values);
+        toast.success('Cập nhật vai trò thành công');
+      } else {
+        await createRole(values);
+        toast.success('Tạo vai trò thành công');
+      }
+    } catch (error: any) {
+      console.error('Submit error:', error);
+      toast.error('Lỗi: ' + error.message);
+    }
+  };
   const columns: ColumnDef<Role>[] = [
     {
       id: "select",
@@ -172,6 +188,7 @@ export default function RolesPage() {
       {
         icon: <Plus className="w-4 h-4 mr-2" />,
         onClick: () => {
+          setSelectedRole(null)
           openModal();
         },
         title: "Thêm bàn mới",
@@ -202,10 +219,8 @@ export default function RolesPage() {
             </h4>
             <RoleForm
               role={selectedRole}
-              onSuccess={() => {
-                fetchRoles();
-                closeModal();
-              }}
+              onSubmit={onSubmit}
+              onCancel={closeModal}
             />
           </Modal>
       </ComponentCard>

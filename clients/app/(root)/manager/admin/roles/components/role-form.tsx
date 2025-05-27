@@ -16,26 +16,26 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Permission, Role } from '@/types/permission';
-import { createRole, updateRole } from '@/services/auth-api';
-import { getPermissions } from '@/services/auth-api';
+import { Role } from '@/types/permission';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
+import { navigatorService } from '@/services/navigator-api';
+import { Navigator } from '@/types/navigator';
 const formSchema = z.object({
   name: z.string().min(1, 'Tên vai trò không được để trống'),
   code: z.string().min(1, 'Mã vai trò không được để trống'),
   description: z.string().optional(),
-  permissionIds: z.array(z.number()).min(1, 'Phải chọn ít nhất một quyền'),
+  navigatorIds: z.array(z.string()).min(1, 'Phải chọn ít nhất một chức năng'),
 });
 
 type RoleFormProps = {
   role?: Role | null;
-  onSuccess: () => void;
+  onSubmit: (values: z.infer<typeof formSchema>) => void;
+  onCancel:() => void;
 };
 
-export function RoleForm({ role, onSuccess }: RoleFormProps) {
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
+  const [navigators, setNavigators] = useState<Navigator[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,41 +43,31 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
       name: role?.name || '',
       code: role?.code || '',
       description: role?.description || '',
-      permissionIds: role?.permissions.map(p => p.id) || [],
+      navigatorIds: role?.navigators.map(p => p.id) || [],
     },
   });
 
   useEffect(() => {
-    const fetchPermissions = async () => {
+    const fetchNavigators = async () => {
       try {
-        const data = await getPermissions();
-        setPermissions(data);
+        const data = await navigatorService.getNavigators();
+        setNavigators(data);
       } catch (error: any) {
-        toast.error('Lỗi khi tải danh sách quyền: ' + error.message);
+        toast.error('Lỗi khi tải danh sách chức năng: ' + error.message);
       }
     };
 
-    fetchPermissions();
+    fetchNavigators();
   }, []);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      if (role) {
-        await updateRole(role.id, values);
-        toast.success('Cập nhật vai trò thành công');
-      } else {
-        await createRole(values);
-        toast.success('Tạo vai trò thành công');
-      }
-      onSuccess();
-    } catch (error: any) {
-      toast.error('Lỗi: ' + error.message);
-    }
-  };
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    onSubmit(values);
+};
+  
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="name"
@@ -98,7 +88,7 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
             <FormItem>
               <FormLabel>Mã vai trò</FormLabel>
               <FormControl>
-                <Input className='input-focus' placeholder="Nhập mã vai trò" {...field} />
+                <Input className='input-focus' disabled={role?.id != null} placeholder="Nhập mã vai trò" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -123,32 +113,32 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
 
         <FormField
           control={form.control}
-          name="permissionIds"
+          name="navigatorIds"
           render={() => (
             <FormItem>
-              <FormLabel>Quyền</FormLabel>
+              <FormLabel>Chức năng</FormLabel>
               <ScrollArea className="h-[200px] border rounded-md p-4">
                 <div className="space-y-4">
-                  {permissions.map((permission) => (
+                  {navigators.map((navigator) => (
                     <FormField
-                      key={permission.id}
+                      key={navigator.id}
                       control={form.control}
-                      name="permissionIds"
+                      name="navigatorIds"
                       render={({ field }) => {
                         return (
                           <FormItem
-                            key={permission.id}
+                            key={navigator.id}
                             className="flex flex-row items-start space-x-3 space-y-0"
                           >
                             <FormControl>
                               <Checkbox
-                                checked={field.value?.includes(permission.id)}
+                                checked={field.value?.includes(navigator.id)}
                                 onCheckedChange={(checked: any) => {
                                   return checked
-                                    ? field.onChange([...field.value, permission.id])
+                                    ? field.onChange([...field.value, navigator.id])
                                     : field.onChange(
                                       field.value?.filter(
-                                        (value) => value !== permission.id
+                                        (value) => value !== navigator.id
                                       )
                                     );
                                 }}
@@ -156,11 +146,11 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel className="text-sm font-normal">
-                                {permission.name}
+                                {navigator.label}
                               </FormLabel>
-                              {permission.description && (
+                              {navigator.link && (
                                 <p className="text-sm text-muted-foreground">
-                                  {permission.description}
+                                  {navigator.link}
                                 </p>
                               )}
                             </div>
@@ -176,9 +166,12 @@ export function RoleForm({ role, onSuccess }: RoleFormProps) {
           )}
         />
 
-        <div className="flex justify-end gap-4">
-          <Button type="submit">
-            {role ? 'Cập nhật' : 'Tạo mới'}
+        <div className="flex justify-end space-x-2">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Hủy
+          </Button>
+          <Button type='submit'>
+            {role ? "Cập nhật" : "Tạo mới"}
           </Button>
         </div>
       </form>

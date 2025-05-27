@@ -1,3 +1,5 @@
+import { Navigator } from "./navigator";
+
 export interface Permission {
   id: number;
   name: string;
@@ -13,6 +15,7 @@ export interface Role {
   code: string;
   description?: string;
   permissions: Permission[];
+  navigators: Navigator[];
   createdAt: string;
   updatedAt: string;
 }
@@ -29,12 +32,16 @@ export interface UpdatePermissionDto {
 
 export interface CreateRoleDto {
   name: string;
+  code: string;
   description?: string;
-  permissionIds: number[];
+  navagatorIds?: string[];
+  // permissionIds: number[];
 }
 
 export interface UpdateRoleDto {
   name?: string;
+  code: string;
   description?: string;
-  permissionIds?: number[];
+  navagatorIds?: string[];
+  // permissionIds?: number[];
 } 

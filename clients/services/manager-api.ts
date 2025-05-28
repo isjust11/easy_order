@@ -91,13 +91,13 @@ export const updateOrder = async (id: number, data: any): Promise<Order> => {
 
 
 // todo: api manager navigator
-export const getNavigators = async (): Promise<Navigator[]> => {
+export const getNavigators = async (params?: PaginationParams): Promise<PaginatedResponse<Navigator>> => {
   try {
-    const response = await axiosApi.get(`/navigator`);
+    const response = await axiosApi.get(`/navigator`, {params});
     return response.data;
   } catch (_error) {
     console.error('Error fetching navigator:', _error);
-    throw _error;
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
   }
 };
 
@@ -111,7 +111,7 @@ export const createNavigator = async (data: any): Promise<Navigator> => {
   }
 };
 
-export const updateNavigator = async (id: number, data: any): Promise<Navigator> => {
+export const updateNavigator = async (id: string, data: any): Promise<Navigator> => {
   try {
     const response = await axiosApi.put(`/navigator/${id}`, data);
     return response.data;
@@ -255,7 +255,7 @@ export const getTables = async (params?: PaginationParams): Promise<PaginatedRes
     return response.data;
   } catch (_error) {
     console.error('Error fetching tables:', _error);
-    return { data: [], total: 0, page: 0, size: 10 };
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
   }
 };
 

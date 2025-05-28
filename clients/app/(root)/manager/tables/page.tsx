@@ -32,7 +32,7 @@ export default function TablesManagement() {
     try {
       const response = await getTables({ page: page + 1, size, search });
       setTables(response.data);
-      setPageCount(Math.ceil(response.total / size));
+      setPageCount(response.total);
     } catch (error) {
       toast.error('Có lỗi xảy ra khi tải danh sách bàn');
     }

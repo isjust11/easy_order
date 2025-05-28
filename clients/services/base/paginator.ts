@@ -3,6 +3,7 @@ interface PaginatedResponse<T> {
     total: number;
     page: number;
     size: number;
+    totalPages: number;
   }
   
   interface PaginationParams {

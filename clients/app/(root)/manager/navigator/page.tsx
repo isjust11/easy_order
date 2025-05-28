@@ -2,32 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
 // import { useSocket } from '@/hooks/useSocket';
-import { getNavigators } from '@/services/manager-api';
+import { createNavigator, deleteNavigator, getNavigators, updateNavigator } from '@/services/manager-api';
 import { Navigator } from '@/types/navigator';
 import { Role } from '@/types/role';
+import { Checkbox } from '@radix-ui/react-checkbox';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { ColumnDef } from '@tanstack/react-table';
+import { ArrowUp, ArrowDown, MoreHorizontal, BadgeInfo, Pencil, Trash, Plus } from 'lucide-react';
+import { Action } from '@/types/actions';
+import Badge from '@/components/ui/badge/Badge';
+import PageBreadcrumb from '@/components/common/PageBreadCrumb';
+import { DataTable } from '@/components/DataTable';
+import ComponentCard from '@/components/common/ComponentCard';
+import { Modal } from '@/components/ui/modal';
+import { NavigatorForm } from './components/NavigatorForm';
+import { useModal } from '@/hooks/useModal';
+import { toast } from 'sonner';
 
 export default function NavigatorPage() {
   const [navigators, setNavigators] = useState<Navigator[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedNavigator, setSelectedNavigator] = useState<Navigator | null>(null);
   const [formData, setFormData] = useState({
     icon: '',
@@ -38,65 +32,48 @@ export default function NavigatorPage() {
     order: 0,
     roles: [] as Role[],
   });
+  const { isOpen, openModal, closeModal } = useModal();
+  const [pageCount, setPageCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
   // const { socket } = useSocket();
 
   useEffect(() => {
     const fetchNavigators = async () => {
-      const data = await getNavigators();
-      setNavigators(data as Navigator[]);  
+      const response = await getNavigators({ page: pageIndex + 1, size: pageSize, search });
+      setNavigators(response.data);
+      setPageCount(response.totalPages);
     };
     fetchNavigators();
-  }, []);
+  }, [pageIndex, pageSize, search]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (selectedNavigator) {
-      // Cập nhật navigator
-      // socket?.emit('updateNavigator', {
-      //   id: selectedNavigator.id,
-      //   ...formData,
-      // }, (response: any) => {
-      //   if (response.success) {
-      //     toast.success('Cập nhật navigator thành công');
-      //     setIsOpen(false);
-      //     setSelectedNavigator(null);
-      //     setFormData({
-      //       icon: '',
-      //       label: '',
-      //       link: '',
-      //       parentId: undefined,
-      //       isActive: true,
-      //       order: 0,
-      //       roles: [],
-      //     });
-      //   }
-      // });
-    } else {
-      // Thêm navigator mới
-      // socket?.emit('createNavigator', formData, (response: any) => {
-      //   if (response.success) {
-      //     toast.success('Thêm navigator thành công');
-      //     setIsOpen(false);
-      //     setFormData({
-      //       icon: '',
-      //       label: '',
-      //       link: '',
-      //       parentId: undefined,
-      //       isActive: true,
-      //       order: 0,
-      //       roles: [],
-      //     });
-      //   }
-      // });
-    }
+  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
   };
 
-  const handleDelete = (id: any) => {
-    // socket?.emit('deleteNavigator', { id }, (response: any) => {
-    //   if (response.success) {
-    //     toast.success('Xóa navigator thành công');
-    //   }
-    // });
+  const handleSearch=(searchValue: string)=>{
+    setSearch(searchValue);
+  }
+
+  const handleSubmit = async (values: any) => {
+    if (selectedNavigator) {
+      // Cập nhật navigator
+      await updateNavigator(selectedNavigator.id, values);
+      toast.success('Cập nhật chức năng thành công!')
+    } else {
+      // Thêm navigator mới
+      await createNavigator(values);
+      toast.success('Thêm mới chức năng thành công!')
+    }
+    closeModal();
+  };
+
+  const handleDelete = async (id: any) => {
+    await deleteNavigator(id);
+    closeModal();
+    toast.success('Xóa chức năng thành công!')
   };
 
   const handleEdit = (navigator: Navigator) => {
@@ -110,143 +87,179 @@ export default function NavigatorPage() {
       order: navigator.order || 0,
       roles: navigator.roles || [],
     });
-    setIsOpen(true);
   };
+
+  const columns: ColumnDef<Navigator>[] = [
+    {
+      id: "select",
+      accessorKey: "id",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Chọn tất cả"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Chọn tất cả"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "label",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Tên chức năng
+            {column.getIsSorted() === "asc" ? <ArrowUp /> : <ArrowDown />}
+          </Button>
+        )
+      },
+    },
+    {
+      accessorKey: "icon",
+      header: "Icon",
+      cell: ({ row }) => {
+        const icon = row.getValue("icon") as string
+        return (
+          <div className="text-sm text-gray-500">{icon}</div>
+        )
+      },
+    },
+    {
+      accessorKey: "link",
+      header: "Đường dẫn",
+      cell: ({ row }) => {
+        const link = row.getValue("link") as string
+        return (
+          <div className="text-sm text-gray-500">
+            <span>{link}</span>
+          </div>
+        )
+      }
+    },
+    {
+      accessorKey: "isActive",
+      header: "Trạng thái",
+      cell: ({ row }) => {
+        const status = row.getValue("isActive") as boolean
+        return (
+          <Badge variant="light" color={status === true ? 'success' : 'error'} >
+            {status == true ? 'Hoạt động' : 'Ngừng hoạt động'}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "order",
+      header: "Thứ tự",
+      cell: ({ row }) => {
+        const order = row.getValue("order") as number
+        return (
+          <div className="text-sm text-gray-500">
+            {order??'-'}
+          </div>
+        )
+      },
+    },
+    {
+      id: "actions",
+      header: 'Thao tác',
+      cell: ({ row }) => {
+        const table = row.original
+        return (
+          <div className="p-2 ">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Mở menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                  onClick={() => handleEdit(table)}>
+                  <BadgeInfo className="mr-2 h-4 w-4" />
+                  Xem chi tiết
+                </DropdownMenuItem>
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                  onClick={() => handleEdit(table)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(table.id)}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  Xóa
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      },
+    },
+  ]
+  const lstActions: Action[] = [
+    {
+      icon: <Plus className="w-4 h-4 mr-2" />,
+      onClick: () => {
+        setSelectedNavigator(null);
+        setFormData({
+          icon: '',
+          label: '',
+          link: '',
+          parentId: undefined,
+          isActive: true,
+          order: 0,
+          roles: [],
+        });
+        openModal();
+      },
+      title: "Thêm chức năng",
+      className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
+    },
+  ]
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Quản lý Navigator</h2>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => {
-              setSelectedNavigator(null);
-              setFormData({
-                icon: '',
-                label: '',
-                link: '',
-                parentId: undefined,
-                isActive: true,
-                order: 0,
-                roles: [],
-              });
-            }}>
-              Thêm Navigator
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {selectedNavigator ? 'Cập nhật Navigator' : 'Thêm Navigator mới'}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="icon">Icon</Label>
-                <Input
-                  id="icon"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                  placeholder="Tên icon (ví dụ: home, settings)"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="label">Tên Navigator</Label>
-                <Input
-                  id="label"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="link">Đường dẫn</Label>
-                <Input
-                  id="link"
-                  value={formData.link}
-                  onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                  placeholder="Ví dụ: /dashboard"
-                />
-              </div>
-              <div>
-                <Label htmlFor="parentId">Menu cha</Label>
-                <Input
-                  id="parentId"
-                  type="number"
-                  value={formData.parentId || ''}
-                  onChange={(e) => setFormData({ ...formData, parentId: e.target.value ? Number(e.target.value) : undefined })}
-                  placeholder="ID của menu cha (nếu có)"
-                />
-              </div>
-              <div>
-                <Label htmlFor="order">Thứ tự</Label>
-                <Input
-                  id="order"
-                  type="number"
-                  value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: Number(e.target.value) })}
-                  required
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                />
-                <Label htmlFor="isActive">Kích hoạt</Label>
-              </div>
-              <Button type="submit">
-                {selectedNavigator ? 'Cập nhật' : 'Thêm mới'}
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Icon</TableHead>
-            <TableHead>Tên</TableHead>
-            <TableHead>Đường dẫn</TableHead>
-            <TableHead>Menu cha</TableHead>
-            <TableHead>Thứ tự</TableHead>
-            <TableHead>Trạng thái</TableHead>
-            <TableHead>Thao tác</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {navigators.map((navigator) => (
-            <TableRow key={navigator.id}>
-              <TableCell>{navigator.icon}</TableCell>
-              <TableCell>{navigator.label}</TableCell>
-              <TableCell>{navigator.link}</TableCell>
-              <TableCell>{navigator.parentId}</TableCell>
-              <TableCell>{navigator.order}</TableCell>
-              <TableCell>{navigator.isActive ? 'Đang hoạt động' : 'Không hoạt động'}</TableCell>
-              <TableCell>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleEdit(navigator)}
-                  className="mr-2"
-                >
-                  Sửa
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => handleDelete(navigator.id)}
-                  className="text-red-500"
-                >
-                  Xóa
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <PageBreadcrumb pageTitle="Danh sách chức năng" />
+    <div className="space-y-6">
+      <ComponentCard title="Danh sách chức năng" listAction={lstActions}>
+        <DataTable 
+          columns={columns} 
+          data={navigators}
+          pageCount={pageCount}
+          onPaginationChange={handlePaginationChange}
+          onSearchChange={handleSearch}
+          manualPagination={true}
+        />
+         <Modal
+            isOpen={isOpen}
+            onClose={closeModal}
+            className="max-w-[600px] p-5 lg:p-10"
+          >
+            <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
+              {selectedNavigator ? 'Cập nhật chức năng' : 'Thêm chức năng mới'}
+            </h4>
+            <NavigatorForm
+              initialData={selectedNavigator}
+              onSubmit={handleSubmit}
+              onCancel={closeModal}
+              navigatorParents={navigators} />
+          </Modal>
+      </ComponentCard>
     </div>
+  </div>
   );
 } 

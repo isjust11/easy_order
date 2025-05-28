@@ -1,8 +1,9 @@
 import { AppConstants } from '@/constants';
 import axiosApi from './base/api';
-import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto, Role } from '@/types/permission';
+import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto } from '@/types/permission';
 import { error } from 'console';
 import { RegisterResultDto } from '@/types/dto/RegisterResultDto';
+import { Role } from '@/types/role';
 // Type pour les données de connexion
 interface LoginData {
   username: string;
@@ -202,7 +203,7 @@ export const createRole = async (data: CreateRoleDto): Promise<Role> => {
 };
 
 export const updateRole = async (id: string, data: UpdateRoleDto): Promise<Role> => {
-  const response = await axiosApi.patch(`/roles/${id}`, data);
+  const response = await axiosApi.put(`/roles/${id}`, data);
   return response.data;
 };
 
@@ -210,6 +211,10 @@ export const deleteRole = async (id: string): Promise<void> => {
   await axiosApi.delete(`/roles/${id}`);
 };  
 
+export const findbyCode = async (code: string): Promise<Role> => {
+  const response = await axiosApi.get(`/roles/find/${code}`);
+  return response.data;
+};
 
 export const getPermissions = async (): Promise<Permission[]> => {
   const response = await axiosApi.get('/permissions');

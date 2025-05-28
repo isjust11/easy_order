@@ -9,17 +9,6 @@ export interface Permission {
   updatedAt: string;
 }
 
-export interface Role {
-  id: string;
-  name: string;
-  code: string;
-  description?: string;
-  permissions: Permission[];
-  navigators: Navigator[];
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface CreatePermissionDto {
   name: string;
   description?: string;

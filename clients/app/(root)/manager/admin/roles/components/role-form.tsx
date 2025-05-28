@@ -16,16 +16,17 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { Role } from '@/types/permission';
+
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { navigatorService } from '@/services/navigator-api';
 import { Navigator } from '@/types/navigator';
+import { Role } from '@/types/role';
 const formSchema = z.object({
   name: z.string().min(1, 'Tên vai trò không được để trống'),
   code: z.string().min(1, 'Mã vai trò không được để trống'),
   description: z.string().optional(),
-  navigatorIds: z.array(z.string()).min(1, 'Phải chọn ít nhất một chức năng'),
+  navigatorIds: z.array(z.string()).optional(),
 });
 
 type RoleFormProps = {
@@ -43,7 +44,7 @@ export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
       name: role?.name || '',
       code: role?.code || '',
       description: role?.description || '',
-      navigatorIds: role?.navigators.map(p => p.id) || [],
+      navigatorIds: role?.navigators!.map(p => p.id) || [],
     },
   });
 
@@ -63,7 +64,7 @@ export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     onSubmit(values);
 };
-  
+
 
   return (
     <Form {...form}>
@@ -135,7 +136,7 @@ export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
                                 checked={field.value?.includes(navigator.id)}
                                 onCheckedChange={(checked: any) => {
                                   return checked
-                                    ? field.onChange([...field.value, navigator.id])
+                                    ? field.onChange([...field.value!, navigator.id])
                                     : field.onChange(
                                       field.value?.filter(
                                         (value) => value !== navigator.id
@@ -177,4 +178,4 @@ export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
       </form>
     </Form>
   );
-} 
+}

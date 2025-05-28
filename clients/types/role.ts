@@ -1,8 +1,11 @@
+import { Navigator } from "./navigator";
+
 export interface Role {
-  id: number;
+   id: string;
   name: string;
+  code: string;
   description?: string;
-  permissions?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  navigators?: Navigator[];
+  createdAt: string;
+  updatedAt: string;
 } 

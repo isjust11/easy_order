@@ -2,24 +2,22 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Role } from '@/types/permission';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, QrCode, Trash } from 'lucide-react';
-import { getRoles, deleteRole, createRole, updateRole } from '@/services/auth-api';
+import { Plus, Pencil,  ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, Trash } from 'lucide-react';
+import { getRoles, deleteRole, createRole, updateRole, findbyCode } from '@/services/auth-api';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import router from 'next/router';
 import { Action } from '@/types/actions';
-import { Navigator } from '@/types/navigator';
 import { DataTable } from '@/components/DataTable';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { Modal } from '@/components/ui/modal';
-import { CategoryTypeForm } from '../../category-types/components/CategoryTypeForm';
 import { RoleForm } from './components/role-form';
 import { useModal } from '@/hooks/useModal';
 import Badge from '@/components/ui/badge/Badge';
+import { Role } from '@/types/role';
 
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
@@ -65,7 +63,11 @@ export default function RolesPage() {
 
   const onSubmit = async (values: any) => {
     try {
-
+      const code = await findbyCode(values.code);
+      if(code){
+        toast.error('Đã tồn tại mã vai trò vui lòng nhập mã khác');
+        return;
+      }
       if (selectedRole) {
         await updateRole(selectedRole.id, values);
         toast.success('Cập nhật vai trò thành công');

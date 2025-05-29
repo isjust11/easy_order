@@ -19,6 +19,7 @@ import { Modal } from '@/components/ui/modal';
 import { NavigatorForm } from './components/NavigatorForm';
 import { useModal } from '@/hooks/useModal';
 import { toast } from 'sonner';
+import { Icon } from '@/components/ui/icon';
 
 export default function NavigatorPage() {
   const [navigators, setNavigators] = useState<Navigator[]>([]);
@@ -39,12 +40,13 @@ export default function NavigatorPage() {
   const [search, setSearch] = useState('');
   // const { socket } = useSocket();
 
+  const fetchNavigators = async () => {
+    const response = await getNavigators({ page: pageIndex + 1, size: pageSize, search });
+    setNavigators(response.data);
+    setPageCount(response.totalPages);
+  };
+
   useEffect(() => {
-    const fetchNavigators = async () => {
-      const response = await getNavigators({ page: pageIndex + 1, size: pageSize, search });
-      setNavigators(response.data);
-      setPageCount(response.totalPages);
-    };
     fetchNavigators();
   }, [pageIndex, pageSize, search]);
 
@@ -67,27 +69,17 @@ export default function NavigatorPage() {
       await createNavigator(values);
       toast.success('Thêm mới chức năng thành công!')
     }
+    await fetchNavigators()
     closeModal();
   };
 
   const handleDelete = async (id: any) => {
     await deleteNavigator(id);
+    await fetchNavigators()
     closeModal();
     toast.success('Xóa chức năng thành công!')
   };
 
-  const handleEdit = (navigator: Navigator) => {
-    setSelectedNavigator(navigator);
-    setFormData({
-      icon: navigator.icon,
-      label: navigator.label,
-      link: navigator.link || '',
-      parentId: navigator.parentId,
-      isActive: navigator.isActive,
-      order: navigator.order || 0,
-      roles: navigator.roles || [],
-    });
-  };
 
   const columns: ColumnDef<Navigator>[] = [
     {
@@ -133,7 +125,7 @@ export default function NavigatorPage() {
       cell: ({ row }) => {
         const icon = row.getValue("icon") as string
         return (
-          <div className="text-sm text-gray-500">{icon}</div>
+          <Icon name={icon} size={20} className='text-amber-200'/>
         )
       },
     },
@@ -177,7 +169,7 @@ export default function NavigatorPage() {
       id: "actions",
       header: 'Thao tác',
       cell: ({ row }) => {
-        const table = row.original
+        const navigator = row.original
         return (
           <div className="p-2 ">
             <DropdownMenu>
@@ -189,17 +181,23 @@ export default function NavigatorPage() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
                 <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
-                  onClick={() => handleEdit(table)}>
+                  onClick={() => {
+                    setSelectedNavigator(navigator)
+                    openModal();
+                  }}>
                   <BadgeInfo className="mr-2 h-4 w-4" />
                   Xem chi tiết
                 </DropdownMenuItem>
                 <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
-                  onClick={() => handleEdit(table)}
+                  onClick={() => {
+                    setSelectedNavigator(navigator)
+                    openModal();
+                  }}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   Chỉnh sửa
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(table.id)}>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(navigator.id)}>
                   <Trash className="mr-2 h-4 w-4" />
                   Xóa
                 </DropdownMenuItem>

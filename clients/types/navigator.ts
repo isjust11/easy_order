@@ -1,3 +1,4 @@
+import { IconType } from "react-icons/lib";
 import { Role } from "./role";
 
 export interface Navigator {
@@ -5,6 +6,9 @@ export interface Navigator {
     icon: string;
     label: string;
     link?: string;
+    iconSize: number;
+    iconType:IconType;
+    className?: string;
     parentId?: number;
     children?: Navigator[];
     roles?: Role[];

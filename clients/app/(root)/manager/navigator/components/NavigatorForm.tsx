@@ -13,7 +13,7 @@ import { useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils";
-
+import { IconType } from "@/enums/icon-type.enum";
 const formSchema = z.object({
     label: z.string().min(2, {
         message: "Tên chức năng phải có ít nhất 2 ký tự.",
@@ -37,6 +37,7 @@ interface NavigatorFormProps {
 
 export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParents }: NavigatorFormProps) {
     const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
+    const [iconType, setIconType] = useState();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData
@@ -63,7 +64,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
         // Chuyển đổi icon thành mã Unicode trước khi submit
-        if (values.icon) {
+        if (values.icon && iconType == IconType.emoji) {
             values.icon = emojiToUnicode(values.icon);
         }
         onSubmit(values);
@@ -184,7 +185,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                 <IconPickerModal
                     isOpen={isIconPickerOpen}
                     onClose={() => setIsIconPickerOpen(false)}
-                    onSelect={(icon) => {
+                    onSelect={(icon, iconType) => {
                         form.setValue("icon", icon);
                     }}
                 />

@@ -63,18 +63,22 @@ export default function RolesPage() {
 
   const onSubmit = async (values: any) => {
     try {
-      const code = await findbyCode(values.code);
-      if(code){
-        toast.error('Đã tồn tại mã vai trò vui lòng nhập mã khác');
-        return;
-      }
+     
       if (selectedRole) {
         await updateRole(selectedRole.id, values);
         toast.success('Cập nhật vai trò thành công');
       } else {
+        const code = await findbyCode(values.code);
+        if(code){
+          toast.error('Đã tồn tại mã vai trò vui lòng nhập mã khác');
+          return;
+        }
         await createRole(values);
         toast.success('Tạo vai trò thành công');
       }
+      closeModal();
+      fetchRoles();
+
     } catch (error: any) {
       console.error('Submit error:', error);
       toast.error('Lỗi: ' + error.message);

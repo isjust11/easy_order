@@ -52,7 +52,7 @@ export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
     const fetchNavigators = async () => {
       try {
         const data = await navigatorService.getNavigators();
-        setNavigators(data);
+        setNavigators(data.data);
       } catch (error: any) {
         toast.error('Lỗi khi tải danh sách chức năng: ' + error.message);
       }

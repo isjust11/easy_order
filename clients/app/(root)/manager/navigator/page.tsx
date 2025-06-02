@@ -125,7 +125,7 @@ export default function NavigatorPage() {
       cell: ({ row }) => {
         const icon = row.getValue("icon") as string
         return (
-          <Icon name={icon} size={20} className='text-amber-200'/>
+          <Icon name={icon} size={20} className='text-gray-400'/>
         )
       },
     },

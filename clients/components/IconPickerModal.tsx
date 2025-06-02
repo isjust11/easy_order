@@ -116,12 +116,6 @@ export function IconPickerModal({ isOpen, onClose, onSelect }: IconPickerModalPr
                                     if ( !React.isValidElement(<IconComponent />)) {
                                         return null;
                                     }
-                                    console.log(`lucid icon index: ${index}`)
-                                    if(index ==3394){
-                                        debugger;
-                                        console.log(icon.icon)
-                                    }
-                                    console.log(`lucid icon : ${icon.icon}`)
                                     try {
                                         return (
                                             <Button

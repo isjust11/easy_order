@@ -23,7 +23,7 @@ const formSchema = z.object({
         message: "Đường dẫn phải có ít nhất 2 ký tự.",
     }),
     isActive: z.boolean(),
-    order: z.number().optional(),
+    order: z.string().optional(),
     roles: z.array(z.string()).optional(),
     icon: z.string().optional(),
     iconSize: z.number().optional().default(20),
@@ -52,7 +52,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                 icon: initialData.icon ? unicodeToEmoji(initialData.icon) : "",
                 parentId: initialData.parentId ? initialData.parentId.toString() : "",
                 roles: initialData.roles?.map((role) => role.id) || [],
-                order: initialData.order || 0,
+                order: initialData.order ? String(initialData.order) : "0",
                 link: initialData.link || "",
                 label: initialData.label || "",
                 iconSize: initialData.iconSize || 20,
@@ -66,7 +66,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                 icon: "",
                 parentId: "",
                 roles: [],
-                order: 0,
+                order: "0",
                 iconSize: 20,
                 className: "",
                 iconType: IconType.lucide
@@ -79,7 +79,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
             values.icon = emojiToUnicode(values.icon);
         }
         // Đảm bảo order là số
-        values.order = Number(values.order) || 0;
+        values.order = values.order || "0";
         onSubmit(values);
     };
 
@@ -126,6 +126,13 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
+                                        {navigatorParents.length == 0 &&(
+                                            <div className="flex flex-start items-center">
+                                                    <span className="text-sm px-2 py-2">
+                                                        Không có dữ liệu 
+                                                    </span>
+                                                </div>
+                                        )}
                                         {navigatorParents.map((parent) => (
                                             <SelectItem key={parent.id} value={parent.id}>
                                                 <div className="flex flex-start items-center">
@@ -159,12 +166,11 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                             <FormItem className="w-1/3">
                                 <FormLabel>Thứ tự</FormLabel>
                                 <FormControl>
-                                    <Input 
-                                        className="input-focus" 
-                                        type="number" 
-                                        placeholder="Thứ tự" 
+                                    <Input
+                                        className="input-focus"
+                                        type="text"
+                                        placeholder="Thứ tự"
                                         {...field}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
                                         value={field.value || 0}
                                     />
                                 </FormControl>
@@ -206,7 +212,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                              hover:bg-gray-100 ring-1 ring-gray-100 shadow-2xl rounded-sm">
                                                     <Icon name={field.value ?? ''} size={iconSize} />
                                                 </div>
-                                                {field.value &&(<div className="flex-1" >
+                                                {field.value && (<div className="flex-1" >
                                                     <Slider
                                                         className="[&_.slider-track]:bg-gray-200 [&_.slider-range]:bg-blue-500 [&_.slider-thumb]:bg-white [&_.slider-thumb]:border-2 [&_.slider-thumb]:border-blue-500"
                                                         defaultValue={[iconSize]}
@@ -255,16 +261,17 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                     </Button>
                 </div>
 
-                <IconPickerModal
-                    isOpen={isIconPickerOpen}
-                    onClose={() => setIsIconPickerOpen(false)}
-                    onSelect={(icon, iconType) => {
-                        console.log('icon type:' + iconType);
-                        setIconType(iconType);
-                        form.setValue("icon", icon);
-                    }}
-                />
+
             </form>
+            <IconPickerModal
+                isOpen={isIconPickerOpen}
+                onClose={() => setIsIconPickerOpen(false)}
+                onSelect={(icon, iconType) => {
+                    console.log('icon type:' + iconType);
+                    setIconType(iconType);
+                    form.setValue("icon", icon);
+                }}
+            />
         </Form>
     );
 }

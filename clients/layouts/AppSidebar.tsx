@@ -18,6 +18,8 @@ import {
   UserCircleIcon,
 } from "@/public/icons/index";
 import SidebarWidget from "./SidebarWidget";
+import { getNavigatorsByRole } from "@/services/auth-api";
+import { useAuth } from "@/contexts/AuthContext";
 
 type NavItem = {
   name: string;
@@ -77,7 +79,7 @@ const othersItems: NavItem[] = [
     icon: <BoxCubeIcon />,
     name: "Đa phương tiện",
     subItems: [
-      { name: "Đa phương tiện", path: "/manager/media", pro: false },
+      { name: "Đa phương tiện", path: "/manager/media", pro: true },
      
     ],
   },
@@ -93,9 +95,18 @@ const othersItems: NavItem[] = [
 ];
 
 const AppSidebar: React.FC = () => {
+  const { user } = useAuth();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
+  
+  const [menuItems, setMenuItems] = useState<NavItem[]>(navItems);
 
+  useEffect(() => {
+    const menuData = getNavigatorsByRole(user?.roles[0].id || "");
+    console.log(menuData);
+    // setMenuItems(menuData);
+
+  }, [pathname]);
   const renderMenuItems = (
     navItems: NavItem[],
     menuType: "main" | "others"

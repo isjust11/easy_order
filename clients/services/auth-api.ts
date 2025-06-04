@@ -1,9 +1,8 @@
 import { AppConstants } from '@/constants';
 import axiosApi from './base/api';
 import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto } from '@/types/permission';
-import { error } from 'console';
-import { RegisterResultDto } from '@/types/dto/RegisterResultDto';
 import { Role } from '@/types/role';
+import { User } from '@/types/user';
 // Type pour les données de connexion
 interface LoginData {
   username: string;
@@ -20,12 +19,7 @@ interface RegisterData {
 interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  user: {
-    id: number;
-    username: string;
-    fullName?: string;
-    isAdmin: boolean;
-  };
+  user: User;
 }
 
 interface RefreshTokenResponse {
@@ -66,6 +60,9 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
     localStorage.setItem(AppConstants.AccessToken, response.data.accessToken);
     localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
     localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
+    const roleId = response.data.user.roles[0].id;
+    const feature = await getNavigatorsByRole(roleId);
+    localStorage.setItem(AppConstants.Feature, JSON.stringify(feature));
     return response.data;
   } catch (_error) {
     console.error('Lỗi đăng nhập:', _error);
@@ -170,9 +167,15 @@ export const isAuthenticated = async (): Promise<boolean> => {
 };
 
 // lấy thông tin người dùng đã đăng nhập
-export const getCurrentUser = (): any => {
+export const getCurrentUser = (): User | null => {
   const user = localStorage.getItem(AppConstants.User);
   return user ? JSON.parse(user) : null;
+};
+
+// lấy feature
+export const getFeature = (): Navigator[] | null => {
+  const feature = localStorage.getItem(AppConstants.Feature);
+  return feature ? JSON.parse(feature) : null;
 };
 
 // lấy token xác thực
@@ -210,6 +213,11 @@ export const updateRole = async (id: string, data: UpdateRoleDto): Promise<Role>
 export const deleteRole = async (id: string): Promise<void> => {
   await axiosApi.delete(`/roles/${id}`);
 };  
+
+export const getNavigatorsByRole = async (id: string): Promise<Navigator[]> => {
+  const response = await axiosApi.get(`/roles/${id}/navigators`);
+  return response.data;
+};
 
 export const findbyCode = async (code: string): Promise<Role> => {
   const response = await axiosApi.get(`/roles/find/${code}`);

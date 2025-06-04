@@ -1,19 +1,21 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { login, register, logout, isAuthenticated, getCurrentUser } from '@/services/auth-api';
+import { login, register, logout, isAuthenticated, getCurrentUser, getFeature } from '@/services/auth-api';
 import { useRouter } from 'next/navigation';
+import { User } from '@/types/user';
 
-interface User {
-  id: number;
-  username: string;
-  fullName?: string;
-  isAdmin: boolean;
-  picture?: string;
-  isGoogleUser?: boolean;
-  googleId?: string;
-  email?: string;
-}
+  // interface User {
+  //   id: number;
+  //   username: string;
+  //   fullName?: string;
+  //   isAdmin: boolean;
+  //   picture?: string;
+  //   isGoogleUser?: boolean;
+  //   googleId?: string;
+  //   email?: string;
+  //   roleId?: string;
+  // }
 
 interface AuthContextType {
   user: User | null;
@@ -38,6 +40,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [feature, setFeature] = useState<Navigator[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -47,7 +50,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const isAuth = await isAuthenticated();
       if (isAuth) {
         const currentUser = getCurrentUser();
+        const feature = getFeature();
         setUser(currentUser);
+        setFeature(feature || []);
+        console.log(currentUser);
         router.push('/');
         setIsLoggedIn(true);
       } else {

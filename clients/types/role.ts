@@ -8,4 +8,5 @@ export interface Role {
   navigators?: Navigator[];
   createdAt: string;
   updatedAt: string;
+  isActive: boolean;
 } 

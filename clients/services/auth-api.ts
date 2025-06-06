@@ -3,6 +3,7 @@ import axiosApi from './base/api';
 import { CreatePermissionDto, CreateRoleDto, Permission, UpdatePermissionDto, UpdateRoleDto } from '@/types/permission';
 import { Role } from '@/types/role';
 import { User } from '@/types/user';
+import { Feature } from '@/types/feature';
 // Type pour les données de connexion
 interface LoginData {
   username: string;
@@ -60,9 +61,6 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
     localStorage.setItem(AppConstants.AccessToken, response.data.accessToken);
     localStorage.setItem(AppConstants.RefreshToken, response.data.refreshToken);
     localStorage.setItem(AppConstants.User, JSON.stringify(response.data.user));
-    const roleId = response.data.user.roles[0].id;
-    const feature = await getNavigatorsByRole(roleId);
-    localStorage.setItem(AppConstants.Feature, JSON.stringify(feature));
     return response.data;
   } catch (_error) {
     console.error('Lỗi đăng nhập:', _error);
@@ -173,7 +171,7 @@ export const getCurrentUser = (): User | null => {
 };
 
 // lấy feature
-export const getFeature = (): Navigator[] | null => {
+export const getFeature = (): Feature[] | null => {
   const feature = localStorage.getItem(AppConstants.Feature);
   return feature ? JSON.parse(feature) : null;
 };

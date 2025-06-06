@@ -3,7 +3,7 @@ import axiosApi from './base/api';
 import { CreateFoodItemDto, FoodItem } from '@/types/food-item';
 import { CreateOrderDto } from '@/types/dto/CreateOrderDto';
 import { Permission } from '@/types/permission';
-import { Navigator } from '@/types/navigator';
+import { Navigator } from '@/types/feature';
 import { CategoryType } from '@/types/category-type';
 import { Table } from '@/types/table';
 

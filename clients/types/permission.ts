@@ -1,4 +1,4 @@
-import { Navigator } from "./navigator";
+import { Navigator } from "./feature";
 
 export interface Permission {
   id: number;

@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { login, register, logout, isAuthenticated, getCurrentUser, getFeature } from '@/services/auth-api';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/user';
-
+import { Feature } from '@/types/feature';
   // interface User {
   //   id: number;
   //   username: string;
@@ -19,6 +19,7 @@ import { User } from '@/types/user';
 
 interface AuthContextType {
   user: User | null;
+  feature: Feature[];
   loading: boolean;
   error: string | null;
   isLoggedIn: boolean;
@@ -40,7 +41,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [feature, setFeature] = useState<Navigator[]>([]);
+  const [feature, setFeature] = useState<Feature[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -117,12 +118,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const handleLogout = () => {
     logout();
     setUser(null);
+    setFeature([]);
     setIsLoggedIn(false);
     router.push('/login');
   };
 
   const value = {
     user,
+    feature,
     loading,
     error,
     isLoggedIn,

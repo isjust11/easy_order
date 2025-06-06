@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { navigatorService } from '@/services/navigator-api';
-import { Navigator } from '@/types/navigator';
+import { Navigator } from '@/types/feature';
 import { Role } from '@/types/role';
 const formSchema = z.object({
   name: z.string().min(1, 'Tên vai trò không được để trống'),

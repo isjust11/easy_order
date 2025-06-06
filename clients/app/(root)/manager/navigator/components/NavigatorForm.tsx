@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Switch from "@/components/form/switch/Switch";
-import { Navigator } from "@/types/navigator";
+import { Feature } from "@/types/feature";
 import { useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
@@ -33,10 +33,10 @@ const formSchema = z.object({
 });
 
 interface NavigatorFormProps {
-    initialData?: Navigator | null;
+    initialData?: Feature | null;
     onSubmit: (values: z.infer<typeof formSchema>) => void;
     onCancel: () => void;
-    navigatorParents: Navigator[];
+    navigatorParents: Feature[];
 }
 
 export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParents }: NavigatorFormProps) {

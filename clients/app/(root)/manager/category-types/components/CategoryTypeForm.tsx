@@ -18,6 +18,8 @@ import { SmilePlus } from "lucide-react"
 import { useState } from "react";
 import { IconPickerModal } from "@/components/IconPickerModal"
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils"
+import { AppCategoryCode } from "@/constants"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 const formSchema = z.object({
   code: z.string().min(2, {
     message: "Mã loại phải có ít nhất 2 ký tự.",
@@ -62,19 +64,32 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mã loại</FormLabel>
-              <FormControl>
-                <Input className="input-focus" placeholder="Nhập mã loại" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+         <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Loại danh mục</FormLabel>
+                            <Select value={field.value} onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn loại danh mục" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
+                                    {Object.entries(AppCategoryCode).map(([key, value]) => (
+                                        <SelectItem key={key} value={key}>
+                                            <div className="flex flex-start items-center">
+                                                <span className="text-sm text-gray-500">{value}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
         <FormField
           control={form.control}
           name="name"
@@ -153,6 +168,7 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
             {initialData ? "Cập nhật" : "Tạo mới"}
           </Button>
         </div>
+      </form>
         <IconPickerModal
           isOpen={isIconPickerOpen}
           onClose={() => setIsIconPickerOpen(false)}
@@ -160,7 +176,6 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
             form.setValue("icon", icon);
           }}
         />
-      </form>
     </Form>
   )
 }

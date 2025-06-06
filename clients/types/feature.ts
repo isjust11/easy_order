@@ -1,7 +1,7 @@
 import { IconType } from "@/enums/icon-type.enum";
 import { Role } from "./role";
 
-export interface Navigator {
+export interface Feature {
     id: string;
     icon: string;
     label: string;
@@ -10,7 +10,7 @@ export interface Navigator {
     iconType: IconType;
     className?: string;
     parentId?: number;
-    children?: Navigator[];
+    children?: Feature[];
     roles?: Role[];
     isActive: boolean;
     order?: number;

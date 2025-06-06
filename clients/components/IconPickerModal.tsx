@@ -25,6 +25,13 @@ const iconCategories = {
     "Tài liệu": ["File", "Document", "Folder", "Archive", "Book", "Note", "Text", "Write"],
     "Người dùng": ["User", "Profile", "Account", "Avatar", "Person", "Group", "Team"],
     "Thời gian": ["Clock", "Calendar", "Date", "Time", "Schedule", "Timer", "Stopwatch"],
+    "Hành động": ["Add", "Remove", "Delete", "Edit", "Save", "Share", "Download", "Upload"],
+    "Xã hội": ["Social", "Share", "Like", "Comment", "Follow", "Friend", "Group", "Chat"],
+    "Địa lý": ["Location", "Map", "Pin", "Place", "Marker", "Direction", "Compass", "Globe"],
+    "Kinh doanh": ["Business", "Shop", "Store", "Cart", "Money", "Wallet", "Payment", "Invoice"],
+    "Hệ thống": ["System", "Settings", "Configuration", "Admin", "Control", "Dashboard", "Console"],
+    "An ninh": ["Lock", "Security", "Shield", "Key", "Password", "Privacy", "Protection", "Firewall"],
+    "Thể thao": ["Sport", "Game", "Ball", "Team", "Player", "Score", "Trophy", "Medal"],
     "Khác": [] // Icons không thuộc các nhóm trên
 };
 

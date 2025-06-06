@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { AppConstants } from '@/constants';
 import { Suspense } from 'react';
-import { getTokenInfo } from '@/services/auth-api';
+import { getNavigatorsByRole, getTokenInfo } from '@/services/auth-api';
 
 function AuthSuccessPage() {
   const router = useRouter();
@@ -23,7 +23,9 @@ function AuthSuccessPage() {
           localStorage.setItem(AppConstants.AccessToken, userInfo.accessToken);
           localStorage.setItem(AppConstants.RefreshToken, userInfo.refreshToken);
           localStorage.setItem(AppConstants.User, JSON.stringify(userInfo.user));
-
+          const roleId = userInfo.user.roles[0].id;
+          const feature = await getNavigatorsByRole(roleId);
+          localStorage.setItem(AppConstants.Feature, JSON.stringify(feature));
           toast.success('Đăng nhập thành công');
           router.push('/');
         } catch (error) {

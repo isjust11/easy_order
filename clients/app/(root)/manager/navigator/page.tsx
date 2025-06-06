@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 // import { useSocket } from '@/hooks/useSocket';
 import { createNavigator, deleteNavigator, getNavigators, updateNavigator } from '@/services/manager-api';
-import { Navigator } from '@/types/navigator';
+import { Navigator } from '@/types/feature';
 import { Role } from '@/types/role';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';

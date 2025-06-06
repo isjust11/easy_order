@@ -7,13 +7,16 @@ import * as z from "zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Switch from "@/components/form/switch/Switch";
 import { Feature } from "@/types/feature";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils";
 import { IconType } from "@/enums/icon-type.enum";
 import { Icon } from "@/components/ui/icon";
 import { Slider } from "@/components/ui/slider";
+import { Category } from "@/types/category";
+import { getCategoryByCode } from "@/services/manager-api";
+import { getFeatureType } from "@/utils/appUtils";
 
 const formSchema = z.object({
     label: z.string().min(2, {
@@ -30,6 +33,7 @@ const formSchema = z.object({
     className: z.string().optional().default(''),
     iconType: z.nativeEnum(IconType),
     parentId: z.string().optional(),
+    navigatorTypeId: z.string().optional(),
 });
 
 interface NavigatorFormProps {
@@ -43,6 +47,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
     const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
     const [iconType, setIconType] = useState(IconType.lucide);
     const [iconSize, setIconSize] = useState(20)
+    const [navigatorType, setNavigatorType] = useState<Category[]>([]);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData
@@ -57,7 +62,8 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                 label: initialData.label || "",
                 iconSize: initialData.iconSize || 20,
                 className: initialData.className || "",
-                iconType: IconType.lucide
+                iconType: IconType.lucide,
+                navigatorTypeId: initialData.navigatorTypeId || ""
             }
             : {
                 label: "",
@@ -69,7 +75,8 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                 order: "0",
                 iconSize: 20,
                 className: "",
-                iconType: IconType.lucide
+                iconType: IconType.lucide,
+                navigatorTypeId: ""
             },
     });
 
@@ -83,6 +90,15 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
         onSubmit(values);
     };
 
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const loadNavigatorType = async () => {
+                const response = await getCategoryByCode(getFeatureType());
+                setNavigatorType(response);
+            };
+            loadNavigatorType();
+        }
+    }, []);
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -94,6 +110,43 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                             <FormLabel>Tên chức năng</FormLabel>
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập tên chức năng" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="navigatorTypeId"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Loại chức năng</FormLabel>
+                            <FormControl>
+                                <Select 
+                                    value={field.value} 
+                                    onValueChange={field.onChange} 
+                                    defaultValue={navigatorType[0]?.id}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Chọn loại chức năng" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
+                                        {navigatorType.map((type) => (
+                                            <SelectItem key={type.id} value={type.id}>
+                                                <div className="flex flex-start items-center">
+                                                    <span className="text-2xl mr-2">
+                                                        {type.icon && (
+                                                            <Icon name={type.icon} />
+                                                        )}
+                                                    </span>
+                                                    <span className="text-sm text-gray-500">{type.name}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -126,12 +179,12 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
-                                        {navigatorParents.length == 0 &&(
+                                        {navigatorParents.length == 0 && (
                                             <div className="flex flex-start items-center">
-                                                    <span className="text-sm px-2 py-2">
-                                                        Không có dữ liệu 
-                                                    </span>
-                                                </div>
+                                                <span className="text-sm px-2 py-2">
+                                                    Không có dữ liệu
+                                                </span>
+                                            </div>
                                         )}
                                         {navigatorParents.map((parent) => (
                                             <SelectItem key={parent.id} value={parent.id}>

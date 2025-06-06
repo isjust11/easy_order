@@ -14,6 +14,7 @@ export interface Feature {
     roles?: Role[];
     isActive: boolean;
     order?: number;
+    navigatorTypeId?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }

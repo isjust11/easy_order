@@ -1,5 +1,6 @@
 import { IconType } from "@/enums/icon-type.enum";
 import { Role } from "./role";
+import { Category } from "./category";
 
 export interface Feature {
     id: string;
@@ -15,6 +16,8 @@ export interface Feature {
     isActive: boolean;
     order?: number;
     navigatorTypeId?: string;
+    navigatorType: Category;
+    isDefault:boolean;
     createdAt?: Date;
     updatedAt?: Date;
 }

@@ -12,6 +12,9 @@ function AuthSuccessPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    if (window == undefined) {
+      return;
+    }
     const fetchData = async () => {
       const tempToken = searchParams.get('token');
       if (tempToken) {

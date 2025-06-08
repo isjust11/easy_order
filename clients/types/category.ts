@@ -10,4 +10,7 @@ export interface Category {
   type: CategoryType;
   createdAt: string;
   updatedAt: string;
+  order: number;
+  code: string;
+  isDefault: boolean;
 } 

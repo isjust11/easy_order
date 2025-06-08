@@ -21,10 +21,15 @@ import SidebarWidget from "./SidebarWidget";
 import { useAuth } from "@/contexts/AuthContext";
 import { Feature } from "@/types/feature";
 import { Icon } from "@/components/ui/icon";
+import { Category } from "@/types/category";
+import { getNavigatorsByRole } from "@/services/auth-api";
+import { getCategoryByCode } from "@/services/manager-api";
+import { AppCategoryCode } from "@/constants";
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
+  type?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
@@ -98,22 +103,34 @@ const AppSidebar: React.FC = () => {
   const { user, feature } = useAuth();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-
+  const [menuTypes, setMenuTypes] = useState<Category[]>();
   const [features, setFeatures] = useState<Feature[]>();
 
   useEffect(() => {
+    const fetchMenuTypes = async () => {
+      const appCode = Object.entries(AppCategoryCode);
+      const data:Category[] = await getCategoryByCode(appCode[0][0]);
+      console.log(data);
+      setMenuTypes(data.sort((a,b)=> a.order-b.order));
+    }
+    fetchMenuTypes();
+  }, []);
+
+  useEffect(() => {
     const buildFeatureItems = buildFeature(feature);
+    // set feature by type 
+    console.log('feature:', buildFeatureItems)
     setFeatures(buildFeatureItems);
   }, [feature]);
 
   const renderMenuItems = (
     navItems: NavItem[],
-    menuType: "main" | "others"
+    menuType: string
   ) => (
     <ul className="flex flex-col gap-4">
       {navItems.map((nav, index) => (
         <li key={nav.name}>
-          {nav.subItems ? (
+          {nav.subItems && nav.subItems.length > 0 ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group  ${openSubmenu?.type === menuType && openSubmenu?.index === index
@@ -224,7 +241,7 @@ const AppSidebar: React.FC = () => {
   );
 
   const [openSubmenu, setOpenSubmenu] = useState<{
-    type: "main" | "others";
+    type: string;
     index: number;
   } | null>(null);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
@@ -236,15 +253,17 @@ const AppSidebar: React.FC = () => {
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   const convertFeatureToNavItem = (feature: Feature): NavItem => {
+    console.log('feature item:', feature)
     return {
       name: feature.label || '',
-      icon: <Icon name={feature.icon} size={feature.iconSize}/>, // You'll need to implement this
+      icon: <Icon name={feature.icon} size={feature.iconSize} />, // You'll need to implement this
       path: feature.link,
+      type: feature?.navigatorType?.code,
       subItems: feature.children?.map(child => ({
         name: child.label || '',
         path: child.link || '',
-        pro:  false,
-        new:  false
+        pro: false,
+        new: false
       }))
     };
   };
@@ -289,7 +308,7 @@ const AppSidebar: React.FC = () => {
     }
   }, [openSubmenu]);
 
-  const handleSubmenuToggle = (index: number, menuType: "main" | "others") => {
+  const handleSubmenuToggle = (index: number, menuType: string) => {
     setOpenSubmenu((prevOpenSubmenu) => {
       if (
         prevOpenSubmenu &&
@@ -379,37 +398,25 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(features?.map(convertFeatureToNavItem) ?? [], "main")}
-            </div>
+            {menuTypes?.map((type) => (
+              <div>
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    type.name
+                  ) : (
+                    <HorizontaLDots />
+                  )}
+                </h2>
+                {renderMenuItems(features?.map(convertFeatureToNavItem).filter((x)=>x.type == type.code) ?? [], type.name)}
+              </div>
+            ))
 
-            <div className="">
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
-                ) : (
-                  <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>
+            }
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

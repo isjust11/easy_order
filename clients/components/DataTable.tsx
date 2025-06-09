@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   onPaginationChange?: (pageIndex: number, pageSize: number) => void
   onSearchChange?: (search: string) => void
   manualPagination?: boolean
+  getRowChildren?: (row: TData) => TData[] | undefined
 }
 
 export function DataTable<TData, TValue>({
@@ -43,6 +44,7 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   onSearchChange,
   manualPagination = false,
+  getRowChildren,
 }: DataTableProps<TData, TValue>) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -53,8 +55,35 @@ export function DataTable<TData, TValue>({
   const [pageIndex, setPageIndex] = React.useState(0)
   const [search, setSearch] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
+  const [expandedRows, setExpandedRows] = React.useState<Record<string, boolean>>({})
+
+  const toggleRow = (rowId: string) => {
+    setExpandedRows(prev => ({
+      ...prev,
+      [rowId]: !prev[rowId]
+    }))
+  }
+
+  const getExpandedData = (data: TData[]): TData[] => {
+    return data.reduce((acc: TData[], row: TData) => {
+      const rowId = (row as any).id?.toString()
+      acc.push(row)
+      
+      if (rowId && expandedRows[rowId] && getRowChildren) {
+        const children = getRowChildren(row)
+        if (children) {
+          acc.push(...getExpandedData(children))
+        }
+      }
+      
+      return acc
+    }, [])
+  }
+
+  const expandedData = getExpandedData(data)
+
   const table = useReactTable({
-    data,
+    data: expandedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -161,18 +190,48 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const rowData = row.original as any
+                const hasChildren = getRowChildren ? (getRowChildren(rowData) ?? []).length > 0 : false
+                const rowId = rowData.id?.toString()
+                const isExpanded = rowId ? expandedRows[rowId] : false
+                const isChild = rowData.parentId !== undefined
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={isChild ? "bg-gray-50" : ""}
+                  >
+                    {row.getVisibleCells().map((cell, index) => {
+                      if (index === 0 && hasChildren) {
+                        return (
+                          <TableCell key={cell.id} className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleRow(rowId!)}
+                              className="h-6 w-6 p-0"
+                            >
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4 mt-5" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4 mt-5 rotate-[-90deg]" />
+                              )}
+                            </Button>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        )
+                      }
+                      return (
+                        <TableCell key={cell.id}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">

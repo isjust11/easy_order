@@ -38,11 +38,6 @@ export default function RootLayout({
               className="toast-wrapper"
               toastOptions={{
                 className: 'toast',
-                // style: {
-                //   background: '#fff',
-                //   color: '#333',
-                //   border: '1px solid #e5e7eb',
-                // },
               }}
             />
             <Loading />

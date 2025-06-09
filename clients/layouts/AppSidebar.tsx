@@ -24,6 +24,7 @@ import { Category } from "@/types/category";
 import { getNavigatorsByRole } from "@/services/auth-api";
 import { getCategoryByCode } from "@/services/manager-api";
 import { AppCategoryCode } from "@/constants";
+import { buildFeature } from "@/utils/appUtils";
 type NavItem = {
   name: string;
   icon: React.ReactNode;
@@ -82,20 +83,9 @@ const othersItems: NavItem[] = [
   {
     icon: <BoxCubeIcon />,
     name: "Đa phương tiện",
-    subItems: [
-      { name: "Đa phương tiện", path: "/manager/media", pro: true },
-
-    ],
+    path: "/manager/media",
   },
-  {
-    icon: <PlugInIcon />,
-    name: "Quản trị",
-    subItems: [
-      { name: "Phân quyền", path: "/manager/admin/permissions", pro: false },
-      { name: "Vai trò", path: "/manager/admin/roles", pro: false },
-      { name: "Chức năng", path: "/manager/navigator", pro: false },
-    ],
-  },
+  
 ];
 
 const AppSidebar: React.FC = () => {
@@ -126,7 +116,6 @@ const AppSidebar: React.FC = () => {
     }
     const buildFeatureItems = buildFeature(feature);
     // set feature by type 
-    console.log('feature:', buildFeatureItems)
     setFeatures(buildFeatureItems);
   }, [feature]);
 
@@ -327,35 +316,7 @@ const AppSidebar: React.FC = () => {
       return { type: menuType, index };
     });
   };
-  const buildFeature = (items: Feature[]): Feature[] => {
-    // Tạo một bản đồ để dễ dàng truy cập các nút theo id
-    const itemMap: Record<string, Feature> = {};
-    items.forEach(item => {
-      itemMap[item.id] = { ...item, children: [] };
-    });
-
-    // Xây dựng cây
-    const tree: Feature[] = [];
-
-    items.forEach(item => {
-      if (item.parentId) {
-        // Nếu có parentId, thêm vào children của parent
-        if (itemMap[item.parentId]) {
-          itemMap[item.parentId].children?.push(itemMap[item.id]);
-          // Sắp xếp children theo order
-          itemMap[item.parentId].children?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        }
-      } else {
-        // Nếu không có parentId, thêm vào cây gốc
-        tree.push(itemMap[item.id]);
-      }
-    });
-
-    // Sắp xếp cây gốc theo order
-    tree.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-    return tree;
-  }
+ 
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
@@ -424,6 +385,24 @@ const AppSidebar: React.FC = () => {
             ))
 
             }
+          </div>
+           <div className="flex flex-col gap-4">
+              <div>
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
+                    ? "lg:justify-center"
+                    : "justify-start"
+                    }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? (
+                    "Khác"
+                  ) : (
+                    <HorizontaLDots />
+                  )}
+                </h2>
+                {renderMenuItems(othersItems ?? [], "others")}
+              </div>
+           
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 // import { useSocket } from '@/hooks/useSocket';
 import { createNavigator, deleteNavigator, getNavigators, updateNavigator } from '@/services/manager-api';
-import { Navigator } from '@/types/feature';
+import { Feature } from '@/types/feature';
 import { Role } from '@/types/role';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
@@ -20,10 +20,10 @@ import { NavigatorForm } from './components/NavigatorForm';
 import { useModal } from '@/hooks/useModal';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
-
+import { buildFeature } from '@/utils/appUtils';
 export default function NavigatorPage() {
-  const [navigators, setNavigators] = useState<Navigator[]>([]);
-  const [selectedNavigator, setSelectedNavigator] = useState<Navigator | null>(null);
+  const [features, setFeatures] = useState<Feature[]>([]);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [formData, setFormData] = useState({
     icon: '',
     label: '',
@@ -42,7 +42,8 @@ export default function NavigatorPage() {
 
   const fetchNavigators = async () => {
     const response = await getNavigators({ page: pageIndex + 1, size: pageSize, search });
-    setNavigators(response.data);
+    const featureTree = buildFeature(response.data);
+    setFeatures(featureTree);
     setPageCount(response.totalPages);
   };
 
@@ -60,9 +61,9 @@ export default function NavigatorPage() {
   }
 
   const handleSubmit = async (values: any) => {
-    if (selectedNavigator) {
+    if (selectedFeature) {
       // Cập nhật navigator
-      await updateNavigator(selectedNavigator.id, values);
+      await updateNavigator(selectedFeature.id, values);
       toast.success('Cập nhật chức năng thành công!')
     } else {
       // Thêm navigator mới
@@ -81,7 +82,8 @@ export default function NavigatorPage() {
   };
 
 
-  const columns: ColumnDef<Navigator>[] = [
+
+  const columns: ColumnDef<Feature>[] = [
     {
       id: "select",
       accessorKey: "id",
@@ -169,7 +171,7 @@ export default function NavigatorPage() {
       id: "actions",
       header: 'Thao tác',
       cell: ({ row }) => {
-        const navigator = row.original
+        const feature = row.original
         return (
           <div className="p-2 ">
             <DropdownMenu>
@@ -182,7 +184,7 @@ export default function NavigatorPage() {
               <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
                 <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
                   onClick={() => {
-                    setSelectedNavigator(navigator)
+                    setSelectedFeature(feature)
                     openModal();
                   }}>
                   <BadgeInfo className="mr-2 h-4 w-4" />
@@ -190,14 +192,14 @@ export default function NavigatorPage() {
                 </DropdownMenuItem>
                 <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
                   onClick={() => {
-                    setSelectedNavigator(navigator)
+                    setSelectedFeature(feature)
                     openModal();
                   }}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   Chỉnh sửa
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(navigator.id)}>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(feature.id)}>
                   <Trash className="mr-2 h-4 w-4" />
                   Xóa
                 </DropdownMenuItem>
@@ -212,7 +214,7 @@ export default function NavigatorPage() {
     {
       icon: <Plus className="w-4 h-4 mr-2" />,
       onClick: () => {
-        setSelectedNavigator(null);
+        setSelectedFeature(null);
         setFormData({
           icon: '',
           label: '',
@@ -236,11 +238,12 @@ export default function NavigatorPage() {
       <ComponentCard title="Danh sách chức năng" listAction={lstActions}>
         <DataTable 
           columns={columns} 
-          data={navigators}
+          data={features}
           pageCount={pageCount}
           onPaginationChange={handlePaginationChange}
           onSearchChange={handleSearch}
           manualPagination={true}
+          getRowChildren={(row) => (row as any).children}
         />
          <Modal
             isOpen={isOpen}
@@ -248,13 +251,13 @@ export default function NavigatorPage() {
             className="max-w-[600px] p-5 lg:p-10"
           >
             <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
-              {selectedNavigator ? 'Cập nhật chức năng' : 'Thêm chức năng mới'}
+              {selectedFeature ? 'Cập nhật chức năng' : 'Thêm chức năng mới'}
             </h4>
             <NavigatorForm
-              initialData={selectedNavigator}
+              initialData={selectedFeature}
               onSubmit={handleSubmit}
               onCancel={closeModal}
-              navigatorParents={navigators} />
+              navigatorParents={features} />
           </Modal>
       </ComponentCard>
     </div>

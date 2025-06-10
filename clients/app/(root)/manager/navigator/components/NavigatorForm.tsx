@@ -111,7 +111,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập tên chức năng" {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500"/>
                         </FormItem>
                     )}
                 />
@@ -133,7 +133,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
-                                        {navigatorType.map((type) => (
+                                        {navigatorType.length >0 ? navigatorType.map((type) => (
                                             <SelectItem key={type.id} value={type.id}>
                                                 <div className="flex flex-start items-center">
                                                     <span className="text-2xl mr-2">
@@ -144,11 +144,17 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                                     <span className="text-sm text-gray-500">{type.name}</span>
                                                 </div>
                                             </SelectItem>
-                                        ))}
+                                        )): (
+                                            <div className="flex flex-start items-center">
+                                                <span className="text-sm px-2 py-2">
+                                                    Không có dữ liệu
+                                                </span>
+                                            </div>
+                                        )}
                                     </SelectContent>
                                 </Select>
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500"/> 
                         </FormItem>
                     )}
                 />
@@ -161,7 +167,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập đường dẫn" {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500"/> 
                         </FormItem>
                     )}
                 />
@@ -207,7 +213,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage />
+                                <FormMessage className="text-red-500"/> 
                             </FormItem>
                         )}
                     />
@@ -227,7 +233,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                         value={field.value || 0}
                                     />
                                 </FormControl>
-                                <FormMessage />
+                                <FormMessage className="text-red-500"/> 
                             </FormItem>
                         )}
                     />
@@ -285,7 +291,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                     }
 
                                 </div>
-                                <FormMessage />
+                                <FormMessage className="text-red-500"/>
                             </FormItem>
                         )}
                     />

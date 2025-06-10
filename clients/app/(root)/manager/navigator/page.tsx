@@ -9,7 +9,7 @@ import { Role } from '@/types/role';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUp, ArrowDown, MoreHorizontal, BadgeInfo, Pencil, Trash, Plus } from 'lucide-react';
+import { ArrowUp, ArrowDown, MoreHorizontal, BadgeInfo, Pencil, Trash, Plus, ArrowLeftRight } from 'lucide-react';
 import { Action } from '@/types/actions';
 import Badge from '@/components/ui/badge/Badge';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
@@ -21,6 +21,7 @@ import { useModal } from '@/hooks/useModal';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
 import { buildFeature } from '@/utils/appUtils';
+import { Category } from '@/types/category';
 export default function NavigatorPage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
@@ -81,7 +82,11 @@ export default function NavigatorPage() {
     toast.success('Xóa chức năng thành công!')
   };
 
-
+  const handleChangeStatus = async (feature: Feature) => {
+    await updateNavigator(feature.id, { isActive: !feature.isActive });
+    await fetchNavigators()
+    toast.success('Đổi trạng thái chức năng thành công!')
+  };
 
   const columns: ColumnDef<Feature>[] = [
     {
@@ -121,6 +126,18 @@ export default function NavigatorPage() {
         )
       },
     },
+     {
+      accessorKey: "navigatorType",
+      header: "Loại danh mục",
+      cell: ({ row }) => {
+        const featureType = row.getValue("navigatorType") as Category
+        return (
+         <div className="text-sm text-gray-500">
+            <span>{featureType?.name ?? '-'}</span>
+          </div>
+        )
+      },
+    },
     {
       accessorKey: "icon",
       header: "Icon",
@@ -137,9 +154,9 @@ export default function NavigatorPage() {
       cell: ({ row }) => {
         const link = row.getValue("link") as string
         return (
-          <div className="text-sm text-gray-500">
-            <span>{link}</span>
-          </div>
+            <div className="text-sm text-gray-500">
+            {link ?? '-'}
+            </div>
         )
       }
     },
@@ -181,25 +198,33 @@ export default function NavigatorPage() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
-                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+              <DropdownMenuContent align="end" className='bg-red shadow-sm rounded-xs '>
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-gray-700 dark:text-white"
                   onClick={() => {
                     setSelectedFeature(feature)
                     openModal();
                   }}>
-                  <BadgeInfo className="mr-2 h-4 w-4" />
+                  <BadgeInfo className="mr-2 h-4 w-4 text-gray-700 dark:text-white" />
                   Xem chi tiết
                 </DropdownMenuItem>
-                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-violet-500 dark:text-white'
+                  onClick={() => {
+                    handleChangeStatus(feature)
+                  }}
+                >
+                  <ArrowLeftRight className="mr-2 h-4 w-4 text-violet-500 dark:text-white" />
+                  {feature.isActive?' Ngừng hoạt động' : 'Kích hoạt'} 
+                </DropdownMenuItem>
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-blue-500 dark:text-white'
                   onClick={() => {
                     setSelectedFeature(feature)
                     openModal();
                   }}
                 >
-                  <Pencil className="mr-2 h-4 w-4" />
+                  <Pencil className="mr-2 h-4 w-4 text-blue-500 dark:text-white" />
                   Chỉnh sửa
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(feature.id)}>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10" onClick={() => handleDelete(feature.id)}>
                   <Trash className="mr-2 h-4 w-4" />
                   Xóa
                 </DropdownMenuItem>

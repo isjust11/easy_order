@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { navigatorService } from '@/services/navigator-api';
-import { Navigator } from '@/types/feature';
+import { Feature } from '@/types/feature';
 import { Role } from '@/types/role';
 const formSchema = z.object({
   name: z.string().min(1, 'Tên vai trò không được để trống'),
@@ -36,7 +36,7 @@ type RoleFormProps = {
 };
 
 export function RoleForm({ role, onSubmit ,onCancel }: RoleFormProps) {
-  const [navigators, setNavigators] = useState<Navigator[]>([]);
+  const [navigators, setNavigators] = useState<Feature[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

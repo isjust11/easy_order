@@ -173,7 +173,8 @@ export const getCurrentUser = (): User | null => {
 // lấy feature
 export const getFeature = (): Feature[] | null => {
   const feature = localStorage.getItem(AppConstants.Feature);
-  return feature ? JSON.parse(feature) : null;
+  var data = feature ? JSON.parse(feature) : null;
+  return data ? data.filter((f: Feature) => f.isActive) : null;
 };
 
 // lấy token xác thực
@@ -212,7 +213,7 @@ export const deleteRole = async (id: string): Promise<void> => {
   await axiosApi.delete(`/roles/${id}`);
 };  
 
-export const getNavigatorsByRole = async (id: string): Promise<Navigator[]> => {
+export const getNavigatorsByRole = async (id: string): Promise<Feature[]> => {
   const response = await axiosApi.get(`/roles/${id}/navigators`);
   return response.data;
 };

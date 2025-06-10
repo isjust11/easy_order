@@ -3,9 +3,9 @@ import axiosApi from './base/api';
 import { CreateFoodItemDto, FoodItem } from '@/types/food-item';
 import { CreateOrderDto } from '@/types/dto/CreateOrderDto';
 import { Permission } from '@/types/permission';
-import { Navigator } from '@/types/feature';
 import { CategoryType } from '@/types/category-type';
 import { Table } from '@/types/table';
+import { Feature } from '@/types/feature';
 
 
 // todo: api manager fooditem
@@ -91,7 +91,7 @@ export const updateOrder = async (id: number, data: any): Promise<Order> => {
 
 
 // todo: api manager navigator
-export const getNavigators = async (params?: PaginationParams): Promise<PaginatedResponse<Navigator>> => {
+export const getNavigators = async (params?: PaginationParams): Promise<PaginatedResponse<Feature>> => {
   try {
     const response = await axiosApi.get(`/navigator`, {params});
     return response.data;
@@ -101,7 +101,7 @@ export const getNavigators = async (params?: PaginationParams): Promise<Paginate
   }
 };
 
-export const createNavigator = async (data: any): Promise<Navigator> => {
+export const createNavigator = async (data: any): Promise<Feature> => {
   try {
     const response = await axiosApi.post(`/navigator`, data);
     return response.data;
@@ -111,7 +111,7 @@ export const createNavigator = async (data: any): Promise<Navigator> => {
   }
 };
 
-export const updateNavigator = async (id: string, data: any): Promise<Navigator> => {
+export const updateNavigator = async (id: string, data: any): Promise<Feature> => {
   try {
     const response = await axiosApi.put(`/navigator/${id}`, data);
     return response.data;

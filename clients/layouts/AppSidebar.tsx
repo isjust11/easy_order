@@ -21,7 +21,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Feature } from "@/types/feature";
 import { Icon } from "@/components/ui/icon";
 import { Category } from "@/types/category";
-import { getNavigatorsByRole } from "@/services/auth-api";
 import { getCategoryByCode } from "@/services/manager-api";
 import { AppCategoryCode } from "@/constants";
 import { buildFeature } from "@/utils/appUtils";
@@ -249,7 +248,6 @@ const AppSidebar: React.FC = () => {
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   const convertFeatureToNavItem = (feature: Feature): NavItem => {
-    console.log('feature item:', feature)
     return {
       name: feature.label || '',
       icon: <Icon name={feature.icon} size={feature.iconSize} />, // You'll need to implement this
@@ -367,7 +365,7 @@ const AppSidebar: React.FC = () => {
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
             {menuTypes?.map((type) => (
-              <div>
+              <div key={type.code}>
                 <h2
                   className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
                     ? "lg:justify-center"

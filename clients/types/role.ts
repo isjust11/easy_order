@@ -1,11 +1,11 @@
-import { Navigator } from "./feature";
+import { Feature } from "./feature";
 
 export interface Role {
    id: string;
   name: string;
   code: string;
   description?: string;
-  navigators?: Navigator[];
+  navigators?: Feature[];
   createdAt: string;
   updatedAt: string;
   isActive: boolean;

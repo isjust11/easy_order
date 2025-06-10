@@ -197,7 +197,7 @@ export default function RolesPage() {
           setSelectedRole(null)
           openModal();
         },
-        title: "Thêm bàn mới",
+        title: "Thêm vai trò",
         className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
       },
     ]

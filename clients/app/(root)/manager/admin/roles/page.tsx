@@ -8,18 +8,19 @@ import { getRoles, deleteRole, createRole, updateRole, findbyCode } from '@/serv
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import router from 'next/router';
+import { useRouter } from 'next/navigation';
 import { Action } from '@/types/actions';
 import { DataTable } from '@/components/DataTable';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import { Modal } from '@/components/ui/modal';
-import { RoleForm } from './components/role-form';
+// import { RoleForm } from './components/role-form';
 import { useModal } from '@/hooks/useModal';
 import Badge from '@/components/ui/badge/Badge';
 import { Role } from '@/types/role';
 
 export default function RolesPage() {
+  const router = useRouter()
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const { isOpen, openModal, closeModal } = useModal();
@@ -194,8 +195,9 @@ export default function RolesPage() {
       {
         icon: <Plus className="w-4 h-4 mr-2" />,
         onClick: () => {
-          setSelectedRole(null)
-          openModal();
+          // setSelectedRole(null)
+          // openModal();
+          router.push('/manager/admin/roles/create')
         },
         title: "Thêm vai trò",
         className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
@@ -223,11 +225,11 @@ export default function RolesPage() {
             <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
               {selectedRole ? 'Cập nhật vai trò' : 'Thêm vai trò mới'}
             </h4>
-            <RoleForm
+            {/* <RoleForm
               role={selectedRole}
               onSubmit={onSubmit}
               onCancel={closeModal}
-            />
+            /> */}
           </Modal>
       </ComponentCard>
     </div>

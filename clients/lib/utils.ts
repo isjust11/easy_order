@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import crypto from 'crypto';
+import { AppCategoryCode } from "@/constants";
+import { Feature } from "@/types/feature";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -62,3 +65,57 @@ export const formatCurrency = (amount: number): string => {
     currency: 'VND'
   }).format(amount);
 };
+
+
+
+export const getFeatureType = () => {
+    const keys = Object.keys(AppCategoryCode);
+    const featureTypeKey = keys[0];
+    return featureTypeKey;
+}
+
+
+ export const buildFeature = (items: Feature[]): Feature[] => {
+    // Tạo một bản đồ để dễ dàng truy cập các nút theo id
+    const itemMap: Record<string, Feature> = {};
+    items.forEach(item => {
+      itemMap[item.id] = { ...item, children: [] };
+    });
+
+    // Xây dựng cây
+    const tree: Feature[] = [];
+
+    items.forEach(item => {
+      if (item.parentId) {
+        // Nếu có parentId, thêm vào children của parent
+        if (itemMap[item.parentId]) {
+          itemMap[item.parentId].children?.push(itemMap[item.id]);
+          // Sắp xếp children theo order
+          itemMap[item.parentId].children?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        }
+      } else {
+        // Nếu không có parentId, thêm vào cây gốc
+        tree.push(itemMap[item.id]);
+      }
+    });
+
+    // Sắp xếp cây gốc theo order
+    tree.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+    return tree;
+  }
+
+  // build decode function input is string output is string
+  
+export const decode = (id: string): string => {
+  try {
+    // Giải mã chuỗi base64
+    const decoded = atob(id);
+    // Chuyển đổi chuỗi đã giải mã thành chuỗi UTF-8
+    return decodeURIComponent(decoded);
+  } catch (error) {
+    console.error('Error decoding id:', error);
+    return id; // Trả về id gốc nếu có lỗi
+  }
+}
+  

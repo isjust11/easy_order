@@ -7,6 +7,7 @@ import emojiData from "emoji-datasource";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
 import { IconType } from "@/enums/icon-type.enum";
+import { emojiToUnicode } from "@/lib/utils";
 
 interface IconPickerModalProps {
     isOpen: boolean;
@@ -130,6 +131,7 @@ export function IconPickerModal({ isOpen, onClose, onSelect }: IconPickerModalPr
                                                 variant="outline"
                                                 className="h-12 w-12 flex items-center justify-center hover:bg-gray-100"
                                                 onClick={() => {
+
                                                     onSelect(icon.name, IconType.lucide);
                                                     onClose();
                                                 }}
@@ -159,7 +161,8 @@ export function IconPickerModal({ isOpen, onClose, onSelect }: IconPickerModalPr
                                         variant="outline"
                                         className="h-12 w-12 text-2xl flex items-center justify-center hover:bg-gray-100"
                                         onClick={() => {
-                                            onSelect(icon.char, IconType.emoji);
+                                            const encodeEmoji = emojiToUnicode(icon.char);
+                                            onSelect(encodeEmoji, IconType.emoji);
                                             onClose();
                                         }}
                                     >

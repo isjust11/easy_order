@@ -54,9 +54,6 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
   })
    const handleSubmit = (values: z.infer<typeof formSchema>) => {
           // Chuyển đổi icon thành mã Unicode trước khi submit
-          if (values.icon) {
-              values.icon = emojiToUnicode(values.icon);
-          }
           onSubmit(values);
       };
   

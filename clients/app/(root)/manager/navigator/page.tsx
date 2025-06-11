@@ -20,8 +20,8 @@ import { NavigatorForm } from './components/NavigatorForm';
 import { useModal } from '@/hooks/useModal';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
-import { buildFeature } from '@/utils/appUtils';
 import { Category } from '@/types/category';
+import { buildFeature } from '@/lib/utils';
 export default function NavigatorPage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);

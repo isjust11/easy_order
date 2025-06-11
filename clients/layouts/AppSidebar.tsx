@@ -23,7 +23,7 @@ import { Icon } from "@/components/ui/icon";
 import { Category } from "@/types/category";
 import { getCategoryByCode } from "@/services/manager-api";
 import { AppCategoryCode } from "@/constants";
-import { buildFeature } from "@/utils/appUtils";
+import { buildFeature } from "@/lib/utils";
 type NavItem = {
   name: string;
   icon: React.ReactNode;

@@ -1,5 +1,5 @@
+import { Role } from '@/types/role';
 import axiosApi from './base/api';
-import { Role } from '@/types/permission';
 
 export interface User {
   id: number;
@@ -32,6 +32,16 @@ export const userApi = {
     const response = await axiosApi.get('/users');
     return response.data;
   },
+
+  getByPage: async (params?: PaginationParams): Promise<PaginatedResponse<User>> => {
+  try {
+    const response = await axiosApi.get(`/users`, {params});
+    return response.data;
+  } catch (_error) {
+    console.error('Error fetching user:', _error);
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
+  }
+},
 
   getById: async (id: number): Promise<User> => {
     const response = await axiosApi.get(`/users/${id}`);

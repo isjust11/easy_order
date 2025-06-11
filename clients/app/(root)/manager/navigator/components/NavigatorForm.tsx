@@ -10,13 +10,12 @@ import { Feature } from "@/types/feature";
 import { useEffect, useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
-import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils";
+import { decode, emojiToUnicode, getFeatureType, unicodeToEmoji } from "@/lib/utils";
 import { IconType } from "@/enums/icon-type.enum";
 import { Icon } from "@/components/ui/icon";
 import { Slider } from "@/components/ui/slider";
 import { Category } from "@/types/category";
 import { getCategoryByCode } from "@/services/manager-api";
-import { getFeatureType } from "@/utils/appUtils";
 
 const formSchema = z.object({
     label: z.string().min(2, {
@@ -63,7 +62,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                 iconSize: initialData.iconSize || 20,
                 className: initialData.className || "",
                 iconType: IconType.lucide,
-                navigatorTypeId: initialData.navigatorTypeId || ""
+                navigatorTypeId: decode(initialData.navigatorTypeId || "")
             }
             : {
                 label: "",

@@ -1,6 +1,6 @@
 'use client';
 
-import RoleForm from "../components/RoleForm";
+import RoleForm from "../../components/RoleForm";
 
 
 export default function CreateRole() {

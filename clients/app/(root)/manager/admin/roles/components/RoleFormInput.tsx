@@ -25,17 +25,17 @@ const formSchema = z.object({
   code: z.string().min(1, 'Mã vai trò không được để trống'),
   isActive: z.boolean(),
   description: z.string().optional(),
-  navigatorIds: z.array(z.string()).optional(),
+  features: z.array(z.string()).optional(),
 });
 
 type RoleFormProps = {
   role?: Role | null;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
   onCancel: () => void;
   onFormChange?: (values: z.infer<typeof formSchema>) => void;
+  isView?: boolean;
 };
 
-export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFormProps) {
+export function RoleFormInput({ role, onFormChange, isView = false }: RoleFormProps) {
   const [navigators, setNavigators] = useState<Feature[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,9 +45,36 @@ export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFo
       code: role?.code || '',
       isActive: role?.isActive || true,
       description: role?.description || '',
-      navigatorIds: role?.feature!.map(p => p.id) || [],
+      features: role?.features!.map(p => p.id) || [],
     },
   });
+
+  // Reset form when role changes
+  useEffect(() => {
+    if (role) {
+      form.reset({
+        name: role.name,
+        code: role.code,
+        isActive: role.isActive,
+        description: role.description || '',
+        features: role.features?.map(p => p.id) || [],
+      });
+    }
+  }, [role, form]);
+
+  // Gửi giá trị ban đầu của form
+  useEffect(() => {
+    const initialValues = form.getValues();
+    onFormChange?.(initialValues);
+  }, [role]);
+
+  // Theo dõi sự thay đổi của form
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      onFormChange?.(value as z.infer<typeof formSchema>);
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch, onFormChange]);
 
   useEffect(() => {
     const fetchNavigators = async () => {
@@ -62,21 +89,9 @@ export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFo
     fetchNavigators();
   }, []);
 
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      onFormChange?.(value as z.infer<typeof formSchema>);
-    });
-    return () => subscription.unsubscribe();
-  }, [form.watch, onFormChange]);
-
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values);
-  };
-
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form className="space-y-6">
         <FormField
           control={form.control}
           name="name"
@@ -84,7 +99,7 @@ export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFo
             <FormItem>
               <FormLabel>Tên vai trò</FormLabel>
               <FormControl>
-                <Input className='input-focus' placeholder="Nhập tên vai trò" {...field} />
+                <Input className='input-focus' placeholder="Nhập tên vai trò" {...field} disabled={isView} />
               </FormControl>
               <FormMessage className='text-red-500'/>
             </FormItem>
@@ -97,7 +112,7 @@ export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFo
             <FormItem>
               <FormLabel>Mã vai trò</FormLabel>
               <FormControl>
-                <Input className='input-focus' disabled={role?.id != null} placeholder="Nhập mã vai trò" {...field} />
+                <Input className='input-focus' disabled={role?.id != null || isView} placeholder="Nhập mã vai trò" {...field} />
               </FormControl>
               <FormMessage className='text-red-500'/>
             </FormItem>
@@ -112,6 +127,7 @@ export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFo
                 label="Trạng thái"
                 defaultChecked={field.value}
                 {...field}
+                disabled={isView}
               />
             </FormItem>
           )}
@@ -126,6 +142,7 @@ export function RoleFormInput({ role, onSubmit, onCancel, onFormChange }: RoleFo
                 <Textarea className='input-focus'
                   placeholder="Nhập mô tả cho vai trò này"
                   {...field}
+                  disabled={isView}
                 />
               </FormControl>
               <FormMessage className='text-red-500'/>

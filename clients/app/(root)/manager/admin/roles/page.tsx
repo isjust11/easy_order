@@ -172,10 +172,7 @@ export default function RolesPage() {
                     Xem chi tiết
                   </DropdownMenuItem>
                   <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
-                    onClick={() => {
-                      setSelectedRole(role);
-                      openModal();
-                    }}
+                    onClick={() => router.push(`/manager/admin/roles/update/${role.id}`)}
                   >
                     <Pencil className="mr-2 h-4 w-4" />
                     Chỉnh sửa

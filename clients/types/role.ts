@@ -5,7 +5,7 @@ export interface Role {
   name: string;
   code: string;
   description?: string;
-  feature?: Feature[];
+  features?: Feature[];
   createdAt: string;
   updatedAt: string;
   isActive: boolean;

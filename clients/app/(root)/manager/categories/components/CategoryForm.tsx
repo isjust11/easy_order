@@ -13,6 +13,7 @@ import { useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils";
+import { IconType } from "@/enums/icon-type.enum";
 
 const formSchema = z.object({
     name: z.string().min(2, {
@@ -24,6 +25,7 @@ const formSchema = z.object({
         required_error: "Vui lòng chọn loại danh mục",
     }),
     icon: z.string().optional(),
+    iconType: z.nativeEnum(IconType).optional(),
     code: z.string().optional(),
 });
 
@@ -47,6 +49,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                 isActive: initialData.isActive || true,
                 icon: initialData.icon || "",
                 type: initialData.type.id,
+                iconType: initialData.iconType
             }
             : {
                 name: "",
@@ -55,14 +58,12 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                 type: "",
                 icon: "",
                 code: "",
+                iconType: IconType.lucide
             },
     });
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        // Chuyển đổi icon thành mã Unicode trước khi submit
-        if (values.icon) {
-            values.icon = emojiToUnicode(values.icon);
-        }
+        // Chuyển đổi icon thành mã Unicode trước khi submit 
         onSubmit(values);
     };
 
@@ -194,8 +195,9 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                 <IconPickerModal
                     isOpen={isIconPickerOpen}
                     onClose={() => setIsIconPickerOpen(false)}
-                    onSelect={(icon) => {
+                    onSelect={(icon, iconType) => {
                         form.setValue("icon", icon);
+                        form.setValue("iconType", iconType)
                     }}
                 />
             </form>

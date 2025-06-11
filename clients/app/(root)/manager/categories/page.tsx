@@ -21,6 +21,8 @@ import { CategoryForm } from './components/CategoryForm';
 import { Action } from '@/types/actions';
 import { unicodeToEmoji } from '@/lib/utils';
 import Badge from '@/components/ui/badge/Badge';
+import { Icon } from '@/components/ui/icon';
+import { IconType } from '@/enums/icon-type.enum';
 
 
 
@@ -96,16 +98,31 @@ export default function CategoriesManagement() {
       },
     },
     {
+      accessorKey: "iconType",
+      header: "Loại Icon"
+    },
+    {
       accessorKey: "icon",
       header: "Icon",
       cell: ({ row }) => {
         const iconUnicode = row.getValue("icon") as string;
-        const icon = unicodeToEmoji(iconUnicode);
-        return (
-          <div >
-            {icon}
-          </div>
-        )
+        const iconTypeStr = row.getValue("iconType") as string;
+        console.log('iconType:', iconTypeStr)
+        const iconType = iconTypeStr === 'emoji' ? IconType.emoji : IconType.lucide;
+        if (iconType === IconType.emoji) {
+          const icon = unicodeToEmoji(iconUnicode);
+          return (
+            <div>
+              {icon}
+            </div>
+          );
+        } else {
+          return (
+            <div>
+              <Icon name={iconUnicode} size={20} />
+            </div>
+          );
+        }
       },
     },
 
@@ -138,7 +155,6 @@ export default function CategoriesManagement() {
               <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
                 <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
                   onClick={() => {
-                    console.log(category)
                     setSelectedCategory(category);
                     openModal();
                   }}
@@ -184,7 +200,7 @@ export default function CategoriesManagement() {
       const filters = categories.filter((category) => category.type.id === selectedType.id)
       setFilterByType(filters);
     }
-    else { 
+    else {
       setFilterByType(categories);
     }
   }

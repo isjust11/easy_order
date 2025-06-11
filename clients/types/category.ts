@@ -1,3 +1,4 @@
+import { IconType } from "@/enums/icon-type.enum";
 import { CategoryType } from "./category-type";
 
 export interface Category {
@@ -10,6 +11,9 @@ export interface Category {
   type: CategoryType;
   createdAt: string;
   updatedAt: string;
+  iconType: IconType;
+  iconSize: number;
+  className: string;
   order: number;
   code: string;
   isDefault: boolean;

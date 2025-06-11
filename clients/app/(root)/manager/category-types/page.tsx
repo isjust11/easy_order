@@ -19,6 +19,8 @@ import { Modal } from '@/components/ui/modal';
 import { CategoryTypeForm } from './components/CategoryTypeForm';
 import Badge from '@/components/ui/badge/Badge';
 import { unicodeToEmoji } from '@/lib/utils';
+import { IconType } from '@/enums/icon-type.enum';
+import { Icon } from '@/components/ui/icon';
 
 
 
@@ -108,15 +110,29 @@ export default function CategoryTypesManagement() {
       },
     },
     {
+      accessorKey: "iconType",
+      header: "Loại icon",
+    },
+    {
       accessorKey: "icon",
       header: "Icon",
       cell: ({ row }) => {
-        const icon = row.getValue("icon") as string
-        return (
-          <div className="flex items-center justify-start">
-            {icon && unicodeToEmoji(icon)}
-          </div>
-        )
+        const iconUnicode = row.getValue("icon") as string;
+        const iconType = row.getValue("iconType") as IconType;
+        if (iconType === IconType.emoji) {
+          const icon = unicodeToEmoji(iconUnicode);
+          return (
+            <div>
+              {icon}
+            </div>
+          );
+        } else {
+          return (
+            <div>
+              <Icon name={iconUnicode} size={20} />
+            </div>
+          );
+        }
       },
     },
     {

@@ -20,6 +20,8 @@ import { IconPickerModal } from "@/components/IconPickerModal"
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils"
 import { AppCategoryCode } from "@/constants"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { IconType } from "@/enums/icon-type.enum"
+
 const formSchema = z.object({
   code: z.string().min(2, {
     message: "Mã loại phải có ít nhất 2 ký tự.",
@@ -28,6 +30,7 @@ const formSchema = z.object({
     message: "Tên loại phải có ít nhất 2 ký tự.",
   }),
   description: z.string().optional(),
+  iconType: z.nativeEnum(IconType).optional(),
   isActive: z.boolean(),
   icon: z.string().optional(),
 })
@@ -48,6 +51,7 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
       code: "",
       name: "",
       description: "",
+      iconType: IconType.lucide,
       isActive: true,
       icon: "",
     },
@@ -169,8 +173,9 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
         <IconPickerModal
           isOpen={isIconPickerOpen}
           onClose={() => setIsIconPickerOpen(false)}
-          onSelect={(icon) => {
+          onSelect={(icon,iconType) => {
             form.setValue("icon", icon);
+            form.setValue("iconType", iconType)
           }}
         />
     </Form>

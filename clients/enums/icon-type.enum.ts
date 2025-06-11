@@ -1,4 +1,4 @@
 export enum IconType {
-    lucide,
-    emoji
+    lucide = "lucide",
+    emoji = "emoji"
 }

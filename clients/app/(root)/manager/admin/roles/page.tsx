@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Plus, Pencil,  ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, Trash } from 'lucide-react';
 import { getRoles, deleteRole, createRole, updateRole, findbyCode } from '@/services/auth-api';
 import { Checkbox } from '@radix-ui/react-checkbox';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { Action } from '@/types/actions';

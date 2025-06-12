@@ -17,7 +17,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
-  maxHeight = "calc(100vh - 280px)", // Default max height
+  maxHeight = "calc(100vh - 250px)", // Default max height
   listAction = [],
 }) => {
   return (

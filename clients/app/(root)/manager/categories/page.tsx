@@ -9,7 +9,7 @@ import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { DataTable } from '@/components/DataTable';
 import { Checkbox } from "@/components/ui/checkbox"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { createCategory, deleteCategory, getCategories, getCategoryTypes, updateCategory } from '@/services/manager-api';
 import { CategoryType } from '@/types/category-type';

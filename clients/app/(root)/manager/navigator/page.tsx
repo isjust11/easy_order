@@ -7,7 +7,7 @@ import { createNavigator, deleteNavigator, getNavigators, updateNavigator } from
 import { Feature } from '@/types/feature';
 import { Role } from '@/types/role';
 import { Checkbox } from '@radix-ui/react-checkbox';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUp, ArrowDown, MoreHorizontal, BadgeInfo, Pencil, Trash, Plus, ArrowLeftRight } from 'lucide-react';
 import { Action } from '@/types/actions';
@@ -198,7 +198,7 @@ export default function NavigatorPage() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className='bg-red shadow-sm rounded-xs '>
+              <DropdownMenuContent align="end" className='shadow-sm rounded-sm bg-white dark:bg-gray-800'>
                 <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-gray-700 dark:text-white"
                   onClick={() => {
                     setSelectedFeature(feature)

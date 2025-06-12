@@ -130,7 +130,8 @@ export function DataTable<TData, TValue>({
           <Input
             placeholder="Tìm tên..."
             value={(search) ?? ""}
-            className="input-focus"
+            className="input-focus dark:bg-white/[0.05] dark:text-white/90 dark:border-white/[0.05] pr-10"
+            autoFocus
             onChange={(event) => {
               setSearch(event.target.value)
               delay(() => {
@@ -138,15 +139,15 @@ export function DataTable<TData, TValue>({
               }, 500)
             }}
           />
-          <Search className="absolute right-2 text-gray-800" />
+          <Search className="absolute right-2 text-gray-800 dark:text-white/90" />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto dark:border-white/[0.05] dark:bg-white/[0.05] dark:text-white/90">
               Hiển thị <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="shadow-sm rounded-sm bg-white dark:bg-gray-800 dark:text-white/90 dark:border-white/[0.05]">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
@@ -168,14 +169,14 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border dark:border-white/[0.05] overflow-x-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className="border-b border-gray-500 dark:border-white/[0.05]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="px-5 py-3 font-medium text-gray-500 text-start text-theme-sm dark:text-gray-400">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -188,7 +189,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="divide-y divide-gray-100 dark:border-white/[0.05]">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => {
                 const rowData = row.original as any
@@ -201,12 +202,12 @@ export function DataTable<TData, TValue>({
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={isChild ? "bg-gray-50" : ""}
+                    className={isChild ? "bg-gray-50 dark:bg-white/[0.05] dark:text-gray-400 dark:color-white/[0.05]" : ""}
                   >
                     {row.getVisibleCells().map((cell, index) => {
                       if (index === 0 && hasChildren) {
                         return (
-                          <TableCell key={cell.id} className="flex items-center gap-2">
+                          <TableCell key={cell.id} className="flex items-center gap-2 sm:px-6 text-start dark:text-white/90">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -224,7 +225,7 @@ export function DataTable<TData, TValue>({
                         )
                       }
                       return (
-                        <TableCell key={cell.id}>
+                        <TableCell key={cell.id} className="px-5 py-3 text-gray-800 dark:text-white/90">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       )
@@ -243,7 +244,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex-1 text-sm text-muted-foreground dark:text-gray-400">
           Đã chọn
           <span className="text-bold"> {table.getFilteredSelectedRowModel().rows.length} /{" "}
             {table.getFilteredRowModel().rows.length} </span>
@@ -251,14 +252,14 @@ export function DataTable<TData, TValue>({
         {data.length > 0 ?
           <div className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium">Số hàng trên trang</p>
+              <p className="text-sm font-medium dark:text-gray-400">Số hàng trên trang</p>
               <select
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value))
                   table.setPageIndex(0)
                 }}
-                className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm"
+                className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm dark:border-white/[0.05] dark:bg-white/[0.05] dark:text-white/90"
               >
                 {[5, 10, 20, 30, 40, 50].map((size) => (
                   <option key={size} value={size}>
@@ -269,6 +270,7 @@ export function DataTable<TData, TValue>({
             </div>
             <Button
               variant="outline"
+               className="dark:border-white/[0.05] dark:bg-white/[0.05] dark:text-white/90"
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
@@ -280,6 +282,7 @@ export function DataTable<TData, TValue>({
                 // className="text-white"
                 key={page}
                 variant={table.getState().pagination.pageIndex === page - 1 ? "default" : "outline"}
+                 className="dark:border-white/[0.05] dark:bg-white/[0.05] dark:text-white/90"
                 size="sm"
                 onClick={() => table.setPageIndex(page - 1)}
               >
@@ -288,6 +291,7 @@ export function DataTable<TData, TValue>({
             ))}
             <Button
               variant="outline"
+              className="dark:border-white/[0.05] dark:bg-white/[0.05] dark:text-white/90"
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}

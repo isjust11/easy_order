@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { unicodeToEmoji } from '@/lib/utils';
 import { DataTable } from '@/components/DataTable';
 import { Category } from '@/types/category';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Table } from '@/types/table';
 import { User } from '@/types/user';
 

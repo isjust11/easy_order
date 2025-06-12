@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Plus, Pencil, ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, Trash, Lock, Unlock } from 'lucide-react';
 import { Checkbox } from '@radix-ui/react-checkbox';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
+// import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
 import { Action } from '@/types/actions';
@@ -14,6 +14,8 @@ import { DataTable } from '@/components/DataTable';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import Badge from '@/components/ui/badge/Badge';
+import { MoreDotIcon } from '@/public/icons';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export default function UsersPage() {
   const router = useRouter();
@@ -23,24 +25,24 @@ export default function UsersPage() {
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
 
-   const fetchUsers = async (page: number, size: number, search: string) => {
-      try {
-        const response = await userApi.getByPage({ page: page + 1, size, search });
-        setUsers(response.data);
-        setPageCount(response.total);
-      } catch (error) {
-        toast.error('Có lỗi xảy ra khi tải danh sách tài khoản');
-      }
-    };
-    
-  
-    useEffect(() => {
-      fetchUsers(pageIndex, pageSize,search);
-    }, [pageIndex, pageSize, search]);
+  const fetchUsers = async (page: number, size: number, search: string) => {
+    try {
+      const response = await userApi.getByPage({ page: page + 1, size, search });
+      setUsers(response.data);
+      setPageCount(response.total);
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi tải danh sách tài khoản');
+    }
+  };
+
+
+  useEffect(() => {
+    fetchUsers(pageIndex, pageSize, search);
+  }, [pageIndex, pageSize, search]);
 
   const handleDelete = async (id: number) => {
     if (!confirm('Bạn có chắc chắn muốn xóa người dùng này?')) return;
-    
+
     try {
       await userApi.delete(id);
       toast.success('Xóa người dùng thành công');
@@ -59,7 +61,7 @@ export default function UsersPage() {
         await userApi.block(id);
         toast.success('Khóa tài khoản thành công');
       }
-      fetchUsers(pageIndex, pageSize, search); 
+      fetchUsers(pageIndex, pageSize, search);
     } catch (_error) {
       toast.error('Có lỗi xảy ra');
     }
@@ -113,10 +115,10 @@ export default function UsersPage() {
               </div>
             )}
           </div>
-        ) 
+        )
       }
     },
-   
+
     {
       accessorKey: "username",
       header: ({ column }) => {
@@ -165,7 +167,7 @@ export default function UsersPage() {
         )
       },
     },
-     {
+    {
       accessorKey: "lastLogin",
       header: "Lần đăng nhập cuối",
       cell: ({ row }) => {
@@ -190,26 +192,26 @@ export default function UsersPage() {
         const user = row.original;
         return (
           <div className="p-2">
-            <DropdownMenu>
+            <DropdownMenu >
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <span className="sr-only">Mở menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
+                  <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 " />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs'>
-                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+              <DropdownMenuContent align="end" className='shadow-sm rounded-sm bg-white dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700'>
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => router.push(`/manager/admin/users/${user.id}`)}>
                   <BadgeInfo className="mr-2 h-4 w-4" />
                   Xem chi tiết
                 </DropdownMenuItem>
-                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700'
                   onClick={() => router.push(`/manager/admin/users/update/${user.id}`)}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   Chỉnh sửa
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => handleBlock(user.id, user.isBlocked)}
                 >
                   {user.isBlocked ? (
@@ -224,7 +226,7 @@ export default function UsersPage() {
                     </>
                   )}
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" 
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20"
                   onClick={() => handleDelete(user.id)}>
                   <Trash className="mr-2 h-4 w-4" />
                   Xóa
@@ -253,8 +255,8 @@ export default function UsersPage() {
       <PageBreadcrumb pageTitle="Danh sách người dùng" />
       <div className="space-y-6">
         <ComponentCard title="Danh sách người dùng" listAction={lstActions}>
-          <DataTable 
-            columns={columns} 
+          <DataTable
+            columns={columns}
             data={users}
             pageCount={pageCount}
             onPaginationChange={handlePaginationChange}

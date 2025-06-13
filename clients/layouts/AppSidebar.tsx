@@ -32,60 +32,60 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
-  {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Quản lý bàn",
-    path: "/tables",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "Quản lý order",
-    path: "/order",
-  },
-  {
-    name: "Quản lý",
-    icon: <ListIcon />,
-    subItems: [
-      { name: "Quản lý thực đơn", path: "/manager/food-items", pro: false },
-      { name: "Quản lý bàn", path: "/manager/tables", pro: false },
-      { name: "Quản lý tài khoản", path: "/manager/users", pro: false },
-      { name: "Quản lý hóa đơn", path: "/manager/invoices", pro: false },
-      { name: "Quản lý đơn hàng", path: "/manager/orders", pro: false },
+// const navItems: NavItem[] = [
+//   {
+//     icon: <GridIcon />,
+//     name: "Dashboard",
+//     subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+//   },
+//   {
+//     icon: <CalenderIcon />,
+//     name: "Quản lý bàn",
+//     path: "/tables",
+//   },
+//   {
+//     icon: <UserCircleIcon />,
+//     name: "Quản lý order",
+//     path: "/order",
+//   },
+//   {
+//     name: "Quản lý",
+//     icon: <ListIcon />,
+//     subItems: [
+//       { name: "Quản lý thực đơn", path: "/manager/food-items", pro: false },
+//       { name: "Quản lý bàn", path: "/manager/tables", pro: false },
+//       { name: "Quản lý tài khoản", path: "/manager/users", pro: false },
+//       { name: "Quản lý hóa đơn", path: "/manager/invoices", pro: false },
+//       { name: "Quản lý đơn hàng", path: "/manager/orders", pro: false },
 
-    ],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
-  },
-];
+//     ],
+//   },
+//   {
+//     name: "Pages",
+//     icon: <PageIcon />,
+//     subItems: [
+//       { name: "Blank Page", path: "/blank", pro: false },
+//       { name: "404 Error", path: "/error-404", pro: false },
+//     ],
+//   },
+// ];
 
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Danh mục",
-    subItems: [
-      { name: "Loại danh mục", path: "/manager/category-types", pro: false },
-      { name: "Quản lý danh mục", path: "/manager/categories", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "Đa phương tiện",
-    path: "/manager/media",
-  },
+// const othersItems: NavItem[] = [
+//   {
+//     icon: <PieChartIcon />,
+//     name: "Danh mục",
+//     subItems: [
+//       { name: "Loại danh mục", path: "/manager/category-types", pro: false },
+//       { name: "Quản lý danh mục", path: "/manager/categories", pro: false },
+//     ],
+//   },
+//   {
+//     icon: <BoxCubeIcon />,
+//     name: "Đa phương tiện",
+//     path: "/manager/media",
+//   },
   
-];
+// ];
 
 const AppSidebar: React.FC = () => {
   const { user, feature } = useAuth();
@@ -266,14 +266,15 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;
-    ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
-      items.forEach((nav, index) => {
+    const menuTypesCode = menuTypes?.map((x)=>x.code);
+    menuTypesCode?.forEach((menuType) => {
+      const items = features?.map(convertFeatureToNavItem).filter((x)=>x.type == menuType);
+      items?.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
             if (isActive(subItem.path)) {
               setOpenSubmenu({
-                type: menuType as "main" | "others",
+                type: menuType,
                 index,
               });
               submenuMatched = true;
@@ -383,24 +384,6 @@ const AppSidebar: React.FC = () => {
             ))
 
             }
-          </div>
-           <div className="flex flex-col gap-4">
-              <div>
-                <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                    }`}
-                >
-                  {isExpanded || isHovered || isMobileOpen ? (
-                    "Khác"
-                  ) : (
-                    <HorizontaLDots />
-                  )}
-                </h2>
-                {renderMenuItems(othersItems ?? [], "others")}
-              </div>
-           
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

@@ -252,7 +252,7 @@ const AppSidebar: React.FC = () => {
       name: feature.label || '',
       icon: <Icon name={feature.icon} size={feature.iconSize} />, // You'll need to implement this
       path: feature.link,
-      type: feature?.navigatorType?.code,
+      type: feature?.featureType?.code,
       subItems: feature.children?.map(child => ({
         name: child.label || '',
         path: child.link || '',

@@ -16,7 +16,7 @@ export interface Feature {
     isActive: boolean;
     order?: number;
     navigatorTypeId?: string;
-    navigatorType: Category;
+    featureType: Category;
     isDefault:boolean;
     createdAt?: Date;
     updatedAt?: Date;

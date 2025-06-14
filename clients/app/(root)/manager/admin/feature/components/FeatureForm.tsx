@@ -35,18 +35,18 @@ const formSchema = z.object({
     navigatorTypeId: z.string().optional(),
 });
 
-interface NavigatorFormProps {
+interface FeatureFormProps {
     initialData?: Feature | null;
     onSubmit: (values: z.infer<typeof formSchema>) => void;
     onCancel: () => void;
     navigatorParents: Feature[];
 }
 
-export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParents }: NavigatorFormProps) {
+export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents }: FeatureFormProps) {
     const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
     const [iconType, setIconType] = useState(IconType.lucide);
     const [iconSize, setIconSize] = useState(20)
-    const [navigatorType, setNavigatorType] = useState<Category[]>([]);
+    const [featureType, setFeatureType] = useState<Category[]>([]);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData
@@ -91,11 +91,11 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const loadNavigatorType = async () => {
+            const loadFeatureType = async () => {
                 const response = await getCategoryByCode(getFeatureType());
-                setNavigatorType(response);
+                setFeatureType(response);
             };
-            loadNavigatorType();
+            loadFeatureType();
         }
     }, []);
     return (
@@ -124,7 +124,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                 <Select 
                                     value={field.value} 
                                     onValueChange={field.onChange} 
-                                    defaultValue={navigatorType[0]?.id}
+                                    defaultValue={featureType[0]?.id}
                                 >
                                     <FormControl>
                                         <SelectTrigger>
@@ -132,7 +132,7 @@ export function NavigatorForm({ initialData, onSubmit, onCancel, navigatorParent
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
-                                        {navigatorType.length >0 ? navigatorType.map((type) => (
+                                        {featureType.length >0 ? featureType.map((type) => (
                                             <SelectItem key={type.id} value={type.id}>
                                                 <div className="flex flex-start items-center">
                                                     <span className="text-2xl mr-2">

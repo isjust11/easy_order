@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { AppConstants } from '@/constants';
 import { Suspense } from 'react';
-import { getNavigatorsByRole, getTokenInfo } from '@/services/auth-api';
+import { getFeaturesByRole, getTokenInfo } from '@/services/auth-api';
 
 function AuthSuccessPage() {
   const router = useRouter();
@@ -27,18 +27,18 @@ function AuthSuccessPage() {
           localStorage.setItem(AppConstants.RefreshToken, userInfo.refreshToken);
           localStorage.setItem(AppConstants.User, JSON.stringify(userInfo.user));
           const roleId = userInfo.user.roles[0].id;
-          const feature = await getNavigatorsByRole(roleId);
+          const feature = await getFeaturesByRole(roleId);
           localStorage.setItem(AppConstants.Feature, JSON.stringify(feature));
           toast.success('Đăng nhập thành công');
           router.push('/');
         } catch (error) {
           console.error('Error fetching token info:', error);
           toast.error('Có lỗi xảy ra khi xử lý đăng nhập');
-          router.push('/auth/login');
+          router.push('/login');
         }
       } else {
         toast.error('Không tìm thấy token đăng nhập');
-        router.push('/auth/login');
+        router.push('/login');
       }
     };
     fetchData();

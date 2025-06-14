@@ -49,16 +49,18 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    const loadData = async () => {
-      const remember = localStorage.getItem(AppConstants.Remember);
-      if (remember) {
-        form.setValue('remember', remember === 'true');
-        form.setValue('username', localStorage.getItem(AppConstants.Username) || '');
-        const password = localStorage.getItem(AppConstants.Password);
-        // form.setValue('password', decrypt(password || ''));
+    if (typeof window !== 'undefined') {
+      const loadData = async () => {
+        const remember = localStorage.getItem(AppConstants.Remember);
+        if (remember) {
+          form.setValue('remember', remember === 'true');
+          form.setValue('username', localStorage.getItem(AppConstants.Username) || '');
+          const password = localStorage.getItem(AppConstants.Password);
+          // form.setValue('password', decrypt(password || ''));
+        }
       }
+      loadData();
     }
-    loadData();
   }, [form]);
 
   const handleForgotPassword = async () => {

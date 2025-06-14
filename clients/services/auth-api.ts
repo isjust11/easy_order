@@ -213,8 +213,8 @@ export const deleteRole = async (id: string): Promise<void> => {
   await axiosApi.delete(`/roles/${id}`);
 };  
 
-export const getNavigatorsByRole = async (id: string): Promise<Feature[]> => {
-  const response = await axiosApi.get(`/roles/${id}/navigators`);
+export const getFeaturesByRole = async (id: string): Promise<Feature[]> => {
+  const response = await axiosApi.get(`/roles/${id}/features`);
   return response.data;
 };
 

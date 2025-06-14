@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
-import { navigatorService } from '@/services/navigator-api';
+import { navigatorService } from '@/services/feature-api';
 import { Feature } from '@/types/feature';
 import { Role } from '@/types/role';
 import Switch from '@/components/form/switch/Switch';

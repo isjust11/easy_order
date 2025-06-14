@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 // import { useSocket } from '@/hooks/useSocket';
-import { createNavigator, deleteNavigator, getNavigators, updateNavigator } from '@/services/manager-api';
+import { createFeature, deleteFeature, getFeatures, updateFeature } from '@/services/manager-api';
 import { Feature } from '@/types/feature';
 import { Role } from '@/types/role';
 import { Checkbox } from '@radix-ui/react-checkbox';
@@ -16,13 +16,13 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { DataTable } from '@/components/DataTable';
 import ComponentCard from '@/components/common/ComponentCard';
 import { Modal } from '@/components/ui/modal';
-import { NavigatorForm } from './components/NavigatorForm';
 import { useModal } from '@/hooks/useModal';
 import { toast } from 'sonner';
 import { Icon } from '@/components/ui/icon';
 import { Category } from '@/types/category';
 import { buildFeature } from '@/lib/utils';
-export default function NavigatorPage() {
+import { FeatureForm } from './components/FeatureForm';
+export default function FeaturePage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
   const [formData, setFormData] = useState({
@@ -41,15 +41,15 @@ export default function NavigatorPage() {
   const [search, setSearch] = useState('');
   // const { socket } = useSocket();
 
-  const fetchNavigators = async () => {
-    const response = await getNavigators({ page: pageIndex + 1, size: pageSize, search });
+  const fetchFeatures = async () => {
+    const response = await getFeatures({ page: pageIndex + 1, size: pageSize, search });
     const featureTree = buildFeature(response.data);
     setFeatures(featureTree);
     setPageCount(response.totalPages);
   };
 
   useEffect(() => {
-    fetchNavigators();
+    fetchFeatures();
   }, [pageIndex, pageSize, search]);
 
   const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
@@ -64,27 +64,27 @@ export default function NavigatorPage() {
   const handleSubmit = async (values: any) => {
     if (selectedFeature) {
       // Cập nhật navigator
-      await updateNavigator(selectedFeature.id, values);
+      await updateFeature(selectedFeature.id, values);
       toast.success('Cập nhật chức năng thành công!')
     } else {
       // Thêm navigator mới
-      await createNavigator(values);
+      await createFeature(values);
       toast.success('Thêm mới chức năng thành công!')
     }
-    await fetchNavigators()
+    await fetchFeatures()
     closeModal();
   };
 
   const handleDelete = async (id: any) => {
-    await deleteNavigator(id);
-    await fetchNavigators()
+    await deleteFeature(id);
+    await fetchFeatures()
     closeModal();
     toast.success('Xóa chức năng thành công!')
   };
 
   const handleChangeStatus = async (feature: Feature) => {
-    await updateNavigator(feature.id, { isActive: !feature.isActive });
-    await fetchNavigators()
+    await updateFeature(feature.id, { isActive: !feature.isActive });
+    await fetchFeatures()
     toast.success('Đổi trạng thái chức năng thành công!')
   };
 
@@ -127,10 +127,10 @@ export default function NavigatorPage() {
       },
     },
      {
-      accessorKey: "navigatorType",
+      accessorKey: "featureType",
       header: "Loại danh mục",
       cell: ({ row }) => {
-        const featureType = row.getValue("navigatorType") as Category
+        const featureType = row.getValue("featureType") as Category
         return (
          <div className="text-sm text-gray-500">
             <span>{featureType?.name ?? '-'}</span>
@@ -278,7 +278,7 @@ export default function NavigatorPage() {
             <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
               {selectedFeature ? 'Cập nhật chức năng' : 'Thêm chức năng mới'}
             </h4>
-            <NavigatorForm
+            <FeatureForm
               initialData={selectedFeature}
               onSubmit={handleSubmit}
               onCancel={closeModal}

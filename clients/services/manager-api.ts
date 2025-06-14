@@ -91,9 +91,9 @@ export const updateOrder = async (id: number, data: any): Promise<Order> => {
 
 
 // todo: api manager navigator
-export const getNavigators = async (params?: PaginationParams): Promise<PaginatedResponse<Feature>> => {
+export const getFeatures = async (params?: PaginationParams): Promise<PaginatedResponse<Feature>> => {
   try {
-    const response = await axiosApi.get(`/navigator`, {params});
+    const response = await axiosApi.get(`/feature`, {params});
     return response.data;
   } catch (_error) {
     console.error('Error fetching navigator:', _error);
@@ -101,9 +101,9 @@ export const getNavigators = async (params?: PaginationParams): Promise<Paginate
   }
 };
 
-export const createNavigator = async (data: any): Promise<Feature> => {
+export const createFeature = async (data: any): Promise<Feature> => {
   try {
-    const response = await axiosApi.post(`/navigator`, data);
+    const response = await axiosApi.post(`/feature`, data);
     return response.data;
   } catch (_error) {
     console.error('Error creating navigator:', _error);
@@ -111,9 +111,9 @@ export const createNavigator = async (data: any): Promise<Feature> => {
   }
 };
 
-export const updateNavigator = async (id: string, data: any): Promise<Feature> => {
+export const updateFeature = async (id: string, data: any): Promise<Feature> => {
   try {
-    const response = await axiosApi.put(`/navigator/${id}`, data);
+    const response = await axiosApi.put(`/feature/${id}`, data);
     return response.data;
   } catch (_error) {
     console.error('Error updating navigator:', _error);
@@ -121,9 +121,9 @@ export const updateNavigator = async (id: string, data: any): Promise<Feature> =
   }
 };
 
-export const deleteNavigator = async (id: number): Promise<void> => {
+export const deleteFeature = async (id: number): Promise<void> => {
   try {
-    await axiosApi.delete(`/navigator/${id}`);
+    await axiosApi.delete(`/feature/${id}`);
   } catch (_error) {
     console.error('Error deleting navigator:', _error);
     throw _error;
@@ -132,7 +132,7 @@ export const deleteNavigator = async (id: number): Promise<void> => {
 
 export const assignPermissions = async (id: number, data: any): Promise<void> => {
   try {
-    await axiosApi.post(`/navigator/${id}/permissions`, data);
+    await axiosApi.post(`/feature/${id}/permissions`, data);
   } catch (_error) {
     console.error('Error assigning permissions:', _error);
     throw _error;
@@ -141,16 +141,16 @@ export const assignPermissions = async (id: number, data: any): Promise<void> =>
 
 export const removePermissions = async (id: number, data: any): Promise<void> => {
   try {
-    await axiosApi.delete(`/navigator/${id}/permissions`, data);
+    await axiosApi.delete(`/feature/${id}/permissions`, data);
   } catch (_error) {
     console.error('Error removing permissions:', _error);
     throw _error;
   }
 };
 
-export const getNavigatorPermissions = async (id: number): Promise<Permission[]> => {
+export const getFeaturePermissions = async (id: number): Promise<Permission[]> => {
   try {
-    const response = await axiosApi.get(`/navigator/${id}/permissions`);
+    const response = await axiosApi.get(`/feature/${id}/permissions`);
     return response.data;
   } catch (_error) {
     console.error('Error fetching navigator permissions:', _error);

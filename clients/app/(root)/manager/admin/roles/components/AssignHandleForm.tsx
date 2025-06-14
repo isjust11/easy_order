@@ -1,6 +1,6 @@
 // components/EnhancedAssignList.jsx
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { navigatorService } from '@/services/navigator-api';
+import { navigatorService } from '@/services/feature-api';
 import { Feature } from '@/types/feature';
 import { ArrowRight, ChevronRight, X } from 'lucide-react';
 import { useState, useEffect } from 'react';

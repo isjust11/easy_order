@@ -14,7 +14,7 @@ export interface Category {
   iconType: IconType;
   iconSize: number;
   className: string;
-  order: number;
+  sortOrder: number;
   code: string;
   isDefault: boolean;
 } 

@@ -10,12 +10,13 @@ import { Feature } from "@/types/feature";
 import { useEffect, useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
-import { decode, emojiToUnicode, getFeatureType, unicodeToEmoji } from "@/lib/utils";
+import { emojiToUnicode, getFeatureType, unicodeToEmoji } from "@/lib/utils";
 import { IconType } from "@/enums/icon-type.enum";
 import { Icon } from "@/components/ui/icon";
 import { Slider } from "@/components/ui/slider";
 import { Category } from "@/types/category";
 import { getCategoryByCode } from "@/services/manager-api";
+import { AppCategoryCode } from "@/constants";
 
 const formSchema = z.object({
     label: z.string().min(2, {
@@ -25,24 +26,25 @@ const formSchema = z.object({
         message: "Đường dẫn phải có ít nhất 2 ký tự.",
     }),
     isActive: z.boolean(),
-    order: z.string().optional(),
+    sortOrder: z.string().optional(),
     roles: z.array(z.string()).optional(),
     icon: z.string().optional(),
     iconSize: z.number().optional().default(20),
     className: z.string().optional().default(''),
     iconType: z.nativeEnum(IconType),
     parentId: z.string().optional(),
-    navigatorTypeId: z.string().optional(),
+    featureTypeId: z.string().optional(),
 });
 
 interface FeatureFormProps {
     initialData?: Feature | null;
     onSubmit: (values: z.infer<typeof formSchema>) => void;
     onCancel: () => void;
-    navigatorParents: Feature[];
+    featureParents: Feature[];
+    featureParent?: Feature;
 }
 
-export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents }: FeatureFormProps) {
+export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, featureParent }: FeatureFormProps) {
     const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
     const [iconType, setIconType] = useState(IconType.lucide);
     const [iconSize, setIconSize] = useState(20)
@@ -56,26 +58,26 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                 icon: initialData.icon ? unicodeToEmoji(initialData.icon) : "",
                 parentId: initialData.parentId ? initialData.parentId.toString() : "",
                 roles: initialData.roles?.map((role) => role.id) || [],
-                order: initialData.order ? String(initialData.order) : "0",
+                sortOrder: initialData.sortOrder ? String(initialData.sortOrder) : "0",
                 link: initialData.link || "",
                 label: initialData.label || "",
                 iconSize: initialData.iconSize || 20,
                 className: initialData.className || "",
                 iconType: IconType.lucide,
-                navigatorTypeId: decode(initialData.navigatorTypeId || "")
+                featureTypeId: initialData.featureTypeId || ""
             }
             : {
                 label: "",
                 link: "",
                 isActive: true,
                 icon: "",
-                parentId: "",
+                parentId: featureParent?.id??'',
                 roles: [],
-                order: "0",
+                sortOrder: "0",
                 iconSize: 20,
                 className: "",
                 iconType: IconType.lucide,
-                navigatorTypeId: ""
+                featureTypeId: ""
             },
     });
 
@@ -84,16 +86,20 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
         if (values.icon && values.iconType === IconType.emoji) {
             values.icon = emojiToUnicode(values.icon);
         }
-        // Đảm bảo order là số
-        values.order = values.order || "0";
+        // Đảm bảo sortOrder là số
+        values.sortOrder = values.sortOrder || "0";
         onSubmit(values);
     };
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const loadFeatureType = async () => {
-                const response = await getCategoryByCode(getFeatureType());
-                setFeatureType(response);
+                const data = await getCategoryByCode(getFeatureType());
+                setFeatureType(data);
+                if (data.length > 0) {
+                    const menuFeature = data.find((x)=>x.code == AppCategoryCode.FEATURE_MENU)
+                    form.setValue("featureTypeId", menuFeature?.id);
+                  }
             };
             loadFeatureType();
         }
@@ -110,21 +116,20 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập tên chức năng" {...field} />
                             </FormControl>
-                            <FormMessage className="text-red-500"/>
+                            <FormMessage className="text-red-500" />
                         </FormItem>
                     )}
                 />
                 <FormField
                     control={form.control}
-                    name="navigatorTypeId"
+                    name="featureTypeId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Loại chức năng</FormLabel>
                             <FormControl>
-                                <Select 
-                                    value={field.value} 
-                                    onValueChange={field.onChange} 
-                                    defaultValue={featureType[0]?.id}
+                                <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
                                 >
                                     <FormControl>
                                         <SelectTrigger>
@@ -132,18 +137,22 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
-                                        {featureType.length >0 ? featureType.map((type) => (
+                                        {featureType.length > 0 ? featureType.map((type) => (
                                             <SelectItem key={type.id} value={type.id}>
                                                 <div className="flex flex-start items-center">
                                                     <span className="text-2xl mr-2">
-                                                        {type.icon && (
-                                                            <Icon name={type.icon} />
-                                                        )}
+                                                        {
+                                                            type.iconType == "lucide" ?
+                                                                type.icon && (
+                                                                    <Icon name={type.icon} />
+                                                                ) :
+                                                                unicodeToEmoji(type.icon)
+                                                        }
                                                     </span>
                                                     <span className="text-sm text-gray-500">{type.name}</span>
                                                 </div>
                                             </SelectItem>
-                                        )): (
+                                        )) : (
                                             <div className="flex flex-start items-center">
                                                 <span className="text-sm px-2 py-2">
                                                     Không có dữ liệu
@@ -153,7 +162,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                                     </SelectContent>
                                 </Select>
                             </FormControl>
-                            <FormMessage className="text-red-500"/> 
+                            <FormMessage className="text-red-500" />
                         </FormItem>
                     )}
                 />
@@ -166,7 +175,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập đường dẫn" {...field} />
                             </FormControl>
-                            <FormMessage className="text-red-500"/> 
+                            <FormMessage className="text-red-500" />
                         </FormItem>
                     )}
                 />
@@ -184,14 +193,14 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
-                                        {navigatorParents.length == 0 && (
+                                        {featureParents.length == 0 && (
                                             <div className="flex flex-start items-center">
                                                 <span className="text-sm px-2 py-2">
                                                     Không có dữ liệu
                                                 </span>
                                             </div>
                                         )}
-                                        {navigatorParents.map((parent) => (
+                                        {featureParents.map((parent) => (
                                             <SelectItem key={parent.id} value={parent.id}>
                                                 <div className="flex flex-start items-center">
                                                     <span className="text-2xl mr-2">
@@ -212,15 +221,15 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage className="text-red-500"/> 
+                                <FormMessage className="text-red-500" />
                             </FormItem>
                         )}
                     />
 
                     <FormField
                         control={form.control}
-                        name="order"
-                        render={({ field }) => (
+                        name="sortOrder"
+                            render={({ field }) => (
                             <FormItem className="w-1/3">
                                 <FormLabel>Thứ tự</FormLabel>
                                 <FormControl>
@@ -229,10 +238,10 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                                         type="text"
                                         placeholder="Thứ tự"
                                         {...field}
-                                        value={field.value || 0}
+                                        value={field.value || "0"}
                                     />
                                 </FormControl>
-                                <FormMessage className="text-red-500"/> 
+                                <FormMessage className="text-red-500" />
                             </FormItem>
                         )}
                     />
@@ -290,7 +299,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, navigatorParents 
                                     }
 
                                 </div>
-                                <FormMessage className="text-red-500"/>
+                                <FormMessage className="text-red-500" />
                             </FormItem>
                         )}
                     />

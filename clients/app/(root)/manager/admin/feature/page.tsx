@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-// import { useSocket } from '@/hooks/useSocket';
 import { createFeature, deleteFeature, getFeatures, updateFeature } from '@/services/manager-api';
 import { Feature } from '@/types/feature';
-import { Role } from '@/types/role';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUp, ArrowDown, MoreHorizontal, BadgeInfo, Pencil, Trash, Plus, ArrowLeftRight } from 'lucide-react';
+import { ArrowUp, ArrowDown, MoreHorizontal, BadgeInfo, Pencil, Trash, Plus, ArrowLeftRight, PlusCircle } from 'lucide-react';
 import { Action } from '@/types/actions';
 import Badge from '@/components/ui/badge/Badge';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
@@ -22,19 +20,15 @@ import { Icon } from '@/components/ui/icon';
 import { Category } from '@/types/category';
 import { buildFeature } from '@/lib/utils';
 import { FeatureForm } from './components/FeatureForm';
+import Link from "next/link";
+import { AlertDialogUtils } from '@/components/AlertDialogUtils';
 export default function FeaturePage() {
   const [features, setFeatures] = useState<Feature[]>([]);
+  const [featureParent, setFeatureParent] = useState<Feature>();
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
-  const [formData, setFormData] = useState({
-    icon: '',
-    label: '',
-    link: '',
-    parentId: undefined as number | undefined,
-    isActive: true,
-    order: 0,
-    roles: [] as Role[],
-  });
-  const { isOpen, openModal, closeModal } = useModal();
+  const {isOpen, openModal, closeModal } = useModal();
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [dialogContent, setDialogContent] = useState<string>();
   const [pageCount, setPageCount] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -57,7 +51,7 @@ export default function FeaturePage() {
     setPageSize(newPageSize);
   };
 
-  const handleSearch=(searchValue: string)=>{
+  const handleSearch = (searchValue: string) => {
     setSearch(searchValue);
   }
 
@@ -75,12 +69,20 @@ export default function FeaturePage() {
     closeModal();
   };
 
-  const handleDelete = async (id: any) => {
-    await deleteFeature(id);
-    await fetchFeatures()
-    closeModal();
-    toast.success('Xóa chức năng thành công!')
+  const handleDelete = async (feature: any) => {
+    setSelectedFeature(feature)
+    setOpenDialog(true);
+    setDialogContent('Bạn có chắc chắn muốn xóa chức năng này không?');
+    
+
   };
+
+  const confirmDelete=async ()=>{
+    await deleteFeature(selectedFeature?.id);
+    await fetchFeatures();
+    setOpenDialog(false)
+    toast.success('Xóa chức năng thành công!')
+  }
 
   const handleChangeStatus = async (feature: Feature) => {
     await updateFeature(feature.id, { isActive: !feature.isActive });
@@ -126,13 +128,13 @@ export default function FeaturePage() {
         )
       },
     },
-     {
+    {
       accessorKey: "featureType",
       header: "Loại danh mục",
       cell: ({ row }) => {
         const featureType = row.getValue("featureType") as Category
         return (
-         <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500">
             <span>{featureType?.name ?? '-'}</span>
           </div>
         )
@@ -144,18 +146,28 @@ export default function FeaturePage() {
       cell: ({ row }) => {
         const icon = row.getValue("icon") as string
         return (
-          <Icon name={icon} size={20} className='text-gray-400'/>
+          <Icon name={icon} size={20} className='text-gray-400' />
         )
       },
     },
     {
       accessorKey: "link",
+      enableHiding: true,
       header: "Đường dẫn",
       cell: ({ row }) => {
-        const link = row.getValue("link") as string
+        const link = row.getValue("link") as string;
+        const parentId = row.original.parentId;
         return (
-            <div className="text-sm text-gray-500">
-            {link ?? '-'}
+          parentId ?
+            <Link
+              href={link ?? '#'}
+              className='text-sm text-blue-400'
+            >
+              {link ?? ''}
+            </Link>
+            :
+            <div className='text-sm text-gray-500'>
+              {link ?? ''}
             </div>
         )
       }
@@ -173,13 +185,13 @@ export default function FeaturePage() {
       },
     },
     {
-      accessorKey: "order",
+      accessorKey: "sortOrder",
       header: "Thứ tự",
       cell: ({ row }) => {
-        const order = row.getValue("order") as number
+        const sortOrder = row.getValue("sortOrder") as number
         return (
           <div className="text-sm text-gray-500">
-            {order??'-'}
+            {sortOrder ?? '-'}
           </div>
         )
       },
@@ -199,6 +211,17 @@ export default function FeaturePage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className='shadow-sm rounded-sm bg-white dark:bg-gray-800'>
+                {
+                  feature.parentId == null && <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-green-500 dark:text-white"
+                    onClick={() => {
+                      setSelectedFeature(null);
+                      setFeatureParent(feature)
+                      openModal();
+                    }}>
+                    <PlusCircle className="mr-2 h-4 w-4 text-green-500 dark:text-white" />
+                    Thêm chức năng con
+                  </DropdownMenuItem>
+                }
                 <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-gray-700 dark:text-white"
                   onClick={() => {
                     setSelectedFeature(feature)
@@ -213,7 +236,7 @@ export default function FeaturePage() {
                   }}
                 >
                   <ArrowLeftRight className="mr-2 h-4 w-4 text-violet-500 dark:text-white" />
-                  {feature.isActive?' Ngừng hoạt động' : 'Kích hoạt'} 
+                  {feature.isActive ? ' Ngừng hoạt động' : 'Kích hoạt'}
                 </DropdownMenuItem>
                 <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10 text-blue-500 dark:text-white'
                   onClick={() => {
@@ -224,7 +247,7 @@ export default function FeaturePage() {
                   <Pencil className="mr-2 h-4 w-4 text-blue-500 dark:text-white" />
                   Chỉnh sửa
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10" onClick={() => handleDelete(feature.id)}>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/10" onClick={() => handleDelete(feature)}>
                   <Trash className="mr-2 h-4 w-4" />
                   Xóa
                 </DropdownMenuItem>
@@ -240,15 +263,6 @@ export default function FeaturePage() {
       icon: <Plus className="w-4 h-4 mr-2" />,
       onClick: () => {
         setSelectedFeature(null);
-        setFormData({
-          icon: '',
-          label: '',
-          link: '',
-          parentId: undefined,
-          isActive: true,
-          order: 0,
-          roles: [],
-        });
         openModal();
       },
       title: "Thêm chức năng",
@@ -258,19 +272,19 @@ export default function FeaturePage() {
 
   return (
     <div>
-    <PageBreadcrumb pageTitle="Danh sách chức năng" />
-    <div className="space-y-6">
-      <ComponentCard title="Danh sách chức năng" listAction={lstActions}>
-        <DataTable 
-          columns={columns} 
-          data={features}
-          pageCount={pageCount}
-          onPaginationChange={handlePaginationChange}
-          onSearchChange={handleSearch}
-          manualPagination={true}
-          getRowChildren={(row) => (row as any).children}
-        />
-         <Modal
+      <PageBreadcrumb pageTitle="Danh sách chức năng" />
+      <div className="space-y-6">
+        <ComponentCard title="Danh sách chức năng" listAction={lstActions}>
+          <DataTable
+            columns={columns}
+            data={features}
+            pageCount={pageCount}
+            onPaginationChange={handlePaginationChange}
+            onSearchChange={handleSearch}
+            manualPagination={true}
+            getRowChildren={(row) => (row as any).children}
+          />
+          <Modal
             isOpen={isOpen}
             onClose={closeModal}
             className="max-w-[600px] p-5 lg:p-10"
@@ -282,10 +296,21 @@ export default function FeaturePage() {
               initialData={selectedFeature}
               onSubmit={handleSubmit}
               onCancel={closeModal}
-              navigatorParents={features} />
+              featureParents={features}
+              featureParent={featureParent}
+            />
           </Modal>
-      </ComponentCard>
+        </ComponentCard>
+        <AlertDialogUtils
+          type="warning"
+          content={dialogContent}
+          confirmText="Đồng ý"
+          cancelText="Hủy"
+          isOpen={openDialog}
+          onConfirm={() => confirmDelete()}
+          onCancel={() => {setOpenDialog(false)}}
+        />
+      </div>
     </div>
-  </div>
   );
 } 

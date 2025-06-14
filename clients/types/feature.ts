@@ -14,8 +14,8 @@ export interface Feature {
     children?: Feature[];
     roles?: Role[];
     isActive: boolean;
-    order?: number;
-    navigatorTypeId?: string;
+    sortOrder?: number;
+    featureTypeId?: string;
     featureType: Category;
     isDefault:boolean;
     createdAt?: Date;

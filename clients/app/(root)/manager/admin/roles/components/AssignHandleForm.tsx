@@ -1,6 +1,6 @@
 // components/EnhancedAssignList.jsx
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { navigatorService } from '@/services/feature-api';
+import { featureService } from '@/services/feature-api';
 import { Feature } from '@/types/feature';
 import { ArrowRight, ChevronRight, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -47,7 +47,7 @@ export default function AssignHandleForm({
 
     const fetchFeatures = async () => {
         try {
-            const data = await navigatorService.getNavigators();
+            const data = await featureService.getFeatures();
             const newFeatures = data.data;
             setFeatures(newFeatures);
             

@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
-import { navigatorService } from '@/services/feature-api';
+import { featureService } from '@/services/feature-api';
 import { Feature } from '@/types/feature';
 import { Role } from '@/types/role';
 import Switch from '@/components/form/switch/Switch';
@@ -79,7 +79,7 @@ export function RoleFormInput({ role, onFormChange, isView = false }: RoleFormPr
   useEffect(() => {
     const fetchNavigators = async () => {
       try {
-        const data = await navigatorService.getNavigators();
+        const data = await featureService.getFeatures();
         setNavigators(data.data);
       } catch (error: any) {
         toast.error('Lỗi khi tải danh sách chức năng: ' + error.message);

@@ -6,6 +6,7 @@ import { Permission } from '@/types/permission';
 import { CategoryType } from '@/types/category-type';
 import { Table } from '@/types/table';
 import { Feature } from '@/types/feature';
+import { Category } from '@/types/category';
 
 
 // todo: api manager fooditem
@@ -121,7 +122,7 @@ export const updateFeature = async (id: string, data: any): Promise<Feature> => 
   }
 };
 
-export const deleteFeature = async (id: number): Promise<void> => {
+export const deleteFeature = async (id?: string): Promise<void> => {
   try {
     await axiosApi.delete(`/feature/${id}`);
   } catch (_error) {
@@ -229,7 +230,7 @@ export const deleteCategoryType = async (id: string): Promise<void> => {
   await axiosApi.delete(`/category-types/${id}`);
 };
 
-export const getCategoryByCode = async (code: string): Promise<any> => {
+export const getCategoryByCode = async (code: string): Promise<Category[]> => {
   try {
     const response = await axiosApi.get(`/category-types/code/${code}`);
     return response.data.categories;

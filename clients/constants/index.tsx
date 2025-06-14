@@ -17,4 +17,5 @@ export const AppCategoryCode = {
   TableType: 'Loại bàn',
   TableStatus: 'Trạng thái bàn',
   TableArea: 'Khu vực bàn',
+  FEATURE_MENU: 'FEATURE_MENU',
 }

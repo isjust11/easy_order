@@ -32,61 +32,6 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-// const navItems: NavItem[] = [
-//   {
-//     icon: <GridIcon />,
-//     name: "Dashboard",
-//     subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-//   },
-//   {
-//     icon: <CalenderIcon />,
-//     name: "Quản lý bàn",
-//     path: "/tables",
-//   },
-//   {
-//     icon: <UserCircleIcon />,
-//     name: "Quản lý order",
-//     path: "/order",
-//   },
-//   {
-//     name: "Quản lý",
-//     icon: <ListIcon />,
-//     subItems: [
-//       { name: "Quản lý thực đơn", path: "/manager/food-items", pro: false },
-//       { name: "Quản lý bàn", path: "/manager/tables", pro: false },
-//       { name: "Quản lý tài khoản", path: "/manager/users", pro: false },
-//       { name: "Quản lý hóa đơn", path: "/manager/invoices", pro: false },
-//       { name: "Quản lý đơn hàng", path: "/manager/orders", pro: false },
-
-//     ],
-//   },
-//   {
-//     name: "Pages",
-//     icon: <PageIcon />,
-//     subItems: [
-//       { name: "Blank Page", path: "/blank", pro: false },
-//       { name: "404 Error", path: "/error-404", pro: false },
-//     ],
-//   },
-// ];
-
-// const othersItems: NavItem[] = [
-//   {
-//     icon: <PieChartIcon />,
-//     name: "Danh mục",
-//     subItems: [
-//       { name: "Loại danh mục", path: "/manager/category-types", pro: false },
-//       { name: "Quản lý danh mục", path: "/manager/categories", pro: false },
-//     ],
-//   },
-//   {
-//     icon: <BoxCubeIcon />,
-//     name: "Đa phương tiện",
-//     path: "/manager/media",
-//   },
-  
-// ];
-
 const AppSidebar: React.FC = () => {
   const { user, feature } = useAuth();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -104,7 +49,7 @@ const AppSidebar: React.FC = () => {
       if (!data) {
         return;
       }
-      setMenuTypes(data.sort((a,b)=> a.order-b.order));
+      setMenuTypes(data.sort((a,b)=> a.sortOrder-b.sortOrder));
     }
     fetchMenuTypes();
   }, []);

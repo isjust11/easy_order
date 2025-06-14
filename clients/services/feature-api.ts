@@ -1,7 +1,7 @@
 import axios from 'axios';
 import axiosApi from './base/api';
 
-export const FeatureService = {
+export const featureService = {
 
   async getFeatures() {
     try {

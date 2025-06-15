@@ -10,13 +10,13 @@ import { Category } from '@/types/category';
 
 
 // todo: api manager fooditem
-export const getAllFoods = async (): Promise<FoodItem[]> => {
+export const getAllFoods = async (params?: PaginationParams) : Promise<PaginatedResponse<FoodItem>> => {
   try {
-    const response = await axiosApi.get(`/food-items`);
+    const response = await axiosApi.get(`/food-items`, {params});
     return response.data;
   } catch (_error) {
     console.error('Error fetching food item:', _error);
-    return [];
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
   }
 };
 

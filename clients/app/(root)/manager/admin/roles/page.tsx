@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Plus, Pencil,  ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, Trash } from 'lucide-react';
+import { Plus, Pencil, ArrowDown, ArrowUp, BadgeInfo, MoreHorizontal, Trash } from 'lucide-react';
 import { getRoles, deleteRole, createRole, updateRole, findbyCode } from '@/services/auth-api';
 import { Checkbox } from '@radix-ui/react-checkbox';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
@@ -28,10 +28,12 @@ export default function RolesPage() {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
+
   const fetchRoles = async () => {
     try {
-      const data = await getRoles();
-      setRoles(data);
+      const reponse = await getRoles({ page: pageIndex + 1, size: pageSize, search });
+      setRoles(reponse.data);
+      setPageCount(reponse.totalPages)
     } catch (error: any) {
       toast.error('Lỗi khi tải danh sách vai trò: ' + error.message);
     }
@@ -39,11 +41,11 @@ export default function RolesPage() {
 
   useEffect(() => {
     fetchRoles();
-  }, []);
+  }, [pageIndex, pageSize, search]);
+
 
   const handleDelete = async (id: string) => {
     if (!confirm('Bạn có chắc chắn muốn xóa vai trò này?')) return;
-    
     try {
       await deleteRole(id);
       toast.success('Xóa vai trò thành công');
@@ -58,33 +60,10 @@ export default function RolesPage() {
     setPageSize(newPageSize);
   };
 
-  const handleSearch=(searchValue: string)=>{
+  const handleSearch = (searchValue: string) => {
     setSearch(searchValue);
   }
 
-  const onSubmit = async (values: any) => {
-    try {
-     
-      if (selectedRole) {
-        await updateRole(selectedRole.id, values);
-        toast.success('Cập nhật vai trò thành công');
-      } else {
-        const code = await findbyCode(values.code);
-        if(code){
-          toast.error('Đã tồn tại mã vai trò vui lòng nhập mã khác');
-          return;
-        }
-        await createRole(values);
-        toast.success('Tạo vai trò thành công');
-      }
-      closeModal();
-      fetchRoles();
-
-    } catch (error: any) {
-      console.error('Submit error:', error);
-      toast.error('Lỗi: ' + error.message);
-    }
-  };
   const columns: ColumnDef<Role>[] = [
     {
       id: "select",
@@ -125,11 +104,11 @@ export default function RolesPage() {
     },
     {
       accessorKey: "description",
-      header:"Mô tả",
+      header: "Mô tả",
     },
     {
       accessorKey: "code",
-      header:"Mã vai trò",
+      header: "Mã vai trò",
       cell: ({ row }) => {
         const code = row.getValue("code") as string
         return (
@@ -158,63 +137,64 @@ export default function RolesPage() {
         const role = row.original
         return (
           <div className="p-2 ">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Mở menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
-                  <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
-                    onClick={() => router.push(`/manager/admin/roles/${role.id}`)}>
-                    <BadgeInfo className="mr-2 h-4 w-4" />
-                    Xem chi tiết
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
-                    onClick={() => router.push(`/manager/admin/roles/update/${role.id}`)}
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Chỉnh sửa
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(role.id)}>
-                    <Trash className="mr-2 h-4 w-4" />
-                    Xóa
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Mở menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                  onClick={() => router.push(`/manager/admin/roles/${role.id}`)}>
+                  <BadgeInfo className="mr-2 h-4 w-4" />
+                  Xem chi tiết
+                </DropdownMenuItem>
+                <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
+                  onClick={() => router.push(`/manager/admin/roles/update/${role.id}`)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20" onClick={() => handleDelete(role.id)}>
+                  <Trash className="mr-2 h-4 w-4" />
+                  Xóa
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       },
     },
-  ] 
-   const lstActions: Action[] = [
-      {
-        icon: <Plus className="w-4 h-4 mr-2" />,
-        onClick: () => {
-          // setSelectedRole(null)
-          // openModal();
-          router.push('/manager/admin/roles/create')
-        },
-        title: "Thêm vai trò",
-        className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
+  ]
+
+  const lstActions: Action[] = [
+    {
+      icon: <Plus className="w-4 h-4 mr-2" />,
+      onClick: () => {
+        // setSelectedRole(null)
+        // openModal();
+        router.push('/manager/admin/roles/create')
       },
-    ]
+      title: "Thêm vai trò",
+      className: "hover:bg-blue-100 dark:hover:bg-blue-800 rounded-md transition-colors text-blue-500",
+    },
+  ]
 
   return (
     <div>
-    <PageBreadcrumb pageTitle="Danh sách vai trò" />
-    <div className="space-y-6">
-      <ComponentCard title="Danh sách vai trò" listAction={lstActions}>
-        <DataTable 
-          columns={columns} 
-          data={roles}
-          pageCount={pageCount}
-          onPaginationChange={handlePaginationChange}
-          onSearchChange={handleSearch}
-          manualPagination={true}
-        />
-         <Modal
+      <PageBreadcrumb pageTitle="Danh sách vai trò" />
+      <div className="space-y-6">
+        <ComponentCard title="Danh sách vai trò" listAction={lstActions}>
+          <DataTable
+            columns={columns}
+            data={roles}
+            pageCount={pageCount}
+            onPaginationChange={handlePaginationChange}
+            onSearchChange={handleSearch}
+            manualPagination={true}
+          />
+          <Modal
             isOpen={isOpen}
             onClose={closeModal}
             className="max-w-[600px] p-5 lg:p-10"
@@ -222,14 +202,9 @@ export default function RolesPage() {
             <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
               {selectedRole ? 'Cập nhật vai trò' : 'Thêm vai trò mới'}
             </h4>
-            {/* <RoleForm
-              role={selectedRole}
-              onSubmit={onSubmit}
-              onCancel={closeModal}
-            /> */}
           </Modal>
-      </ComponentCard>
+        </ComponentCard>
+      </div>
     </div>
-  </div>
   );
 } 

@@ -189,9 +189,14 @@ export const getProfile = async (): Promise<AuthResponse> => {
 };
 // permission and role
 
-export const getRoles = async (): Promise<Role[]> => {
-  const response = await axiosApi.get('/roles');
-  return response.data;
+export const getRoles = async (params?: PaginationParams): Promise<PaginatedResponse<Role>> =>  {
+  try{
+    const response = await axiosApi.get('/roles', {params});
+    return response.data;
+  }catch(_error){
+    console.error('Error fetching navigator:', _error);
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
+  }
 };
 
 export const getRole = async (id: string): Promise<Role> => {

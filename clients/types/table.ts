@@ -8,9 +8,9 @@ export interface Table {
   tableType: Category;
   tableStatus: Category;
   tableArea: Category;
-  areaId: string;
-  tableStatusId: string;
-  tableTypeId: string;
+  areaId?: string;
+  tableStatusId?: string;
+  tableTypeId?: string;
   description?: string;
   qrCodeUrl?: string;
   // Thêm các trường khác nếu cần

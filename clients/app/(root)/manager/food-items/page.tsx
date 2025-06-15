@@ -185,13 +185,37 @@ const FoodItemsPage = () => {
     },
   ]
   const [foodItems, setFoodItems] = useState<FoodItem[]>([])
-  useEffect(() => {
-    const fetchFoodItems = async () => {
-      const items = await getAllFoods()
-      setFoodItems(items)
+  const [pageCount, setPageCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
+ 
+  const fetchFoodItems = async () => {
+    try {
+      const response = await getAllFoods({ page: pageIndex + 1, size: pageSize, search });
+      if (response && response.data) {
+        setFoodItems(response.data);
+        setPageCount(response.totalPages);
+      }
+    } catch (error) {
+      console.error('Lỗi khi tải danh sách món ăn:', error);
+      toast.error('Có lỗi xảy ra khi tải danh sách món ăn');
     }
-    fetchFoodItems()
-  }, [])
+  }
+  
+  useEffect(() => {
+    fetchFoodItems();
+  }, [pageIndex, pageSize, search])
+
+  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
+  };
+
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+  }
+
   const lstActions: Action[] = [
     {
       icon: <Plus className="w-4 h-4 mr-2" />,
@@ -208,7 +232,14 @@ const FoodItemsPage = () => {
       <div className="space-y-6">
         <ComponentCard title="Danh sách món ăn" listAction={lstActions}>
           <div className="container mx-auto">
-            <DataTable columns={columns} data={foodItems} />
+          <DataTable
+            columns={columns}
+            data={foodItems}
+            pageCount={pageCount}
+            onPaginationChange={handlePaginationChange}
+            onSearchChange={handleSearch}
+            manualPagination={true}
+          />
           </div>
         </ComponentCard>
       </div>

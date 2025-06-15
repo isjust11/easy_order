@@ -197,7 +197,7 @@ export default function CategoriesManagement() {
 
   const setFilters = (categories: Category[]) => {
     if (selectedType) {
-      const filters = categories.filter((category) => category.type.id === selectedType.id)
+      const filters = categories.filter((category) => category.categoryType.id === selectedType.id)
       setFilterByType(filters);
     }
     else {
@@ -234,7 +234,7 @@ export default function CategoriesManagement() {
       setSelectedType(undefined);
       return;
     }
-    const filters = categories.filter((category) => category.type.id === id)
+    const filters = categories.filter((category) => category.categoryType.id === id)
     setFilterByType(filters);
     setSelectedType(categoryTypes.find(type => type.id === id));
   }

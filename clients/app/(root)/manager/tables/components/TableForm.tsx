@@ -35,9 +35,9 @@ const TableForm = () => {
     description: '',
     imageUrl: '',
     capacity: 0,
-    areaId: '',
-    tableStatusId: '',
-    tableTypeId: '',
+    areaId: undefined,
+    tableStatusId: undefined,
+    tableTypeId: undefined,
     qrCodeUrl: '',
   });
   const id = params.id as string;
@@ -96,9 +96,9 @@ const TableForm = () => {
         description: tableData.description,
         imageUrl: tableData.imageUrl ? mergeImageUrl(tableData.imageUrl) : '',
         capacity: tableData.capacity,
-        areaId: base64decrypt(tableData.areaId),
-        tableStatusId: base64decrypt(tableData.tableStatusId),
-        tableTypeId: base64decrypt(tableData.tableTypeId),
+        areaId: base64decrypt(tableData.areaId??''),
+        tableStatusId: base64decrypt(tableData.tableStatusId??''),
+        tableTypeId: base64decrypt(tableData.tableTypeId??''),
         qrCodeUrl: tableData.qrCodeUrl,
       });
       console.log(formData)

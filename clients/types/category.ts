@@ -8,7 +8,7 @@ export interface Category {
   isActive: boolean;
   icon: string;
   createBy: string;
-  type: CategoryType;
+  categoryType: CategoryType;
   createdAt: string;
   updatedAt: string;
   iconType: IconType;

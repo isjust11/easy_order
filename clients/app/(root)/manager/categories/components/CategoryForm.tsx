@@ -12,7 +12,7 @@ import { CategoryType } from "@/types/category-type";
 import { useState } from "react";
 import { SmilePlus } from "lucide-react";
 import { IconPickerModal } from "@/components/IconPickerModal";
-import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils";
+import { unicodeToEmoji } from "@/lib/utils";
 import { IconType } from "@/enums/icon-type.enum";
 
 const formSchema = z.object({
@@ -21,7 +21,7 @@ const formSchema = z.object({
     }),
     description: z.string().optional(),
     isActive: z.boolean(),
-    type: z.string({
+    categoryTypeId: z.string({
         required_error: "Vui lòng chọn loại danh mục",
     }),
     icon: z.string().optional(),
@@ -48,14 +48,14 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                 ...initialData,
                 isActive: initialData.isActive || true,
                 icon: initialData.icon || "",
-                type: initialData.type.id,
+                categoryTypeId: initialData.categoryType.id,
                 iconType: initialData.iconType
             }
             : {
                 name: "",
                 description: "",
                 isActive: true,
-                type: "",
+                categoryTypeId: "",
                 icon: "",
                 code: "",
                 iconType: IconType.lucide
@@ -79,7 +79,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập tên danh mục" {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500"/>
                         </FormItem>
                     )}
                 />
@@ -92,7 +92,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                             <FormControl>
                                 <Input className="input-focus" placeholder="Nhập mã danh mục" {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500"/>
                         </FormItem>
                     )}
                 />
@@ -105,14 +105,14 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                             <FormControl>
                                 <Textarea className="input-focus" placeholder="Nhập mô tả" {...field} />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-red-500"/>
                         </FormItem>
                     )}
                 />
 
                 <FormField
                     control={form.control}
-                    name="type"
+                    name="categoryTypeId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Loại danh mục</FormLabel>
@@ -175,7 +175,7 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                                         <SmilePlus className="h-4 w-4 text-amber-300" />
                                     </Button>
                                 </div>
-                                <FormMessage />
+                                <FormMessage className="text-red-500"/>
                             </FormItem>
                         )}
                     />
@@ -191,8 +191,8 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                         {initialData ? "Cập nhật" : "Thêm mới"}
                     </Button>
                 </div>
-
-                <IconPickerModal
+            </form>
+            <IconPickerModal
                     isOpen={isIconPickerOpen}
                     onClose={() => setIsIconPickerOpen(false)}
                     onSelect={(icon, iconType) => {
@@ -200,7 +200,6 @@ export function CategoryForm({ initialData, onSubmit, onCancel, categoryTypes }:
                         form.setValue("iconType", iconType)
                     }}
                 />
-            </form>
         </Form>
     );
 }

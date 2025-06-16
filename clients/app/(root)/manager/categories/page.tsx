@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
@@ -34,6 +33,11 @@ export default function CategoriesManagement() {
   const [selectedType, setSelectedType] = useState<CategoryType>();
   const [selectedCategory, setSelectedCategory] = useState<Category | null>();
   const { isOpen, openModal, closeModal } = useModal();
+  const [pageCount, setPageCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
+
   const columns: ColumnDef<Category>[] = [
     {
       id: "select",
@@ -98,17 +102,11 @@ export default function CategoriesManagement() {
       },
     },
     {
-      accessorKey: "iconType",
-      header: "Loại Icon"
-    },
-    {
       accessorKey: "icon",
       header: "Icon",
       cell: ({ row }) => {
         const iconUnicode = row.getValue("icon") as string;
-        const iconTypeStr = row.getValue("iconType") as string;
-        console.log('iconType:', iconTypeStr)
-        const iconType = iconTypeStr === 'emoji' ? IconType.emoji : IconType.lucide;
+        const iconType = row.original.iconType as IconType;
         if (iconType === IconType.emoji) {
           const icon = unicodeToEmoji(iconUnicode);
           return (
@@ -136,9 +134,8 @@ export default function CategoriesManagement() {
             await deleteCategory(id);
             toast.success('Danh mục đã được xóa thành công');
             // Refresh data
-            const categoryData = await getCategories();
-            setCategories(categoryData);
-            setFilters(categoryData);
+            fetchData();
+            setSelectedCategory(null);
           } catch (_error) {
             toast.error('Có lỗi xảy ra khi xóa danh mục');
           }
@@ -174,34 +171,43 @@ export default function CategoriesManagement() {
       },
     },
   ]
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [categoriesData, typesData] = await Promise.all([
-          getCategories(),
-          getCategoryTypes()
-        ]);
-        setCategories(categoriesData);
-        setFilters(categoriesData);
-        setCategoryTypes(typesData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Có lỗi xảy ra khi tải dữ liệu');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [categoriesData, typesData] = await Promise.all([
+        getCategories({ page: pageIndex + 1, size: pageSize, search }),
+        getCategoryTypes()
+      ]);
+      setCategories(categoriesData.data);
+      setFilters(categoriesData.data);
+      setCategoryTypes(typesData.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Có lỗi xảy ra khi tải dữ liệu');
+    } finally {
+      setLoading(false);
+    }
+  };
+ const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
+  };
 
-  const setFilters = (categories: Category[]) => {
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [pageIndex, pageSize, search]);
+
+  const setFilters = (data: Category[]) => {
     if (selectedType) {
       const filters = categories.filter((category) => category.categoryType.id === selectedType.id)
       setFilterByType(filters);
     }
     else {
-      setFilterByType(categories);
+      setFilterByType(data);
     }
   }
 
@@ -218,9 +224,8 @@ export default function CategoriesManagement() {
       }
       closeModal();
       // Refresh data
-      const categoryData = await getCategories();
-      setCategories(categoryData);
-      setFilters(categoryData);
+      fetchData();
+      setSelectedCategory(null);
     } catch (error) {
       toast.error('Có lỗi xảy ra khi lưu dữ liệu');
     } finally {
@@ -273,7 +278,15 @@ export default function CategoriesManagement() {
               </SelectContent>
             </Select>
           </div>
-          <DataTable columns={columns} data={filterByType} />
+            <DataTable
+                      columns={columns}
+                      data={filterByType}
+                      pageCount={pageCount}
+                      onPaginationChange={handlePaginationChange}
+                      onSearchChange={handleSearch}
+                      manualPagination={true}
+                      getRowChildren={(row) => (row as any).children}
+                    />
           <Modal
             isOpen={isOpen}
             onClose={closeModal}

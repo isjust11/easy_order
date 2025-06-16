@@ -159,13 +159,13 @@ export const getFeaturePermissions = async (id: number): Promise<Permission[]> =
   }
 };
 // todo: api category 
-export const getCategories = async (): Promise<any[]> => {
+export const getCategories  = async (params?: PaginationParams): Promise<PaginatedResponse<Category>> =>{
   try {
     const response = await axiosApi.get(`/categories`);
     return response.data;
   } catch (_error) {
     console.error('Error fetching categories:', _error);
-    throw _error;
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 }
   }
 };
 
@@ -199,12 +199,18 @@ export const deleteCategory = async (id: string): Promise<void> => {
 };
 
 // todo: api category type
-export const getCategoryTypes = async (): Promise<CategoryType[]> => {
-  const response = await axiosApi.get('/category-types');
+export const getCategoryTypes = async (params?: PaginationParams): Promise<PaginatedResponse<CategoryType>> => {
+  try {
+  const response = await axiosApi.get('/category-types', { params });
   if (!response.data) {
     throw new Error('Failed to fetch category types');
   }
   return response.data;
+  }
+  catch (_error) {
+    console.error('Error fetching category types:', _error);
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
+  }
 };
 
 export const createCategoryType = async (data: CategoryType): Promise<CategoryType> => {

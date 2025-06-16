@@ -196,18 +196,18 @@ export function DataTable<TData, TValue>({
                 const hasChildren = getRowChildren ? (getRowChildren(rowData) ?? []).length > 0 : false
                 const rowId = rowData.id?.toString()
                 const isExpanded = rowId ? expandedRows[rowId] : false
-                const isChild = rowData.parentId !== undefined
+                const isChild = rowData.parentId !== undefined && rowData.parentId !== null
 
                 return (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={isChild ? "bg-gray-50 dark:bg-white/[0.05] dark:text-gray-400 dark:color-white/[0.05]" : ""}
+                    className={isChild ? "bg-white dark:bg-white/[0.05] dark:text-gray-400 dark:color-white/[0.05]" : "bg-gray-50"}
                   >
                     {row.getVisibleCells().map((cell, index) => {
                       if (index === 0 && hasChildren) {
                         return (
-                          <TableCell key={cell.id} className="flex items-center gap-2 sm:px-6 text-start dark:text-white/90">
+                          <TableCell key={`${row.id}_${cell.id}`} className="flex items-center gap-2 sm:px-6 text-start dark:text-white/90">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -225,7 +225,7 @@ export function DataTable<TData, TValue>({
                         )
                       }
                       return (
-                        <TableCell key={cell.id} className="px-5 py-3 text-gray-800 dark:text-white/90">
+                        <TableCell key={`${row.id}_${cell.id}`} className="px-5 py-3 text-gray-800 dark:text-white/90">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       )

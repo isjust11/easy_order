@@ -14,13 +14,15 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CategoryType } from "@/types/category-type"
 import Switch from "@/components/form/switch/Switch"
-import { SmilePlus } from "lucide-react"
+import {  icons, SmilePlus } from "lucide-react"
 import { useState } from "react";
 import { IconPickerModal } from "@/components/IconPickerModal"
 import { emojiToUnicode, unicodeToEmoji } from "@/lib/utils"
 import { AppCategoryCode } from "@/constants"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { IconType } from "@/enums/icon-type.enum"
+import { Slider } from "@radix-ui/react-slider"
+import { Icon } from "@/components/ui/icon"
 
 const formSchema = z.object({
   code: z.string().min(2, {
@@ -42,8 +44,9 @@ interface CategoryTypeFormProps {
 }
 
 export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTypeFormProps) {
-  if(initialData && initialData?.icon !==null){
-    initialData.icon = unicodeToEmoji(initialData.icon ??'');
+  const [iconSize, setIconSize] = useState(20);
+  if (initialData && initialData?.icon !== null) {
+    initialData.icon = unicodeToEmoji(initialData.icon ?? '');
   }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,41 +59,40 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
       icon: "",
     },
   })
-   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-          // Chuyển đổi icon thành mã Unicode trước khi submit
-          onSubmit(values);
-      };
-  
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    onSubmit(values);
+  };
+
   const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-         <FormField
-                    control={form.control}
-                    name="code"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Loại danh mục</FormLabel>
-                            <Select value={field.value} onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Chọn loại danh mục" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
-                                    {Object.entries(AppCategoryCode).map(([key, value]) => (
-                                        <SelectItem key={key} value={key}>
-                                            <div className="flex flex-start items-center">
-                                                <span className="text-sm text-gray-500">{value}</span>
-                                            </div>
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+        <FormField
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Loại danh mục</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Chọn loại danh mục" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="max-h-60 overflow-y-auto bg-white z-[999991]">
+                  {Object.entries(AppCategoryCode).map(([key, value]) => (
+                    <SelectItem key={key} value={key}>
+                      <div className="flex flex-start items-center">
+                        <span className="text-sm text-gray-500">{value}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"
@@ -137,15 +139,41 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
             render={({ field }) => (
               <FormItem className="w-1/2">
                 <div className="flex gap-2">
-                  <FormControl>
-                    <Input
-                      disabled
-                      className="input-focus"
-                      {...field}
-                      value={field.value || ""}
-                      placeholder="Chọn icon"
-                    />
-                  </FormControl>
+                  {
+                    form.getValues('iconType') == IconType.emoji ?
+                      <FormControl>
+                        <Input
+                          disabled
+                          className="input-focus"
+                          {...field}
+                          value={unicodeToEmoji(field.value || "")}
+                          placeholder="Chọn icon"
+                        />
+                      </FormControl>
+                      :
+                      <div className="flex items-center gap-2">
+                        <div className="h-12 w-12 flex items-center justify-center
+                                             hover:bg-gray-100 ring-1 ring-gray-100 shadow-2xl rounded-sm">
+                          <Icon name={field.value ?? ''} size={iconSize} />
+                        </div>
+                        {field.value && (<div className="flex-1" >
+                          <Slider
+                            className="[&_.slider-track]:bg-gray-200 [&_.slider-range]:bg-blue-500 [&_.slider-thumb]:bg-white [&_.slider-thumb]:border-2 [&_.slider-thumb]:border-blue-500"
+                            defaultValue={[20]}
+                            max={40}
+                            step={1}
+                            onValueChange={(value) => {
+                              setIconSize(value[0]);
+                              // form.setValue("iconSize", value[0]);
+                            }}
+                          />
+                          <div className="text-xs text-gray-500 mt-1">
+                            Kích thước: {iconSize}px
+                          </div>
+                        </div>)}
+                      </div>
+
+                  }
                   <Button
                     type="button"
                     variant="outline"
@@ -170,14 +198,14 @@ export function CategoryTypeForm({ initialData, onSubmit, onCancel }: CategoryTy
           </Button>
         </div>
       </form>
-        <IconPickerModal
-          isOpen={isIconPickerOpen}
-          onClose={() => setIsIconPickerOpen(false)}
-          onSelect={(icon,iconType) => {
-            form.setValue("icon", icon);
-            form.setValue("iconType", iconType)
-          }}
-        />
+      <IconPickerModal
+        isOpen={isIconPickerOpen}
+        onClose={() => setIsIconPickerOpen(false)}
+        onSelect={(icon, iconType) => {
+          form.setValue("icon", icon);
+          form.setValue("iconType", iconType)
+        }}
+      />
     </Form>
   )
 }

@@ -54,7 +54,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
         defaultValues: initialData
             ? {
                 ...initialData,
-                isActive: true,
+                isActive: initialData.isActive ?? true,
                 icon: initialData.icon ? unicodeToEmoji(initialData.icon) : "",
                 parentId: initialData.parentId ? initialData.parentId.toString() : "",
                 roles: initialData.roles?.map((role) => role.id) || [],
@@ -63,7 +63,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
                 label: initialData.label || "",
                 iconSize: initialData.iconSize || 20,
                 className: initialData.className || "",
-                iconType: IconType.lucide,
+                iconType: initialData.iconType || IconType.lucide,
                 featureTypeId: initialData.featureTypeId || ""
             }
             : {
@@ -71,7 +71,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
                 link: "",
                 isActive: true,
                 icon: "",
-                parentId: featureParent?.id??'',
+                parentId: featureParent?.id ?? '',
                 roles: [],
                 sortOrder: "0",
                 iconSize: 20,
@@ -82,10 +82,6 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
     });
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        // Chuyển đổi icon thành mã Unicode trước khi submit
-        if (values.icon && values.iconType === IconType.emoji) {
-            values.icon = emojiToUnicode(values.icon);
-        }
         // Đảm bảo sortOrder là số
         values.sortOrder = values.sortOrder || "0";
         onSubmit(values);
@@ -97,9 +93,9 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
                 const data = await getCategoryByCode(getFeatureType());
                 setFeatureType(data);
                 if (data.length > 0) {
-                    const menuFeature = data.find((x)=>x.code == AppCategoryCode.FEATURE_MENU)
+                    const menuFeature = data.find((x) => x.code == AppCategoryCode.FEATURE_MENU)
                     form.setValue("featureTypeId", menuFeature?.id);
-                  }
+                }
             };
             loadFeatureType();
         }
@@ -229,7 +225,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
                     <FormField
                         control={form.control}
                         name="sortOrder"
-                            render={({ field }) => (
+                        render={({ field }) => (
                             <FormItem className="w-1/3">
                                 <FormLabel>Thứ tự</FormLabel>
                                 <FormControl>
@@ -263,13 +259,13 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
                                         <SmilePlus className="h-4 w-4" />
                                     </Button>
                                     {
-                                        iconType == IconType.emoji ?
+                                        form.getValues('iconType') == IconType.emoji ?
                                             <FormControl>
                                                 <Input
                                                     disabled
                                                     className="input-focus"
                                                     {...field}
-                                                    value={field.value || ""}
+                                                    value={unicodeToEmoji(field.value || "")}
                                                     placeholder="Chọn icon"
                                                 />
                                             </FormControl>
@@ -337,6 +333,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel, featureParents, f
                     console.log('icon type:' + iconType);
                     setIconType(iconType);
                     form.setValue("icon", icon);
+                    form.setValue("iconType", iconType);
                 }}
             />
         </Form>

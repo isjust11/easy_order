@@ -29,7 +29,10 @@ export default function CategoryTypesManagement() {
   const [loading, setLoading] = useState(false);
   const [selectedCategoryType, setSelectedCategoryType] = useState<CategoryType>();
   const { isOpen, openModal, closeModal } = useModal();
-  const router = useRouter();
+  const [pageCount, setPageCount] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
   const listAction: Action[] = [
     {
       icon: <Plus className="w-4 h-4 mr-2" />,
@@ -104,21 +107,17 @@ export default function CategoryTypesManagement() {
         const status = row.getValue("isActive") as boolean
         return (
           <Badge variant="light" color={status === true ? 'success' : 'error'} >
-           {status == true ? 'Hoạt động' : 'Ngừng hoạt động'}
-        </Badge>
+            {status == true ? 'Hoạt động' : 'Ngừng hoạt động'}
+          </Badge>
         )
       },
-    },
-    {
-      accessorKey: "iconType",
-      header: "Loại icon",
     },
     {
       accessorKey: "icon",
       header: "Icon",
       cell: ({ row }) => {
         const iconUnicode = row.getValue("icon") as string;
-        const iconType = row.getValue("iconType") as IconType;
+        const iconType = row.original.iconType as IconType;
         if (iconType === IconType.emoji) {
           const icon = unicodeToEmoji(iconUnicode);
           return (
@@ -145,8 +144,8 @@ export default function CategoryTypesManagement() {
             await deleteCategoryType(id);
             toast.success('Loại danh mục đã được xóa thành công');
             try {
-              const typesData = await getCategoryTypes();
-              setCategoryTypes(typesData);
+              fetchData(); // Refresh data after deletion
+              setLoading(true);
             } catch (error) {
               console.error('Error fetching data:', error);
               toast.error('Có lỗi xảy ra khi tải dữ liệu');
@@ -187,23 +186,30 @@ export default function CategoryTypesManagement() {
       },
     },
   ]
+  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
+  };
 
+  const handleSearch = (searchValue: string) => {
+    setSearch(searchValue);
+  }
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const typesData = await getCategoryTypes({ page: pageIndex + 1, size: pageSize, search });
+      setCategoryTypes(typesData.data);
+      setPageCount(Math.ceil(typesData.total / pageSize));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Có lỗi xảy ra khi tải dữ liệu');
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const typesData = await getCategoryTypes();
-        setCategoryTypes(typesData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        toast.error('Có lỗi xảy ra khi tải dữ liệu');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, []);
+  }, [pageIndex, pageSize, search]);
 
   const handleSave = async (values: any) => {
     try {
@@ -211,18 +217,17 @@ export default function CategoryTypesManagement() {
       console.log(values)
       if (selectedCategoryType) {
         await updateCategoryType(selectedCategoryType.id, values);
-         toast.success('Cập nhật loại danh mục thành công');
+        toast.success('Cập nhật loại danh mục thành công');
       } else {
         await createCategoryType(values);
         toast.success('Tạo loại danh mục thành công');
       }
       closeModal();
       // Refresh data
-      const typesData = await getCategoryTypes();
-      setCategoryTypes(typesData);
+      fetchData();
     } catch (error) {
       toast.error('Có lỗi xảy ra khi lưu dữ liệu');
-    }finally{
+    } finally {
       setLoading(false);
     }
   }
@@ -232,7 +237,10 @@ export default function CategoryTypesManagement() {
       <PageBreadcrumb pageTitle="Danh sách loại danh mục" />
       <div className="space-y-6">
         <ComponentCard title="Danh sách loại danh mục" listAction={listAction}>
-          <DataTable columns={columns} data={categoryTypes} />
+          <DataTable columns={columns} data={categoryTypes} pageCount={pageCount}
+            onPaginationChange={handlePaginationChange}
+            onSearchChange={handleSearch}
+            manualPagination={true} />
           <Modal
             isOpen={isOpen}
             onClose={closeModal}

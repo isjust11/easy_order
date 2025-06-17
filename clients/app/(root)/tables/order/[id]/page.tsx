@@ -37,7 +37,7 @@ export default function OrderPage() {
           getTableById(tableId)
         ])
         if (foodItems) {
-          setFoodItems(foodItems)
+          setFoodItems(foodItems.data);
         } else {
           toast.error('Không thể tải danh sách món ăn')
         }

@@ -36,7 +36,7 @@ type RoleFormProps = {
 };
 
 export function RoleFormInput({ role, onFormChange, isView = false }: RoleFormProps) {
-  const [navigators, setNavigators] = useState<Feature[]>([]);
+  const [features, setFeatures] = useState<Feature[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,7 +80,7 @@ export function RoleFormInput({ role, onFormChange, isView = false }: RoleFormPr
     const fetchNavigators = async () => {
       try {
         const data = await featureService.getFeatures();
-        setNavigators(data.data);
+        setFeatures(data.data);
       } catch (error: any) {
         toast.error('Lỗi khi tải danh sách chức năng: ' + error.message);
       }
@@ -112,7 +112,7 @@ export function RoleFormInput({ role, onFormChange, isView = false }: RoleFormPr
             <FormItem>
               <FormLabel>Mã vai trò</FormLabel>
               <FormControl>
-                <Input className='input-focus' disabled={role?.id != null || isView} placeholder="Nhập mã vai trò" {...field} />
+                <Input className='input-focus' disabled={role?.id != null || isView || role?.code == 'ADMIN'} placeholder="Nhập mã vai trò" {...field} />
               </FormControl>
               <FormMessage className='text-red-500'/>
             </FormItem>
@@ -127,7 +127,7 @@ export function RoleFormInput({ role, onFormChange, isView = false }: RoleFormPr
                 label="Trạng thái"
                 defaultChecked={field.value}
                 {...field}
-                disabled={isView}
+                disabled={isView || role?.code == 'ADMIN'}
               />
             </FormItem>
           )}

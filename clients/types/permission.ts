@@ -32,5 +32,6 @@ export interface UpdateRoleDto {
   code: string;
   description?: string;
   navagatorIds?: string[];
+  isActive?: boolean;
   // permissionIds?: number[];
 } 

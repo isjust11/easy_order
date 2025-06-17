@@ -1,52 +1,31 @@
-'use client'
-// 
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { toast } from 'sonner';
-import { Provider } from 'react-redux';
-import { store } from '@/store';
-
-import { SidebarProvider } from '@/contexts/SidebarContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-import { Toaster } from 'sonner';
-import Loading from '@/components/ui/loading';
+import clsx from 'clsx';
+import {Inter} from 'next/font/google';
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale} from 'next-intl/server';
-const inter = Inter({
-  subsets: ['latin', 'vietnamese'],
-  weight: ['400', '500','600', '700'],
-  variable: '--font-inter',
-});
+import {ReactNode} from 'react';
+import './globals.css';
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  // const locale = await getLocale();
+const inter = Inter({subsets: ['latin']});
+
+type Props = {
+  children: ReactNode;
+};
+
+export default async function LocaleLayout({children}: Props) {
+  const locale = await getLocale();
+
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans dark:bg-gray-900`}>
-        <Provider store={store}>
-          <ThemeProvider>
-            <SidebarProvider>
-              {/* <NextIntlClientProvider> */}
-                {children}
-              {/* </NextIntlClientProvider> */}
-            </SidebarProvider>
-            <Toaster
-              position="top-center"
-              duration={4000}
-              richColors
-              theme="light"
-              className="toast-wrapper"
-              toastOptions={{
-                className: 'toast',
-              }}
-            />
-            <Loading />
-          </ThemeProvider>
-        </Provider>
+    <html lang={locale}>
+      <head>
+        <title>next-intl example</title>
+      </head>
+      <body
+        className={clsx(
+          'flex min-h-[100vh] flex-col bg-slate-100',
+          inter.className
+        )}
+      >
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

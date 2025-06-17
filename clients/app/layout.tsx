@@ -1,5 +1,5 @@
 'use client'
-
+// 
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { toast } from 'sonner';
@@ -10,25 +10,29 @@ import { SidebarProvider } from '@/contexts/SidebarContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Toaster } from 'sonner';
 import Loading from '@/components/ui/loading';
-
+import {NextIntlClientProvider} from 'next-intl';
+import {getLocale} from 'next-intl/server';
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
   weight: ['400', '500','600', '700'],
   variable: '--font-inter',
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const locale = await getLocale();
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans dark:bg-gray-900`}>
         <Provider store={store}>
           <ThemeProvider>
             <SidebarProvider>
-              {children}
+              {/* <NextIntlClientProvider> */}
+                {children}
+              {/* </NextIntlClientProvider> */}
             </SidebarProvider>
             <Toaster
               position="top-center"

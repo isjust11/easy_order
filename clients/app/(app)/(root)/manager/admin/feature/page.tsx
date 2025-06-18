@@ -22,6 +22,7 @@ import { buildFeature } from '@/lib/utils';
 import { FeatureForm } from './components/FeatureForm';
 import Link from "next/link";
 import { AlertDialogUtils } from '@/components/AlertDialogUtils';
+import { AsyncWrapper } from '@/components/common/AsyncWrapper';
 export default function FeaturePage() {
   const [features, setFeatures] = useState<Feature[]>([]);
   const [featureParent, setFeatureParent] = useState<Feature>();
@@ -271,7 +272,7 @@ export default function FeaturePage() {
   ]
 
   return (
-    <div>
+    <AsyncWrapper>
       <PageBreadcrumb pageTitle="Danh sách chức năng" />
       <div className="space-y-6">
         <ComponentCard title="Danh sách chức năng" listAction={lstActions}>
@@ -311,6 +312,6 @@ export default function FeaturePage() {
           onCancel={() => {setOpenDialog(false)}}
         />
       </div>
-    </div>
+    </AsyncWrapper>
   );
 } 

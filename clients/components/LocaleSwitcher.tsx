@@ -14,11 +14,11 @@ export default function LocaleSwitcher() {
           label: t('en')
         },
         {
-          value: 'de',
-          label: t('de')
+          value: 'vi',
+          label: t('vi')
         }
       ]}
-      label={t('label')}
+      // label={t('label')}
     />
   );
 }

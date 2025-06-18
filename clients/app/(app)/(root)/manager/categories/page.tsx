@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
@@ -22,21 +22,20 @@ import { unicodeToEmoji } from '@/lib/utils';
 import Badge from '@/components/ui/badge/Badge';
 import { Icon } from '@/components/ui/icon';
 import { IconType } from '@/enums/icon-type.enum';
-
-
+import { useAsyncEffect } from '@/hooks/useAsyncEffect';
 
 export default function CategoriesManagement() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [filterByType, setFilterByType] = useState<Category[]>([]);
   const [categoryTypes, setCategoryTypes] = useState<CategoryType[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(false);
-  const [selectedType, setSelectedType] = useState<CategoryType>();
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>();
-  const { isOpen, openModal, closeModal } = useModal();
-  const [pageCount, setPageCount] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [pageCount, setPageCount] = useState(0);
   const [search, setSearch] = useState('');
+  const [selectedType, setSelectedType] = useState<CategoryType | null>(null);
+  const [filterByType, setFilterByType] = useState<Category[]>([]);
+  const { isOpen, openModal, closeModal } = useModal();
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -134,7 +133,7 @@ export default function CategoriesManagement() {
             await deleteCategory(id);
             toast.success('Danh mục đã được xóa thành công');
             // Refresh data
-            fetchData();
+            await fetchData();
             setSelectedCategory(null);
           } catch (_error) {
             toast.error('Có lỗi xảy ra khi xóa danh mục');
@@ -160,7 +159,11 @@ export default function CategoriesManagement() {
                   Chỉnh sửa
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-red-600 flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
-                  onClick={() => handleDelete(category?.id!)}>
+                  onClick={() => {
+                    if (category.id) {
+                      handleDelete(category.id);
+                    }
+                  }}>
                   <Trash className="mr-2 h-4 w-4" />
                   Xóa
                 </DropdownMenuItem>
@@ -171,6 +174,7 @@ export default function CategoriesManagement() {
       },
     },
   ]
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -181,6 +185,7 @@ export default function CategoriesManagement() {
       setCategories(categoriesData.data);
       setFilters(categoriesData.data);
       setCategoryTypes(typesData.data);
+      setPageCount(categoriesData.totalPages);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
@@ -188,7 +193,12 @@ export default function CategoriesManagement() {
       setLoading(false);
     }
   };
- const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+
+  useAsyncEffect(async () => {
+    await fetchData();
+  }, [pageIndex, pageSize, search]);
+
+  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
     setPageIndex(newPageIndex);
     setPageSize(newPageSize);
   };
@@ -196,10 +206,6 @@ export default function CategoriesManagement() {
   const handleSearch = (searchValue: string) => {
     setSearch(searchValue);
   }
-
-  useEffect(() => {
-    fetchData();
-  }, [pageIndex, pageSize, search]);
 
   const setFilters = (data: Category[]) => {
     if (selectedType) {
@@ -224,7 +230,7 @@ export default function CategoriesManagement() {
       }
       closeModal();
       // Refresh data
-      fetchData();
+      await fetchData();
       setSelectedCategory(null);
     } catch (error) {
       toast.error('Có lỗi xảy ra khi lưu dữ liệu');
@@ -232,17 +238,20 @@ export default function CategoriesManagement() {
       setLoading(false);
     }
   }
+
   const handleChangeType = async (id: string) => {
     console.log(id)
     if (id === 'all') {
       setFilterByType(categories);
-      setSelectedType(undefined);
+      setSelectedType(null);
       return;
     }
     const filters = categories.filter((category) => category.categoryType.id === id)
     setFilterByType(filters);
-    setSelectedType(categoryTypes.find(type => type.id === id));
+    const foundType = categoryTypes.find(type => type.id === id);
+    setSelectedType(foundType || null);
   }
+
   const listAction: Action[] = [
     {
       title: 'Thêm danh mục',
@@ -255,6 +264,7 @@ export default function CategoriesManagement() {
       variant: 'primary',
     },
   ]
+
   return (
     <div>
       <PageBreadcrumb pageTitle="Danh sách danh mục" />
@@ -278,15 +288,15 @@ export default function CategoriesManagement() {
               </SelectContent>
             </Select>
           </div>
-            <DataTable
-                      columns={columns}
-                      data={filterByType}
-                      pageCount={pageCount}
-                      onPaginationChange={handlePaginationChange}
-                      onSearchChange={handleSearch}
-                      manualPagination={true}
-                      getRowChildren={(row) => (row as any).children}
-                    />
+          <DataTable
+            columns={columns}
+            data={filterByType}
+            pageCount={pageCount}
+            onPaginationChange={handlePaginationChange}
+            onSearchChange={handleSearch}
+            manualPagination={true}
+            getRowChildren={(row) => (row as any).children}
+          />
           <Modal
             isOpen={isOpen}
             onClose={closeModal}

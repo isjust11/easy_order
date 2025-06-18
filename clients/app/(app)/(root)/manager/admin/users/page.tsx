@@ -16,8 +16,10 @@ import ComponentCard from '@/components/common/ComponentCard';
 import Badge from '@/components/ui/badge/Badge';
 import { MoreDotIcon } from '@/public/icons';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useTranslations } from 'next-intl';
 
 export default function UsersPage() {
+  const t = useTranslations('UsersPage');
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [pageCount, setPageCount] = useState(0);
@@ -102,7 +104,7 @@ export default function UsersPage() {
     },
     {
       accessorKey: "picture",
-      header: "Ảnh đại diện",
+      header: t('avatar'),
       cell: ({ row }) => {
         const picture = row.getValue("picture") as string;
         return (

@@ -1,11 +1,14 @@
-import clsx from 'clsx';
+
 import {Inter} from 'next/font/google';
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale} from 'next-intl/server';
 import {ReactNode} from 'react';
-import './globals.css';
 
-const inter = Inter({subsets: ['latin']});
+const inter = Inter({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500','600', '700'],
+  variable: '--font-inter',
+});
 
 type Props = {
   children: ReactNode;
@@ -17,13 +20,10 @@ export default async function LocaleLayout({children}: Props) {
   return (
     <html lang={locale}>
       <head>
-        <title>next-intl example</title>
+        <title>Order</title>
       </head>
       <body
-        className={clsx(
-          'flex min-h-[100vh] flex-col bg-slate-100',
-          inter.className
-        )}
+         className={`${inter.variable} font-sans dark:bg-gray-900`}
       >
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

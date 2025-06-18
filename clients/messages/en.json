@@ -10,7 +10,8 @@
   "LocaleSwitcher": {
     "de": "Deutsch",
     "en": "English",
-    "label": "Sprache"
+    "label": "Sprache",
+    "vi": "Tiếng Việt"
   },
   "LoginPage": {
     "credentials": "Anmeldedaten: jane@doe.com / next-intl",
@@ -25,5 +26,19 @@
   },
   "ProfilePage": {
     "title": "Profil"
+  },
+  "UsersPage": {
+    "avatar":  "Ảnh đại diện"
+  },
+  "RolesPage": {
+    "description":  "Description",
+    "addRole": "Thêm vai trò",
+    "editRole": "Chỉnh sửa vai trò",
+    "deleteRole": "Xóa vai trò",
+    "roleName": "Tên vai trò",
+    "permissions": "Quyền hạn",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "roleList": "List roles"
   }
 }

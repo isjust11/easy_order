@@ -11,7 +11,7 @@ import { Toaster } from 'sonner';
 import Loading from '@/components/ui/loading';
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
-  weight: ['400', '500','600', '700'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-inter',
 });
 
@@ -22,27 +22,25 @@ export default async function RootLayout({
 }>) {
   // const locale = await getLocale();
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans dark:bg-gray-900`}>
-        <Provider store={store}>
-          <ThemeProvider>
-            <SidebarProvider>
-                {children}
-            </SidebarProvider>
-            <Toaster
-              position="top-center"
-              duration={4000}
-              richColors
-              theme="light"
-              className="toast-wrapper"
-              toastOptions={{
-                className: 'toast',
-              }}
-            />
-            <Loading />
-          </ThemeProvider>
-        </Provider>
-      </body>
-    </html>
+    <div>
+      <Provider store={store}>
+        <ThemeProvider>
+          <SidebarProvider>
+            {children}
+          </SidebarProvider>
+          <Toaster
+            position="top-center"
+            duration={4000}
+            richColors
+            theme="light"
+            className="toast-wrapper"
+            toastOptions={{
+              className: 'toast',
+            }}
+          />
+          <Loading />
+        </ThemeProvider>
+      </Provider>
+    </div>
   );
 }

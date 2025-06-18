@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -24,6 +24,7 @@ import { Category } from "@/types/category";
 import { getCategoryByCode } from "@/services/manager-api";
 import { AppCategoryCode } from "@/constants";
 import { buildFeature } from "@/lib/utils";
+import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 type NavItem = {
   name: string;
   icon: React.ReactNode;
@@ -38,30 +39,120 @@ const AppSidebar: React.FC = () => {
   const pathname = usePathname();
   const [menuTypes, setMenuTypes] = useState<Category[]>();
   const [features, setFeatures] = useState<Feature[]>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [openSubmenu, setOpenSubmenu] = useState<{
+    type: string;
+    index: number;
+  } | null>(null);
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
+    {}
+  );
+  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
-    if (window == undefined) {
+  // const isActive = (path: string) => path === pathname;
+  const isActive = useCallback((path: string) => path === pathname, [pathname]);
+
+  useAsyncEffect(async () => {
+    if (typeof window === "undefined") {
       return;
     }
+    
+    let isMounted = true;
+    
     const fetchMenuTypes = async () => {
-      const appCode = Object.entries(AppCategoryCode);
-      const data:Category[] = await getCategoryByCode(appCode[0][0]);
-      if (!data) {
-        return;
+      try {
+        const appCode = Object.entries(AppCategoryCode);
+        const data: Category[] = await getCategoryByCode(appCode[0][0]);
+        if (!data || !isMounted) {
+          return;
+        }
+        setMenuTypes(data.sort((a, b) => a.sortOrder - b.sortOrder));
+      } catch (error) {
+        console.error('Error fetching menu types:', error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-      setMenuTypes(data.sort((a,b)=> a.sortOrder-b.sortOrder));
-    }
+    };
+    
     fetchMenuTypes();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
-     if (window == undefined) {
+    if (typeof window === "undefined") {
       return;
     }
     const buildFeatureItems = buildFeature(feature);
-    // set feature by type 
     setFeatures(buildFeatureItems);
   }, [feature]);
+
+  useEffect(() => {
+    // Check if the current path matches any submenu item
+    let submenuMatched = false;
+    const menuTypesCode = menuTypes?.map((x)=>x.code);
+    menuTypesCode?.forEach((menuType) => {
+      const items = features?.map(convertFeatureToNavItem).filter((x)=>x.type == menuType);
+      items?.forEach((nav, index) => {
+        if (nav.subItems) {
+          nav.subItems.forEach((subItem) => {
+            if (isActive(subItem.path)) {
+              setOpenSubmenu({
+                type: menuType,
+                index,
+              });
+              submenuMatched = true;
+            }
+          });
+        }
+      });
+    });
+
+    // If no submenu matched, close any open submenu
+    if (!submenuMatched) {
+      setOpenSubmenu(null);
+    }
+  }, [pathname, menuTypes, features, isActive]);
+
+  useEffect(() => {
+    // Set the height of the submenu items when the submenu is opened
+    if (openSubmenu !== null) {
+      const key = `${openSubmenu.type}-${openSubmenu.index}`;
+      if (subMenuRefs.current[key]) {
+        setSubMenuHeight((prevHeights) => ({
+          ...prevHeights,
+          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
+        }));
+      }
+    }
+  }, [openSubmenu]);
+
+  const convertFeatureToNavItem = (feature: Feature): NavItem => {
+    return {
+      name: feature.label || '',
+      icon: <Icon name={feature.icon} size={feature.iconSize} />, // You'll need to implement this
+      path: feature.link,
+      type: feature?.featureType?.code,
+      subItems: feature.children?.map(child => ({
+        name: child.label || '',
+        path: child.link || '',
+        pro: false,
+        new: false
+      }))
+    };
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   const renderMenuItems = (
     navItems: NavItem[],
@@ -179,74 +270,6 @@ const AppSidebar: React.FC = () => {
       ))}
     </ul>
   );
-
-  const [openSubmenu, setOpenSubmenu] = useState<{
-    type: string;
-    index: number;
-  } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
-  );
-  const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  // const isActive = (path: string) => path === pathname;
-  const isActive = useCallback((path: string) => path === pathname, [pathname]);
-
-  const convertFeatureToNavItem = (feature: Feature): NavItem => {
-    return {
-      name: feature.label || '',
-      icon: <Icon name={feature.icon} size={feature.iconSize} />, // You'll need to implement this
-      path: feature.link,
-      type: feature?.featureType?.code,
-      subItems: feature.children?.map(child => ({
-        name: child.label || '',
-        path: child.link || '',
-        pro: false,
-        new: false
-      }))
-    };
-  };
-
-
-  useEffect(() => {
-    // Check if the current path matches any submenu item
-    let submenuMatched = false;
-    const menuTypesCode = menuTypes?.map((x)=>x.code);
-    menuTypesCode?.forEach((menuType) => {
-      const items = features?.map(convertFeatureToNavItem).filter((x)=>x.type == menuType);
-      items?.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType,
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    // If no submenu item matches, close the open submenu
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-  }, [pathname, isActive]);
-
-  useEffect(() => {
-    // Set the height of the submenu items when the submenu is opened
-    if (openSubmenu !== null) {
-      const key = `${openSubmenu.type}-${openSubmenu.index}`;
-      if (subMenuRefs.current[key]) {
-        setSubMenuHeight((prevHeights) => ({
-          ...prevHeights,
-          [key]: subMenuRefs.current[key]?.scrollHeight || 0,
-        }));
-      }
-    }
-  }, [openSubmenu]);
 
   const handleSubmenuToggle = (index: number, menuType: string) => {
     setOpenSubmenu((prevOpenSubmenu) => {

@@ -18,8 +18,11 @@ import { Modal } from '@/components/ui/modal';
 import { useModal } from '@/hooks/useModal';
 import Badge from '@/components/ui/badge/Badge';
 import { Role } from '@/types/role';
+import { useTranslations } from 'next-intl';
+import { AsyncWrapper } from '@/components/common/AsyncWrapper';
 
 export default function RolesPage() {
+  const t = useTranslations('RolesPage');
   const router = useRouter()
   const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -104,7 +107,7 @@ export default function RolesPage() {
     },
     {
       accessorKey: "description",
-      header: "Mô tả",
+      header: t("description"),
     },
     {
       accessorKey: "code",
@@ -182,10 +185,10 @@ export default function RolesPage() {
   ]
 
   return (
-    <div>
+    <AsyncWrapper>
       <PageBreadcrumb pageTitle="Danh sách vai trò" />
       <div className="space-y-6">
-        <ComponentCard title="Danh sách vai trò" listAction={lstActions}>
+        <ComponentCard title={t("roleList")} listAction={lstActions}>
           <DataTable
             columns={columns}
             data={roles}
@@ -205,6 +208,6 @@ export default function RolesPage() {
           </Modal>
         </ComponentCard>
       </div>
-    </div>
+    </AsyncWrapper>
   );
 } 

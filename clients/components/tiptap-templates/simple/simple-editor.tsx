@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
+import { EditorContent, EditorContext, useEditor, useCurrentEditor } from "@tiptap/react"
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
-import { Image } from "@tiptap/extension-image"
+// import { Image } from "@tiptap/extension-image"
 import { TaskItem } from "@tiptap/extension-task-item"
 import { TaskList } from "@tiptap/extension-task-list"
 import { TextAlign } from "@tiptap/extension-text-align"
@@ -16,6 +16,7 @@ import { Superscript } from "@tiptap/extension-superscript"
 import { Underline } from "@tiptap/extension-underline"
 
 // --- Custom Extensions ---
+import { CustomImage } from "@/components/tiptap-extension/custom-image"
 import { Link } from "@/components/tiptap-extension/link-extension"
 import { Selection } from "@/components/tiptap-extension/selection-extension"
 import { TrailingNode } from "@/components/tiptap-extension/trailing-node-extension"
@@ -73,6 +74,27 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss"
 
+const ImageAlignButton = ({
+  align,
+  children,
+}: {
+  align: "left" | "center" | "right"
+  children: React.ReactNode
+}) => {
+  const { editor } = useCurrentEditor()
+  if (!editor) return null
+
+  return (
+    <Button
+      onClick={() =>
+        editor.chain().focus().updateAttributes("image", { "data-align": align }).run()
+      }
+      data-active={editor.isActive("image", { "data-align": align })}
+    >
+      {children}
+    </Button>
+  )
+}
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -83,6 +105,8 @@ const MainToolbarContent = ({
   onLinkClick: () => void
   isMobile: boolean
 }) => {
+  const { editor } = useCurrentEditor()
+
   return (
     <>
       <Spacer />
@@ -138,6 +162,17 @@ const MainToolbarContent = ({
       <ToolbarGroup>
         <ImageUploadButton text="Add" />
       </ToolbarGroup>
+
+      {editor?.isActive("image") && (
+        <>
+          <ToolbarSeparator />
+          <ToolbarGroup>
+            <ImageAlignButton align="left">Align Left</ImageAlignButton>
+            <ImageAlignButton align="center">Align Center</ImageAlignButton>
+            <ImageAlignButton align="right">Align Right</ImageAlignButton>
+          </ToolbarGroup>
+        </>
+      )}
 
       <Spacer />
 
@@ -216,6 +251,7 @@ export function SimpleEditor({
       window.removeEventListener("scroll", updateRect)
     }
   }, [])
+
   const editor = useEditor({
     immediatelyRender: false,
     editorProps: {
@@ -233,7 +269,7 @@ export function SimpleEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      CustomImage,
       Typography,
       Superscript,
       Subscript,

@@ -91,7 +91,7 @@ export const getFeatureType = () => {
         if (itemMap[item.parentId]) {
           itemMap[item.parentId].children?.push(itemMap[item.id]);
           // Sắp xếp children theo order
-          itemMap[item.parentId].children?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          itemMap[item.parentId].children?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
         }
       } else {
         // Nếu không có parentId, thêm vào cây gốc
@@ -100,7 +100,7 @@ export const getFeatureType = () => {
     });
 
     // Sắp xếp cây gốc theo order
-    tree.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    tree.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
     return tree;
   }

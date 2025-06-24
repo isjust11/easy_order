@@ -65,6 +65,10 @@ export function DataTable<TData, TValue>({
   }
 
   const getExpandedData = (data: TData[]): TData[] => {
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
+    
     return data.reduce((acc: TData[], row: TData) => {
       const rowId = (row as any).id?.toString()
       acc.push(row)
@@ -113,7 +117,7 @@ export function DataTable<TData, TValue>({
       }
     },
     manualPagination: manualPagination,
-    pageCount: pageCount,
+    pageCount: pageCount || 0,
   })
 
   function delay(callback: () => void, ms: number): void {
@@ -262,6 +266,7 @@ export function DataTable<TData, TValue>({
                   table.setPageIndex(0)
                 }}
                 className="h-8 w-[70px] rounded-md border border-input bg-background px-2 py-1 text-sm dark:border-white/[0.05] dark:bg-white/[0.05] dark:text-white/90"
+                aria-label="Số hàng trên trang"
               >
                 {[5, 10, 20, 30, 40, 50].map((size) => (
                   <option key={size} value={size}>

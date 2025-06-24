@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal, ImageOff, BadgeInfo } from 'lucide-react';
+import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal, ImageOff, BadgeInfo, Eye } from 'lucide-react';
 import { deleteArticle, getArticles } from '@/services/article-api';
 import { Article } from '@/services/article-api';
 import { useRouter } from 'next/navigation';
@@ -56,7 +56,7 @@ export default function ArticlesManagement() {
     setSearch(searchValue);
   }
 
-  const handleDelete = async (articleId: number) => {
+  const handleDelete = async (articleId: string) => {
     try {
       await deleteArticle(articleId);
       setArticles(articles.filter(article => article.id !== articleId));
@@ -186,6 +186,11 @@ export default function ArticlesManagement() {
                     onClick={() => router.push(`/manager/articles/${article.id}`)}>
                     <BadgeInfo className="mr-2 h-4 w-4" />
                     Xem chi tiết
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer color-yellow-300 hover:bg-yellow-300/20"
+                    onClick={() => router.push(`/manager/articles/${article.slug}/${article.id}`)}>
+                    <Eye className="mr-2 h-4 w-4 color-yellow-300" />
+                    Xem bài đăng
                   </DropdownMenuItem>
                   <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
                     onClick={() => router.push(`/manager/articles/update/${article.id}`)}

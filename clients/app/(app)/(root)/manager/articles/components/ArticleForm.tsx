@@ -33,7 +33,7 @@ const ArticleForm = () => {
     thumbnail: '',
     status: 'draft',
   });
-  const id = Number(params.id);
+  const id = params.id?.toString();
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
@@ -59,11 +59,11 @@ const ArticleForm = () => {
   useEffect(() => {
     if (id) {
       setIsEditing(true);
-      loadArticle(Number(id));
+      loadArticle(id);
     }
   }, []);
 
-  const loadArticle = async (id: number) => {
+  const loadArticle = async (id: string) => {
     try {
       const article = await getArticle(id);
       setArticle(article);

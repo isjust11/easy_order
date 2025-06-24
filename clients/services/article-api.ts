@@ -1,11 +1,12 @@
 import { axiosInstance } from '@/lib/axios';
 
 export interface Article {
-  id: number;
+  id: string;
   title: string;
   content: string;
   thumbnail?: string;
   description?: string;
+  slug?: string;
   status?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -52,7 +53,7 @@ export const getArticles = async (params: ArticleParams = {}): Promise<ArticleRe
   }
 };
 
-export const getArticle = async (id: number): Promise<Article> => {
+export const getArticle = async (id: string): Promise<Article> => {
   const response = await axiosInstance.get(`/article/${id}`);
   return response.data;
 };
@@ -62,12 +63,12 @@ export const createArticle = async (data: ArticleDto): Promise<Article> => {
   return response.data;
 };
 
-export const updateArticle = async (id: number, data: ArticleDto): Promise<Article> => {
+export const updateArticle = async (id?: string, data?: ArticleDto): Promise<Article> => {
   const response = await axiosInstance.put(`/article/${id}`, data);
   return response.data;
 };
 
-export const deleteArticle = async (id: number): Promise<void> => {
+export const deleteArticle = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/article/${id}`);
 };
  

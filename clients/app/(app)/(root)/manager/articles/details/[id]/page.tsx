@@ -11,7 +11,7 @@ export default function ArticleDetailPage({ params }: { params: { id: string } }
 
   useEffect(() => {
     const fetchArticle = async () => {
-      const data = await getArticle(Number(params.id));
+      const data = await getArticle(params.id);
       if (!data) return notFound();
       setArticle(data);
     };

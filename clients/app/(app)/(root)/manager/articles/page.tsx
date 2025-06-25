@@ -33,7 +33,7 @@ export default function ArticlesManagement() {
     try {
       const response = await getArticles({ page: page + 1, size, search });
       setArticles(response.data || []);
-      setPageCount(response.total || 0);
+      setPageCount(response.totalPages || 0);
     } catch (error) {
       toast.error('Có lỗi xảy ra khi tải danh sách tin tức');
       setArticles([]);
@@ -96,7 +96,7 @@ export default function ArticlesManagement() {
       header: "Hình ảnh",
       cell: ({ row }) => {
         const thumbnail = mergeImageUrl(row.getValue("thumbnail") as string)
-        console.log(thumbnail)
+        // console.log(thumbnail)
         return (
           thumbnail ? 
           <Image width={64}

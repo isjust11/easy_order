@@ -93,7 +93,7 @@ const ArticleForm = () => {
 
       const submitData = {
         ...formData,
-        author: user?.id || null, // Sử dụng ID của người dùng hiện tại
+        authorId: user?.id || null, // Sử dụng ID của người dùng hiện tại
         // Nếu là URL đầy đủ, chuyển về đường dẫn tương đối trước khi lưu
         thumbnail: thumbnail.startsWith('http') ? thumbnail.replace(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000', '') : thumbnail,
       };

@@ -1,16 +1,6 @@
 import { axiosInstance } from '@/lib/axios';
+import { Article } from '@/types/article';
 
-export interface Article {
-  id: string;
-  title: string;
-  content: string;
-  thumbnail?: string;
-  description?: string;
-  slug?: string;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 export interface ArticleDto {
   title: string;
@@ -20,36 +10,14 @@ export interface ArticleDto {
   status?: string;
 }
 
-export interface ArticleResponse {
-  data: Article[];
-  total: number;
-  page: number;
-  size: number;
-}
 
-export interface ArticleParams {
-  page?: number;
-  size?: number;
-  search?: string;
-}
-
-export const getArticles = async (params: ArticleParams = {}): Promise<ArticleResponse> => {
+export const getArticles = async (params?: PaginationParams): Promise<PaginatedResponse<Article>> => {
   try {
     const response = await axiosInstance.get('/article', { params });
-    return {
-      data: response.data?.data || [],
-      total: response.data?.total || 0,
-      page: response.data?.page || 1,
-      size: response.data?.size || 10
-    };
+    return response.data;
   } catch (error) {
     console.error('Error fetching articles:', error);
-    return {
-      data: [],
-      total: 0,
-      page: 1,
-      size: 10
-    };
+     return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
   }
 };
 

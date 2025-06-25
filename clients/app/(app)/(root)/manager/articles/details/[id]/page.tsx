@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
 import { getArticle } from '@/services/article-api';
-import { Article } from '@/services/article-api';
 import Image from 'next/image';
+import { Article } from '@/types/article';
 
 export default function ArticleDetailPage({ params }: { params: { id: string } }) {
   const [article, setArticle] = useState<Article | null>(null);
 
   useEffect(() => {
     const fetchArticle = async () => {
-      const data = await getArticle(Number(params.id));
+      const data = await getArticle(params.id);
       if (!data) return notFound();
       setArticle(data);
     };

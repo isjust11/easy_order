@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getArticle, Article } from "@/services/article-api";
+import { getArticle } from "@/services/article-api";
 import { useParams } from "next/navigation";
+import { Article } from "@/types/article";
 
 export default function ArticleDetailPage() {
   const params = useParams();

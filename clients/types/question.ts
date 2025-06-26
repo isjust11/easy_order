@@ -1,14 +1,15 @@
+import { SkillType } from "@/enums/skill-type.enum";
 import { ExamQuestion } from "./exam-question";
+import { QuestionType } from "@/enums/question-type.enum";
 
 
 export interface Question {
-  id: number;
 
   content: string;
 
-  skill: string;
+  skill?: SkillType;
 
-  type?: string;
+  type?: QuestionType;
 
   options?: string[];
 
@@ -17,10 +18,6 @@ export interface Question {
   explanation?: string;
 
   isActive: boolean;
-
-  createdAt: Date;
-
-  updatedAt: Date;
 
   examQuestions: ExamQuestion[];
 } 

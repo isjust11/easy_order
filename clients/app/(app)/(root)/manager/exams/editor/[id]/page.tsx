@@ -11,29 +11,26 @@ import { Plus, Save, ArrowRight, ArrowLeft, Trash2 } from 'lucide-react';
 import { QuestionType } from '@/enums/question-type.enum';
 import { Label } from '@/components/ui/label';
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
+import { getExamQuestions } from '@/services/exam-api';
+import { Question } from '@/types/question';
+import { SkillType } from '@/enums/skill-type.enum';
 
-interface QuestionFormData {
-    content: string;
-    skill: string;
-    type: string;
-    options: string[];
-    answer: string;
-    explanation?: string;
-}
 
 const QuestionEditor = () => {
     const params = useParams();
     const examId = params.id as string;
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [questions, setQuestions] = useState<QuestionFormData[]>([]);
-    const [currentQuestion, setCurrentQuestion] = useState<QuestionFormData>({
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [currentQuestion, setCurrentQuestion] = useState<Question>({
         content: '',
-        skill: '',
-        type: '',
+        skill: SkillType.READING,
+        type: QuestionType.CHOOSE_SINGLE_ANSWER,
         options: ['', '', '', ''],
         answer: '',
-        explanation: ''
+        explanation: '',
+        isActive: true,
+        examQuestions: []
     });
 
     const questionTypes = [
@@ -49,12 +46,12 @@ const QuestionEditor = () => {
     ];
 
     const skills = [
-        { value: 'LISTENING', label: 'Nghe' },
-        { value: 'READING', label: 'Đọc' },
-        { value: 'WRITING', label: 'Viết' },
-        { value: 'SPEAKING', label: 'Nói' },
-        { value: 'GRAMMAR', label: 'Ngữ pháp' },
-        { value: 'VOCABULARY', label: 'Từ vựng' }
+        { value: SkillType.LISTENING, label: 'Nghe' },
+        { value: SkillType.READING, label: 'Đọc' },
+        { value: SkillType.WRITING, label: 'Viết' },
+        { value: SkillType.SPEAKING, label: 'Nói' },
+        { value: SkillType.GRAMMAR, label: 'Ngữ pháp' },
+        { value: SkillType.VOCABULARY, label: 'Từ vựng' }
     ];
 
     const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -67,17 +64,17 @@ const QuestionEditor = () => {
     const loadQuestions = async () => {
         try {
             // TODO: Implement API call to load existing questions
-            // const response = await examApi.getExamQuestions(examId);
-            // setQuestions(response.data);
+            const data = await getExamQuestions(examId);
+            setQuestions(data || []);
         } catch (error) {
             console.error('Error loading questions:', error);
         }
     };
 
-    const handleQuestionTypeChange = (type: string) => {
+    const handleQuestionTypeChange = (type: QuestionType) => {
         setCurrentQuestion(prev => ({
             ...prev,
-            type,
+            type: type,
             options: type === QuestionType.CHOOSE_SINGLE_ANSWER || type === QuestionType.CHOOSE_MULTIPLE_ANSWERS
                 ? ['', '', '', '']
                 : []
@@ -87,24 +84,24 @@ const QuestionEditor = () => {
     const handleOptionChange = (index: number, value: string) => {
         setCurrentQuestion(prev => ({
             ...prev,
-            options: prev.options.map((option, i) => i === index ? value : option)
+            options: prev.options?.map((option, i) => i === index ? value : option)
         }));
     };
 
     const addOption = () => {
-        if (currentQuestion.options.length < 8) {
+        if (currentQuestion.options?.length ?? 0 < 8) {
             setCurrentQuestion(prev => ({
                 ...prev,
-                options: [...prev.options, '']
+                options: [...prev.options ?? [], '']
             }));
         }
     };
 
     const removeOption = (index: number) => {
-        if (currentQuestion.options.length > 2) {
+        if (currentQuestion.options?.length ?? 0 > 2) {
             setCurrentQuestion(prev => ({
                 ...prev,
-                options: prev.options.filter((_, i) => i !== index)
+                options: prev.options?.filter((_, i) => i !== index)
             }));
         }
     };
@@ -116,7 +113,7 @@ const QuestionEditor = () => {
         }
 
         if (currentQuestion.type === QuestionType.CHOOSE_SINGLE_ANSWER || currentQuestion.type === QuestionType.CHOOSE_MULTIPLE_ANSWERS) {
-            if (!currentQuestion.answer || currentQuestion.options.some(opt => !opt)) {
+            if (!currentQuestion.answer || currentQuestion.options?.some(opt => !opt)) {
                 alert('Vui lòng điền đầy đủ các tùy chọn và đáp án');
                 return;
             }
@@ -139,19 +136,23 @@ const QuestionEditor = () => {
             setCurrentQuestionIndex(nextIndex);
             setCurrentQuestion({
                 content: '',
-                skill: '',
-                type: '',
+                skill: SkillType.READING,
+                type: QuestionType.CHOOSE_SINGLE_ANSWER,
                 options: ['', '', '', ''],
                 answer: '',
-                explanation: ''
+                explanation: '',
+                isActive: true,
+                examQuestions: []
             });
             setQuestions(prev => [...prev, {
                 content: '',
-                skill: '',
-                type: '',
+                skill: SkillType.READING,
+                type: QuestionType.CHOOSE_SINGLE_ANSWER,
                 options: ['', '', '', ''],
                 answer: '',
-                explanation: ''
+                explanation: '',
+                isActive: true,
+                examQuestions: []
             }]);
         }
     };
@@ -178,11 +179,13 @@ const QuestionEditor = () => {
         } else {
             setCurrentQuestion({
                 content: '',
-                skill: '',
-                type: '',
+                skill: SkillType.READING,
+                type: QuestionType.CHOOSE_SINGLE_ANSWER,
                 options: ['', '', '', ''],
                 answer: '',
-                explanation: ''
+                explanation: '',
+                isActive: true,
+                examQuestions: []
             });
         }
     };
@@ -238,7 +241,7 @@ const QuestionEditor = () => {
                                 onClick={() => deleteQuestion(currentQuestionIndex)}
                                 disabled={questions.length === 0}
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4 text-red-500" />
                             </Button>
                         </div>
                     </CardTitle>
@@ -256,7 +259,7 @@ const QuestionEditor = () => {
                                     </SelectTrigger>
                                     <SelectContent className='bg-white z-[999991]'>
                                         {questionTypes.map(type => (
-                                            <SelectItem key={type.value} value={type.value}className='hover:bg-gray-100'>
+                                            <SelectItem key={type.value} value={type.value} className='hover:bg-gray-100'>
                                                 {type.label}
                                             </SelectItem>
                                         ))}
@@ -267,7 +270,7 @@ const QuestionEditor = () => {
                             {/* Skill Selection */}
                             <div className="space-y-2">
                                 <Label>Kỹ năng</Label>
-                                <Select value={currentQuestion.skill} onValueChange={(skill) => setCurrentQuestion(prev => ({ ...prev, skill }))}>
+                                <Select value={currentQuestion.skill} onValueChange={(skill) => setCurrentQuestion(prev => ({ ...prev, skill: skill as SkillType }))}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Chọn kỹ năng" />
                                     </SelectTrigger>
@@ -291,11 +294,11 @@ const QuestionEditor = () => {
                                     rows={4}
                                 /> */}
                                 <SimpleEditor
-                                            key={'content'}
-                                            initialContent={currentQuestion.content || ''}
-                                            placeholder="Giải thích đáp án..."
-                                            onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, content: e }))}
-                                        />
+                                    key={'content'}
+                                    initialContent={currentQuestion.content || ''}
+                                    placeholder="Giải thích đáp án..."
+                                    onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, content: e }))}
+                                />
                             </div>
 
                             {/* Options for Multiple Choice */}
@@ -308,7 +311,7 @@ const QuestionEditor = () => {
                                             variant="outline"
                                             size="sm"
                                             onClick={addOption}
-                                            disabled={currentQuestion.options.length >= 8}
+                                            disabled={(currentQuestion.options?.length ?? 0) >= 8}
                                         >
                                             <Plus className="w-4 h-4" />
                                             Thêm tùy chọn
@@ -316,7 +319,7 @@ const QuestionEditor = () => {
                                     </div>
 
                                     <div className="space-y-2">
-                                        {currentQuestion.options.map((option, index) => (
+                                        {currentQuestion.options?.map((option, index) => (
                                             <div key={index} className="flex gap-2">
                                                 <Badge variant="outline" className="w-8 h-10 flex items-center justify-center">
                                                     {optionLabels[index]}
@@ -327,7 +330,7 @@ const QuestionEditor = () => {
                                                     placeholder={`Tùy chọn ${optionLabels[index]}`}
                                                     className="flex-1"
                                                 />
-                                                {currentQuestion.options.length > 2 && (
+                                                {(currentQuestion.options?.length??0 > 2 )&& (
                                                     <Button
                                                         type="button"
                                                         variant="outline"
@@ -346,18 +349,12 @@ const QuestionEditor = () => {
                             {/* Explanation */}
                             <div className="space-y-2">
                                 <Label>Giải thích (tùy chọn)</Label>
-                                {/* <Textarea
-                                    value={currentQuestion.explanation}
-                                    onChange={(e) => setCurrentQuestion(prev => ({ ...prev, explanation: e.target.value }))}
+                                <SimpleEditor
+                                    key={'new'}
+                                    initialContent={currentQuestion.explanation || ''}
                                     placeholder="Giải thích đáp án..."
-                                    rows={3}
-                                /> */}
-                                 <SimpleEditor
-                                            key={'new'}
-                                            initialContent={currentQuestion.explanation || ''}
-                                            placeholder="Giải thích đáp án..."
-                                            onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, explanation: e }))}
-                                        />
+                                    onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, explanation: e }))}
+                                />
                             </div>
                         </div>
 
@@ -372,7 +369,7 @@ const QuestionEditor = () => {
                                             <SelectValue placeholder="Chọn đáp án đúng" />
                                         </SelectTrigger>
                                         <SelectContent className='bg-white z-[999991]'>
-                                            {currentQuestion.options.map((option, index) => (
+                                            {currentQuestion.options?.map((option, index) => (
                                                 <SelectItem key={index} value={optionLabels[index]} className='hover:bg-gray-100'>
                                                     {optionLabels[index]}: {option}
                                                 </SelectItem>
@@ -383,21 +380,21 @@ const QuestionEditor = () => {
 
                                 {currentQuestion.type === QuestionType.CHOOSE_MULTIPLE_ANSWERS && (
                                     <div className="space-y-2">
-                                        {currentQuestion.options.map((option, index) => (
+                                        {currentQuestion.options?.map((option, index) => (
                                             <div key={index} className="flex items-center space-x-2">
                                                 <Input
                                                     type="checkbox"
                                                     id={`answer-${index}`}
-                                                    checked={currentQuestion.answer.includes(optionLabels[index])}
+                                                    checked={currentQuestion.answer?.includes(optionLabels[index])}
                                                     onChange={(e) => {
-                                                        const currentAnswers = currentQuestion.answer.split(',').filter(a => a.trim());
+                                                        const currentAnswers = currentQuestion.answer?.split(',').filter(a => a.trim());
                                                         let newAnswers;
                                                         if (e.target.checked) {
-                                                            newAnswers = [...currentAnswers, optionLabels[index]];
+                                                            newAnswers = [...currentAnswers??'', optionLabels[index]];
                                                         } else {
-                                                            newAnswers = currentAnswers.filter(a => a !== optionLabels[index]);
+                                                            newAnswers = currentAnswers?.filter(a => a !== optionLabels[index]);
                                                         }
-                                                        setCurrentQuestion(prev => ({ ...prev, answer: newAnswers.join(',') }));
+                                                        setCurrentQuestion(prev => ({ ...prev, answer: newAnswers?.join(',') }));
                                                     }}
                                                 />
                                                 <Label htmlFor={`answer-${index}`} className="flex-1">
@@ -446,7 +443,7 @@ const QuestionEditor = () => {
                                         <p className="font-medium">{currentQuestion.content || 'Nội dung câu hỏi...'}</p>
                                         {currentQuestion.type === QuestionType.CHOOSE_SINGLE_ANSWER && (
                                             <div className="space-y-1">
-                                                {currentQuestion.options.map((option, index) => (
+                                                {currentQuestion.options?.map((option, index) => (
                                                     <div key={index} className="flex items-center space-x-2">
                                                         <span className="font-medium">{optionLabels[index]}.</span>
                                                         <span>{option || `Tùy chọn ${optionLabels[index]}`}</span>

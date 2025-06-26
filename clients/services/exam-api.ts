@@ -1,5 +1,7 @@
 import { axiosInstance } from '@/lib/axios';
+import { QuestionFormData } from '@/types/dto/QuestionFormData';
 import { Exam } from '@/types/exam';
+import { Question } from '@/types/question';
 
 
 export interface ExamDto {
@@ -45,3 +47,16 @@ export const deleteExam = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/exam/${id}`);
 };
  
+export const createAllQuestion = async (examId: string,questions: QuestionFormData): Promise<Exam[]> => {
+  const response = await axiosInstance.post(`/exam/${examId}/questions`);
+  return response.data;
+};
+
+export const deleteQuestion = async (examId: string, questionId: string): Promise<void> => {
+  await axiosInstance.delete(`/exam/${examId}/questions/${questionId}`);
+};
+
+export const getExamQuestions = async (examId: string): Promise<Question[]> => {
+  const response = await axiosInstance.put(`/exam/${examId}/${examId}`);
+  return response.data;
+};

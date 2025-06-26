@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal } from 'lucide-react';
+import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal, BadgeInfo, ClipboardPenLine } from 'lucide-react';
 import { toast } from 'sonner';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
@@ -18,8 +18,10 @@ import { Action } from '@/types/actions';
 import Badge from '@/components/ui/badge/Badge';
 import { useAsyncEffect } from '@/hooks/useAsyncEffect';
 import { ExamForm } from './components/ExamForm';
+import { useRouter } from 'next/navigation';
 
 export default function ExamsManagement() {
+  const router = useRouter();
   const [exams, setExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [loading, setLoading] = useState(false);
@@ -109,6 +111,16 @@ export default function ExamsManagement() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
+              <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                  onClick={() => router.push(`/manager/exams/${exam.id}`)}>
+                  <BadgeInfo className="mr-2 h-4 w-4" />
+                  Xem chi tiết
+                </DropdownMenuItem>
+                <DropdownMenuItem className="flex flex-start px-4 text-blue-800 py-2 cursor-pointer hover:bg-blue-800/20"
+                  onClick={() => router.push(`/manager/exams/editor/${exam.id}`)}>
+                  <ClipboardPenLine className="mr-2 h-4 w-4 text-blue-800" />
+                  Soạn câu hỏi
+                </DropdownMenuItem>
                 <DropdownMenuItem className='flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20'
                   onClick={() => {
                     setSelectedExam(exam);

@@ -19,7 +19,7 @@ export const getExams = async (params?: PaginationParams): Promise<PaginatedResp
     return response.data;
   } catch (error) {
     console.error('Error fetching Exams:', error);
-     return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
+    return { data: [], total: 0, page: 0, size: 10, totalPages: 0 };
   }
 };
 
@@ -46,9 +46,9 @@ export const updateExam = async (id?: string, data?: ExamDto): Promise<Exam> => 
 export const deleteExam = async (id: string): Promise<void> => {
   await axiosInstance.delete(`/exam/${id}`);
 };
- 
-export const createAllQuestion = async (examId: string,questions: QuestionFormData): Promise<Exam[]> => {
-  const response = await axiosInstance.post(`/exam/${examId}/questions`);
+
+export const createBulkQuestion = async (examId: string, data: Question[]): Promise<Exam[]> => {
+  const response = await axiosInstance.post(`/exam/${examId}/questions`, { 'questions': data });
   return response.data;
 };
 
@@ -57,6 +57,6 @@ export const deleteQuestion = async (examId: string, questionId: string): Promis
 };
 
 export const getExamQuestions = async (examId: string): Promise<Question[]> => {
-  const response = await axiosInstance.put(`/exam/${examId}/${examId}`);
+  const response = await axiosInstance.get(`/exam/${examId}/questions`);
   return response.data;
 };

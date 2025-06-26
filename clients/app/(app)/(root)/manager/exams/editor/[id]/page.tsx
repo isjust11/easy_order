@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,12 +11,14 @@ import { Plus, Save, ArrowRight, ArrowLeft, Trash2 } from 'lucide-react';
 import { QuestionType } from '@/enums/question-type.enum';
 import { Label } from '@/components/ui/label';
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
-import { getExamQuestions } from '@/services/exam-api';
+import { createBulkQuestion, getExamQuestions } from '@/services/exam-api';
 import { Question } from '@/types/question';
 import { SkillType } from '@/enums/skill-type.enum';
+import { toast } from 'sonner';
 
 
 const QuestionEditor = () => {
+    const router = useRouter();
     const params = useParams();
     const examId = params.id as string;
 
@@ -107,25 +109,28 @@ const QuestionEditor = () => {
     };
 
     const saveCurrentQuestion = () => {
+        var isValid = true;
         if (!currentQuestion.content || !currentQuestion.type || !currentQuestion.skill) {
-            alert('Vui lòng điền đầy đủ thông tin câu hỏi');
-            return;
+            toast.warning('Vui lòng điền đầy đủ thông tin câu hỏi');
+            isValid = false;
         }
 
         if (currentQuestion.type === QuestionType.CHOOSE_SINGLE_ANSWER || currentQuestion.type === QuestionType.CHOOSE_MULTIPLE_ANSWERS) {
             if (!currentQuestion.answer || currentQuestion.options?.some(opt => !opt)) {
-                alert('Vui lòng điền đầy đủ các tùy chọn và đáp án');
-                return;
+                toast.warning('Vui lòng điền đầy đủ các tùy chọn và đáp án');
+                isValid = false;
             }
         }
 
         const updatedQuestions = [...questions];
         updatedQuestions[currentQuestionIndex] = { ...currentQuestion };
         setQuestions(updatedQuestions);
+        return isValid;
     };
 
     const nextQuestion = () => {
-        saveCurrentQuestion();
+        const isValid = saveCurrentQuestion();
+        if (!isValid) return;
         const nextIndex = currentQuestionIndex + 1;
 
         if (nextIndex < questions.length) {
@@ -159,7 +164,8 @@ const QuestionEditor = () => {
 
     const previousQuestion = () => {
         if (currentQuestionIndex > 0) {
-            saveCurrentQuestion();
+            const isValid = saveCurrentQuestion();
+            if (!isValid) return;
             const prevIndex = currentQuestionIndex - 1;
             setCurrentQuestionIndex(prevIndex);
             setCurrentQuestion(questions[prevIndex]);
@@ -193,12 +199,16 @@ const QuestionEditor = () => {
     const saveAllQuestions = async () => {
         try {
             saveCurrentQuestion();
+            if (questions.length == 0) {
+                toast.warning('Vui lòng tạo ít nhất 1 câu hỏi!')
+                return;
+            }
             // TODO: Implement API call to save all questions
-            // await examApi.saveExamQuestions(examId, questions);
-            alert('Đã lưu tất cả câu hỏi thành công!');
+            await createBulkQuestion(examId, questions);
+            toast.success(`Đã lưu tất cả câu hỏi thành công! `);
         } catch (error) {
             console.error('Error saving questions:', error);
-            alert('Có lỗi xảy ra khi lưu câu hỏi');
+            toast.error('Có lỗi xảy ra khi lưu câu hỏi!');
         }
     };
 
@@ -207,6 +217,10 @@ const QuestionEditor = () => {
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold">Soạn thảo câu hỏi</h1>
                 <div className="flex gap-2">
+                     <Button onClick={()=>router.back()} className="flex items-center gap-2 bg-gray-400 ">
+                        <ArrowLeft className="w-4 h-4 " />
+                        Quay lại
+                    </Button>
                     <Button onClick={saveAllQuestions} className="flex items-center gap-2">
                         <Save className="w-4 h-4" />
                         Lưu tất cả
@@ -330,7 +344,7 @@ const QuestionEditor = () => {
                                                     placeholder={`Tùy chọn ${optionLabels[index]}`}
                                                     className="flex-1"
                                                 />
-                                                {(currentQuestion.options?.length??0 > 2 )&& (
+                                                {(currentQuestion.options?.length ?? 0 > 2) && (
                                                     <Button
                                                         type="button"
                                                         variant="outline"
@@ -390,7 +404,7 @@ const QuestionEditor = () => {
                                                         const currentAnswers = currentQuestion.answer?.split(',').filter(a => a.trim());
                                                         let newAnswers;
                                                         if (e.target.checked) {
-                                                            newAnswers = [...currentAnswers??'', optionLabels[index]];
+                                                            newAnswers = [...currentAnswers ?? '', optionLabels[index]];
                                                         } else {
                                                             newAnswers = currentAnswers?.filter(a => a !== optionLabels[index]);
                                                         }
@@ -440,7 +454,7 @@ const QuestionEditor = () => {
                                 <Label>Xem trước câu hỏi</Label>
                                 <Card className="p-4 bg-gray-50">
                                     <div className="space-y-2">
-                                        <p className="font-medium">{currentQuestion.content || 'Nội dung câu hỏi...'}</p>
+                                        <span className="font-medium" dangerouslySetInnerHTML={{ __html: currentQuestion.content || 'Nội dung câu hỏi...' }}></span>
                                         {currentQuestion.type === QuestionType.CHOOSE_SINGLE_ANSWER && (
                                             <div className="space-y-1">
                                                 {currentQuestion.options?.map((option, index) => (
@@ -480,7 +494,7 @@ const QuestionEditor = () => {
                                 >
                                     <div className="flex items-center space-x-3">
                                         <Badge variant="outline">Câu {index + 1}</Badge>
-                                        <span className="font-medium">{question.content.substring(0, 50)}...</span>
+                                        <span className="font-medium" dangerouslySetInnerHTML={{ __html: question.content }}></span>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <Badge variant="secondary">{question.type}</Badge>

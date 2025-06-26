@@ -79,6 +79,10 @@ body {
     }
   }
 }
+.tiptap-toolbar,.content-wrapper {
+  border: 1px solid rgb(243 243 244);
+  border-radius: 4px;
+}
 
 .simple-editor-content .tiptap.ProseMirror {
   padding: 1rem 1rem;

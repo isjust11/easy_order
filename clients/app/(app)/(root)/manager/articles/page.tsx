@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash, ArrowDown, ArrowUp, MoreHorizontal, ImageOff, BadgeInfo, Eye } from 'lucide-react';
 import { deleteArticle, getArticles } from '@/services/article-api';
-import { Article } from '@/services/article-api';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import ComponentCard from '@/components/common/ComponentCard';
@@ -16,6 +15,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { mergeImageUrl } from '@/lib/utils';
 import Image from 'next/image'
 import { Action } from '@/types/actions';
+import { Article } from '@/types/article';
 
 export default function ArticlesManagement() {
   

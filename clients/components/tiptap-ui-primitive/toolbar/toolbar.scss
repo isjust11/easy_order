@@ -14,7 +14,9 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
-
+  flex-wrap: wrap;
+  flex-direction: row;
+  
   &-group {
     display: flex;
     align-items: center;

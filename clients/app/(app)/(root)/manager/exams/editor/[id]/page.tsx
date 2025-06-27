@@ -25,6 +25,7 @@ const QuestionEditor = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [currentQuestion, setCurrentQuestion] = useState<Question>({
+        id:'',
         content: '',
         skill: SkillType.READING,
         type: QuestionType.CHOOSE_SINGLE_ANSWER,
@@ -308,7 +309,7 @@ const QuestionEditor = () => {
                                     rows={4}
                                 /> */}
                                 <SimpleEditor
-                                    key={'content'}
+                                    key={'content-'+currentQuestion.id}
                                     initialContent={currentQuestion.content || ''}
                                     placeholder="Giải thích đáp án..."
                                     onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, content: e }))}
@@ -364,7 +365,7 @@ const QuestionEditor = () => {
                             <div className="space-y-2">
                                 <Label>Giải thích (tùy chọn)</Label>
                                 <SimpleEditor
-                                    key={'new'}
+                                    key={'explanation-'+currentQuestion.id}
                                     initialContent={currentQuestion.explanation || ''}
                                     placeholder="Giải thích đáp án..."
                                     onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, explanation: e }))}
@@ -422,14 +423,8 @@ const QuestionEditor = () => {
                                 {(currentQuestion.type === QuestionType.FILL_IN_THE_BLANK ||
                                     currentQuestion.type === QuestionType.SHORT_ANSWER ||
                                     currentQuestion.type === QuestionType.ESSAY) && (
-                                        //   <Textarea
-                                        //     value={currentQuestion.answer}
-                                        //     onChange={(e) => setCurrentQuestion(prev => ({ ...prev, answer: e.target.value }))}
-                                        //     placeholder="Nhập đáp án đúng..."
-                                        //     rows={4}
-                                        //   />
                                         <SimpleEditor
-                                            key={'new'}
+                                            key={'answer-'+currentQuestion.id}
                                             initialContent={currentQuestion.answer || ''}
                                             placeholder="Nhập đáp án đúng..."
                                             onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, answer: e }))}
@@ -440,7 +435,7 @@ const QuestionEditor = () => {
                                     currentQuestion.type === QuestionType.ORDERING) && (
                                         <div className="space-y-2">
                                             <SimpleEditor
-                                                key={'new'}
+                                                key={'answer-'+currentQuestion.id}
                                                 initialContent={currentQuestion.answer || ''}
                                                 placeholder="Nhập thứ tự đúng (VD: A-B-C-D hoặc 1-2-3-4)..."
                                                 onContentChange={(e) => setCurrentQuestion(prev => ({ ...prev, answer: e }))}

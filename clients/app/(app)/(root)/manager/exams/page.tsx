@@ -86,6 +86,18 @@ export default function ExamsManagement() {
       },
     },
     {
+      accessorKey:"examQuestions",
+      header:"Số câu hỏi",
+      cell: ({ row }) => {
+        const examQuestions = row.getValue("examQuestions") as any;
+        return (
+          <Badge variant="light" color='primary' >
+            {examQuestions.length +' câu hỏi'}
+          </Badge>
+        )
+      },
+    },
+    {
       id: "actions",
       header: 'Thao tác',
       cell: ({ row }) => {
@@ -111,7 +123,7 @@ export default function ExamsManagement() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className='bg-white shadow-sm rounded-xs '>
-              <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
+                <DropdownMenuItem className="flex flex-start px-4 py-2 cursor-pointer hover:bg-gray-300/20"
                   onClick={() => router.push(`/manager/exams/${exam.id}`)}>
                   <BadgeInfo className="mr-2 h-4 w-4" />
                   Xem chi tiết
@@ -150,8 +162,9 @@ export default function ExamsManagement() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const examsData = await getAllExam();
-      setExams(examsData);
+      const examsData = await getExams({ page: pageIndex + 1, size: pageSize, search: search });
+      setExams(examsData.data);
+      setPageCount(examsData.totalPages)
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Có lỗi xảy ra khi tải dữ liệu');
